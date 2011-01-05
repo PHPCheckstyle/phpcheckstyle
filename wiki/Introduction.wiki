@@ -1,4 +1,5 @@
 #summary PHPCheckstyle introduction
+#labels Featured
 
 = Introduction =
 

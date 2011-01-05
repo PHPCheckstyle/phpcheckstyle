@@ -71,7 +71,7 @@ To change the configuration file used, use the --config flag of the command line
 
 Eclipse is already able to do some checks and to reformat your code (CTRL + SHIFT 9+ F) with [http://www.eclipse.org/pdt/ PDT].
 
-It is also possible to add some extenal tools like PHP_CodeSniffer or PHP_Checkstyle to verify the code you're editing.
+It is also possible to add some extenal tools like PHPCodeSniffer or PHPCheckstyle to verify the code you're editing.
 
   * First, install the Eclispe PHP Tool Integration (see http://www.phpsrc.org/wiki/)
 

@@ -1,0 +1,135 @@
+################################################################################
+#  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
+#  Licensed under the Open Source License version 2.1
+#  (See http://www.spikesource.com/license.html)
+################################################################################
+
+                        Spike PHPCheckstyle Release Notes
+                        =================================
+
+Version 0.8.11
+-------------
+* Refactoring : Added the current stack of instruction to provide contextual information
+* New test : unusedCode
+* New test : deprecated functions
+
+
+Version 0.8.10
+-------------
+* Corrected JavaNCSS count of packages
+* New test : functionInsideLoop
+
+Version 0.8.9
+-------------
+* Corrected LevelOfNesting calculation
+* New test : oneClassPerFile
+
+Version 0.8.8
+-------------
+* New test : variableNaming
+* Added the possibility to configure the regular expressions for the naming rules
+* A taste of it's own dog food
+                        
+Version 0.8.7
+-------------
+* New test : checkUnusedVariables
+* New test : checkUnusedFunctionParameters
+      
+Version 0.8.6
+-------------
+* Correction in the controlStructOpenCurly check.
+      
+Version 0.8.5
+-------------  
+ * New test : empty statement (;;)
+ * New test : inner assignment
+ * New test : unused private functions
+      
+Version 0.8.4
+-------------
+ * Refactored the whiteSpaceBore / noSpaceBefore / whiteSpaceAfter / noSpaceAfter methods.
+ * Refactored peekNextValidToken and peekPrvsValidToken to avoid using call by reference 
+ * New test : function length
+ * New test : empty block (if ($a) {} )
+ * New test : avoid heredoc
+ * New test : excessive function parameters
+ * New test : need braces
+ * New tests : switch have a default and default is at the end
+ * New test : switch case should have a break
+ 
+      
+Version 0.8.3
+-------------
+ * Added some tests on the docbloc (@param and @return)
+ * Added a test on unary operators
+ * Corrected a bug in the detection of the end of a function
+ 
+ Version 0.8.2
+-------------
+ * Added new test (Use boolean operators instead of logical operators)
+                        
+Version 0.8.1
+-------------
+ * Corrected a bug with NEW_LINE caracter inside a constant string
+
+                        
+Version 0.8
+-----------
+ * Replaced the token_get_all() function by token_get_all_nl() found here :  http://php.net/manual/fr/function.token-get-all.php
+   This function returns the new line caracters as a token. This solve some problems and impact a lot of code.
+   
+ * Added the possibility to generate a report on the number of lines of code compatible with the JavaNCSS format (http://kclee.de/clemens/java/javancss/)
+ 
+ * Added new tests (Extract TODOs, Avoid passing references)
+ 
+ * Some refactoring
+           
+           
+Version 0.7.1
+-------------
+ * Added new tests (Cyclomatic Complexity, ...)
+
+
+Version 0.7 
+-----------
+ * All tests are now configurable
+ 
+ * Included siome propositions from the forum
+ 
+ * Added the possibility to define a severity level for each test rule
+ 
+ * Ignoring the .svn repositories
+ 
+ * Changed the XML outpout in order to be compatible with the checkstyle format (http://checkstyle.sourceforge.net/)
+
+Version 0.6.1
+-------------
+ * Bugs Fixes
+ 
+ * HTML Ouput changes
+
+
+Version 0.6
+-----------
+
+ This is the very first release of Spike PHPCheckstyle. It is an alpha release.
+
+ * Known Issues
+   
+   1. Indentation: The tools checks only for existence of tabs in a line. It 
+      does not check that every line follows the 4 space indentation rule.
+   2. Issue with do/while loop: The tool generates wrong errors when a do/while 
+      loop contains a while loop or another do/while loop.
+   3. Global variable nameing: Global variable naming convention checks are 
+      not implemented.
+   4. Docblocks: The tool currently checks only for the existence of docblocks 
+      but not for all the required elements within it.
+   5. Issue: when a cpp comment (starting with //) is followed by "}" in the 
+      next line, reports that the "}" should be on a new line (even though it 
+      is on a new line).
+   6. Expects the configuration file to be {install-dir}/config/pear.cfg.xml.
+      Can not change it.
+   7. Some of the tests are not configurable (that is, they are checked, but can not 
+      disable them). They are: "spaceAfterControlStmt", "spaceAfterSemicolon", 
+      "noSpaceAfterFuncCall" and "spaceAfterFuncNameDefn". (Refer documentation 
+      for more details on configurations).

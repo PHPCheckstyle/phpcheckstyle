@@ -1,0 +1,254 @@
+
+The configuration file used by default is config/default.xml. 
+
+You customize this to suit it to specific coding convention by creating a new configuration file and commenting/uncommenting some tests. 
+
+For some tests, you can list some exceptions when you don't want the test to be applied.
+
+You can also edit the level of severity of each test by adding a "level" attribute in the XML configuration file.
+
+The list of available tests is detailled below.
+
+
+= Naming =
+
+
+== constantNaming ==
+Checks to see if the constant follows the naming convention.
+Constants should only have uppercase letters and underscores.
+
+== variableNaming ==
+Checks to see if the variable follows the naming convention.
+Variables should start with a lowercase or an underscores and should contain only letters.
+
+== functionNaming ==
+Checks to see if the function follows the naming convention.
+Function name has to start with lowercase.
+Special functions (like "__construct" are not checked).
+
+== privateFunctionNaming ==
+Activates the testing for private functions also (private functions have to start with underscore followed by lowercase).
+
+== constructorNaming ==
+Checks the naming of the constructor, the property "naming" can be set to "old" for old PHP constructor style (the name of the class) or to "new" for the new constructor style "__construct()".
+
+== classNaming ==
+Checks to see if the class follows the naming convention (class name has to start with uppercase).
+
+
+= PHP Tags =
+
+
+== noShortPhpCodeTag ==
+Tests and reports an error if a short php code open tag is used. Anything other than "&lt;?php" is an error.
+
+== noFileCloseTag ==
+Test if a PHP closing file is present at the end of a file (which is not recommended)
+
+== noFileFinishHTML ==
+Test if a file finish with some inner HTML.
+This could be OK for some files likes view (in a MVC framework) but could provoque a "header already sent" error in some cases.
+
+
+= Comments =
+
+
+== noShellComments == 
+Tests and reports and error if there is a shell/perl style comment (that starts with '#').
+
+== docBlocks == 
+Tests that every function and class is immediately preceded by a docblock. A property "excludePrivateMembers" can be set if you want to disable docblocks for private member functions.
+* Property excludePrivateMembers (true /false)
+* Property testReturn (true /false)
+* Property testParam (true /false)
+* Property testThrow (true /false)
+
+
+= Indentation =
+
+
+== noTabs == 
+Tests to make sure that a line does not contain the tab character.
+
+== controlStructNeedCurly == 
+Tests to make sure that every control structure is included within a {} block, even if it is syntactically optional.
+
+== controlStructOpenCurly == 
+Tests for the location of the open curly bracket for a control structure. Default position is the same line where control statement ends. It can be overridden to position it on a new line by setting the property "position" to "nl". 
+
+* Property position (sl/nl)
+
+Example: open curly bracket on the same line:
+<pre>
+if ($ret === false) {
+    // statements
+}
+</pre>
+
+Same example, if the open curly bracket was supposed to be on the new line:
+<pre>
+if ($ret === false) 
+{
+    // statements
+}
+</pre>
+
+== controlCloseCurly ==
+Checks the position of the close curly brace (Should always be on a new line).
+
+
+== funcDefinitionOpenCurly == 
+This is similar to "controlStructOpenCurly" explained above. Except that this is for function definition and the default value of "position" is new line ("nl").
+* Property position (sl/nl)
+
+== controlStructElse == 
+Checks the position of the else after the end of the if statement. 
+* Property position (sl/nl)
+
+Same line :
+<pre>
+if ($ret === false) {
+    // statements
+} else {
+}
+</pre>
+
+New line :
+<pre>
+if ($ret === false) {
+    // statements
+} 
+else {
+}
+</pre>
+
+= Spaces =
+
+== spaceAfterControlStmt == 
+Tests that the control statements ("if", "else", "while", "for", etc.) are followed by a space before the opening parenthesis. PEAR standard stipulates this to distinguish it from function calls.
+
+== noSpaceAfterFunctionName ==
+Check that there is no space after a function name in a function call.
+
+== checkWhiteSpaceAfter == 
+heck for the (required) presence of a white space after some tokens (like ,). 
+* A list of exceptions can be defined for this test.
+
+== checkWhiteSpaceBefore == 
+Check for the (required) presence of a white space before some tokens.
+* A list of exceptions can be defined for this test.
+
+== noSpaceBeforeToken ==
+Check that there is no space before before some tokens.
+* A list of exceptions can be defined for this test.
+
+== noSpaceAfterToken ==
+Check that there is no space after some tokens.
+* A list of exceptions can be defined for this test.
+
+
+= Metrics =
+
+
+== lineLength == 
+Tests for long lines (except for comments) and reports error if a line exceeds the value of "maxLineLength" property.
+* Proprety maxLineLength (default = 80).
+
+== functionLength == 
+Checks that the lenght (in lines) of a function doesn't pass the max value.
+* Proprety maxLength (default = 150).
+
+== functionMaxParameters == 
+Checks for excessive parameters in a function declaration.
+* Proprety maxParameters(default = 4).
+
+== cyclomaticComplexity == 
+Calculates a simple cyclomatic complexity value for the functions.
+The level of complexity that raise a warning or an error can be defined.
+See [http://www.aivosto.com/project/help/pm-complexity.html Cyclomatic Complexity]
+
+* Proprety warningLevel (default = 10).
+* Proprety errorLevel(default = 20).
+
+
+= Other =
+
+
+== defaultValuesOrder == 
+Tests that all the arguments of a function with default values are placed at the end of the list of arguments.
+
+== checkProhibitedFunctions ==
+Checks for prohibited functions. List the functions that are forbidden in a project for safety reasons (like for exemple "exec").
+See the list of PHP functions [http://www.php.net/manual/en/indexes.php here]
+
+== checkProhibitedTokens ==
+Checks for prohibited tokens. List the PHP tokens that are forbidden.
+See the list of PHP tokens [http://www.php.net/manual/en/tokens.php here]
+
+== checkSilencedError ==
+Checks for silenced function calls.
+* A list of exceptions can be defined for this test.
+
+== encapsedVariablesInsideString ==
+Checks for encapsed variables inside a String like "$a".
+
+== avoidPassingReferences ==
+Checks for functions have some passed by reference parameters.
+
+== showTODOs ==
+Extracts the TODO from the comments and add them in the report.
+
+== useBooleanOperators ==
+Tests for the presence of boolean operators (AND or OR) and recommend to replace them with boolean operators (&& or ||).
+
+== checkEmptyBlock ==
+Check empty block like if ($a) {}
+* A list of exceptions can be defined for this test.
+
+== checkEmptyStatement ==
+Check empty statement ( ;; )
+
+== checkHeredoc ==
+Check for the presence of heredoc.
+
+== needBraces ==
+Check for braces around code blocs (if, else, elseif, do, while, for, foreach).
+
+== switchNeedDefault ==
+Switch need a default value.
+
+== switchCaseNeedBreak ==
+Switch case should have a break.
+
+== switchDefaultOrder ==
+Switch default value should be at the end.
+
+== checkUnaryOperator ==
+Avoid using unary operators (++) inside a control statement.
+With the exception of for iterators, all variable incrementation or decrementation should occur in their own toplevel statement to increase readability.
+* A list of exceptions can be defined for this test.
+
+== checkInnerAssignment ==
+With inner assignments it is difficult to see all places where a variable is set.
+With the exception of for iterators, all assignments should occur in their own toplevel statement to increase readability.  
+* A list of exceptions can be defined for this test.
+
+== checkUnusedPrivateFunctions ==
+Detect unused private functions (detecting unused public ones is more difficult).
+
+== checkUnusedVariables ==
+Detect unused variables.
+This one is a bit experimental and can generate false positives (variables declared in one class and used in another one for example).
+
+== checkUnusedFunctionParameters ==
+Detect unused function parameters.
+
+== oneClassPerFile ==
+Check that there is only one class declaration per PHP file.
+
+
+= Optimisation =
+
+
+== functionInsideLoop ==
+Avoid using a count/sizeof function inside a loop

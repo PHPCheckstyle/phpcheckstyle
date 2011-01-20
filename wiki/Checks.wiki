@@ -1,3 +1,5 @@
+#summary PHPCheckstyle list of available checks
+
 The configuration file used by default is config/default.xml. 
 
 You customize this to suit it to specific coding convention by creating a new configuration file and commenting/uncommenting some tests. 
@@ -78,19 +80,19 @@ Tests for the location of the open curly bracket for a control structure. Defaul
 * Property position (sl/nl)
 
 Example: open curly bracket on the same line:
-<pre>
+{{{
 if ($ret === false) {
     // statements
 }
-</pre>
+}}}
 
 Same example, if the open curly bracket was supposed to be on the new line:
-<pre>
+{{{
 if ($ret === false) 
 {
     // statements
 }
-</pre>
+}}}
 
 == controlCloseCurly ==
 Checks the position of the close curly brace (Should always be on a new line).
@@ -105,21 +107,21 @@ Checks the position of the else after the end of the if statement.
 * Property position (sl/nl)
 
 Same line :
-<pre>
+{{{
 if ($ret === false) {
     // statements
 } else {
 }
-</pre>
+}}}
 
 New line :
-<pre>
+{{{
 if ($ret === false) {
     // statements
 } 
 else {
 }
-</pre>
+}}}
 
 = Spaces =
 

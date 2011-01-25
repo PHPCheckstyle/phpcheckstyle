@@ -92,7 +92,7 @@ class XmlFormatReporter extends Reporter {
 		$e->setAttribute("line", $line);
 		$e->setAttribute("severity", $level);
 		$e->setAttribute("message", $message);
-		$e->setAttribute("source", "http://developer.spikesource.com/wiki/index.php"); // en dur ...
+		$e->setAttribute("source", "http://code.google.com/p/phpcheckstyle"); // en dur ...
 		$this->currentElement->appendChild($e);
 	}
 

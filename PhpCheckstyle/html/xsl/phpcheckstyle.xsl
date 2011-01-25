@@ -1,9 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<!-- KO_20050713: Adding a doctype breaks the display of the page. This seems to be a wide-spread issue. Commented out for consistancy for now.
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-        /KO_20050713-->
-
 <xsl:transform 
      xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 <xsl:template match="checkstyle">
@@ -19,46 +15,28 @@
   <head>
 
     <title>PHPCheckstyle Results</title>
-        <link href="css/spikesource.css" rel="stylesheet" type="text/css" />
         <link href="css/global.css" rel="stylesheet" type="text/css" />
-
-        <style type="text/css">
-            /* KO_20050713: Override Global CSS */
-
-            .spikeDataTableHeadCenter, .spikeDataTableHeadCenterLast {text-align:left;}
-            .spikeVerticalTableHead, .spikeVerticalTableHeadLast, .spikeDataTableHeadCenter, .spikeDataTableHeadCenterLast {font-size:11px;}
-
-            h1 {
-                padding-top:10px;
-                margin-bottom:5px;
-                                font-size:14px;
-            }
-
-                        .copyright {border-top:3px solid #06c; padding-top:2px;}
-                        div.ahrefTop {width:100%; text-align:right; font-size:10px;}
-        </style>
   </head>
+  
+  
   <body>
 
-
         <div id="top" class="content-small" style="padding-left:10px;padding-top:3px;width:95%">
-            <table border="0" cellpadding="0" cellspacing="0" style="width:750px;">
+            <table border="0" cellpadding="0" cellspacing="0" >
                 <tr>
 
                     <td width="10%">
-                        <a href="http://www.spikesource.com/" style="text-decoration:none" target="_blank">
+                        <a href="http://code.google.com/p/phpcheckstyle/" style="text-decoration:none" target="_blank">
                             <img src="images/spikesource_logo.gif" border="0" style="padding-bottom:5px;"/>
                         </a>
                     </td>
 
                     <td style="text-align:right; vertical-align:bottom; padding-bottom:10px;">
-                        <h1><font size="5">Spike PHPCheckstyle</font></h1>
+                        <h1><font size="5">PHPCheckstyle</font></h1>
                     </td>
 
             </tr>
-<!-- KO_20050713: The following block is junk - should be removed with padding but will be left alone for consistancy. -->
-                <tr><td class="content" colspan="4"><img src="images/spacer.gif" height="5" width="1" border="0"/></td></tr>
-<!-- /KO_20050713 -->
+
             <tr>
                     <td colspan="2" class="content-main" align="left" valign="top" style="border-top:3px solid #06c; padding-right:0px;">
 
@@ -184,12 +162,8 @@
                             <table cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
                                     <td class="copyright" align="left">
-                                        <a href="http://www.spikesource.com/projects/phpcheckstyle/">Spike PHPCheckstyle Home</a>
+                                        <a href="http://code.google.com/p/phpcheckstyle/">PHPCheckstyle Home</a>
                                     </td>
-                                    <td class="copyright" align="right">
-                                        Copyright 2004<script language="JavaScript" type="text/javascript">var d=new Date();yr=d.getFullYear();if (yr!=2004)document.write("-"+yr);</script>, SpikeSource, Inc.
-                                    </td>
-
                                 </tr>
                             </table>
                         </div>

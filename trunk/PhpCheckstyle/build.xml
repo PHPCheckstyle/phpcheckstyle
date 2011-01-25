@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<project name="PHPCheckstyle" default="phpcheckstyle" basedir=".">
+		
+	<!-- Test the environment -->
+    <target name="targetCheck">
+        <condition property="isUnix">
+            <and>
+                <os family="unix" />
+            </and>
+        </condition>
+        <condition property="isWindows">
+            <and>
+                <os family="windows" />
+            </and>
+        </condition>
+    </target>
+	
+	<!-- Launch PHP CheckStyle -->
+	<target name="_phpcheckstylewindows" depends="targetCheck" if="isWindows">
+		<echo>Windows</echo>
+		<exec executable="./phpcheckstyle.cmd" dir="."></exec>
+	</target>
+	
+	<!-- Launch PHP CheckStyle -->
+	<target name="_phpcheckstyleunix" depends="targetCheck" if="isUnix">
+		<echo>Unix</echo>
+		<chmod file="./phpcheckstyle.sh" perm="ugo+rx" />
+		<exec executable="./phpcheckstyle.sh" dir="."></exec>
+	</target>
+	
+	<!-- Launch PHP CheckStyle-->
+	<target name="phpcheckstyle" description="Launch PHP CheckStyle" depends="_phpcheckstylewindows, _phpcheckstyleunix">
+	</target>
+
+</project>

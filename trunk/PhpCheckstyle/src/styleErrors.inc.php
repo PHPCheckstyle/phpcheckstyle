@@ -15,7 +15,7 @@
 
 define("PHPCHECKSTYLE_TAB_IN_LINE", "The line contains a tab");
 
-define("PHPCHECKSTYLE_WRONG_OPEN_TAG", "The php open tag must be '&lt;?php'");
+define("PHPCHECKSTYLE_WRONG_OPEN_TAG", "The php open tag must be '<?php'");
 
 define("PHPCHECKSTYLE_NO_SPACE_BEFORE_TOKEN", "%s should not be preceded by whitespace");
 

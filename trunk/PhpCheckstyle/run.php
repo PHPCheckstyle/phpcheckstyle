@@ -101,6 +101,8 @@ if (!file_exists($outDir)) {
 // right now the output file name is not configurable, only
 // the output directory is configurable (from command line)
 if ($options['format'] == "html") {
+	$outputFile = $outDir."/index.html";;
+} elseif ($options['format'] == "xml") {
 	$outputFile = $outDir."/".$xmlOutFile;
 } elseif ($options['format'] == "text") {
 	$outputFile = $outDir."/".$txtOutFile;
@@ -127,19 +129,6 @@ $style->processFiles($options['src'], $options['exclude']);
 // if output format is html, run the xml file through xsl to generate
 // the html file
 if ($options['format'] == "html") {
-	$xslFile = PHPCHECKSTYLE_HOME_DIR."/html/xsl/phpcheckstyle.xsl";
-	$htmlFile = $outDir."/index.html";
-	$xsl = new XSLTProcessor();
-	$docXsl = new DOMDocument();
-	$docXsl->load($xslFile);
-	$xsl->importStyleSheet($docXsl);
-	$hfh = fopen($htmlFile, "w");
-	$docOutput = new DOMDocument();
-	$docOutput->load($outputFile);
-	fwrite($hfh, $xsl->transformToXML($docOutput));
-	fclose($hfh);
-	$outputFile = $htmlFile;
-
 	// copy the css and images
 	$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/css", $outDir."/css");
 	$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/images", $outDir."/images");

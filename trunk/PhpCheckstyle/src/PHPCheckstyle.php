@@ -18,6 +18,7 @@ require_once PHPCHECKSTYLE_HOME_DIR."/src/TokenUtils.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/TokenInfo.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/PlainFormatReporter.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/XmlFormatReporter.php";
+require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/HTMLFormatReporter.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/ConsoleReporter.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/XmlNCSSReporter.php";
 
@@ -50,9 +51,11 @@ class PHPCheckstyle {
 
 	private $_inControlStatement = false; // We are in a control statement declaration (for, if, while, ...)
 	private $_inArrayStatement = false; // We are in a array statement
+	private $_inClassStatement = false; // Wa are in a class statement (declaration)	
 	private $_inFunctionStatement = false; // We are in a function statement (declaration)
 	private $_inFuncCall = false; // We are in a function call
 	private $_inFunction = false; // We are inside a function
+	private $_inClass = false; // We are inside a class
 	private $_privateFunctions = array(); // The list of private functions in the class
 	private $_privateFunctionsStartLines = array();
 	private $_functionParameters = array(); // The list of function parameters
@@ -71,8 +74,8 @@ class PHPCheckstyle {
 	private $_functionReturns = false; // Does the function return a value ?
 	private $_functionThrows = false; // Does the function throw an exception ?
 	private $_functionLevel = 0; // Level of Nesting of the function
+	private $_classLevel = 0; // Level of Nesting of the class
 	private $_isFunctionPrivate = false; // Is the function a private function
-	private $_inClassStatement = false;
 	private $_constantDef = false;
 	private $_currentClassname = null;
 	private $_currentFilename = null;
@@ -85,6 +88,9 @@ class PHPCheckstyle {
 	private $_levelOfNesting = 0;
 	private $_branchingStack = array();
 	private $_cyclomaticComplexity = 0;
+
+	private $_classSuppressWarnings = array(); // List of warnings to ignore for this class
+	private $_functionSuppressWarnings = array(); // List of warnings to ignore for this function
 
 	// For MVC frameworks
 	private $_isView = false;
@@ -148,10 +154,11 @@ class PHPCheckstyle {
 	/**
 	 * Constructor.
 	 *
-	 * @param $outformat output format "text" or "html".
+	 * @param String $outformat output format "text" or "html".
 	 * 					Accordingly creates a formatter object
-	 * @param $outfile  output file where results are stored.
+	 * @param String $outfile  output file where results are stored.
 	 * 					Note that in case of "html" format, the output is xml and run.php transforms the xml file into html
+	 * @param String $linecountfile output file where line counts are stored
 	 * @access public
 	 */
 	public function PHPCheckstyle($outformat, $outfile, $linecountfile = null) {
@@ -163,6 +170,8 @@ class PHPCheckstyle {
 		if ($outformat == "text") {
 			$this->_reporter = new PlainFormatReporter($outfile);
 		} elseif ($outformat == "html") {
+			$this->_reporter = new HTMLFormatReporter($outfile);
+		} elseif ($outformat == "xml") {
 			$this->_reporter = new XmlFormatReporter($outfile);
 		} elseif ($outformat == "console") {
 			$this->_reporter = new ConsoleReporter();
@@ -351,17 +360,17 @@ class PHPCheckstyle {
 		}
 
 		// Test the last token of the file
-		if ($this->_config->getTest('noFileCloseTag')) {
+		if ($this->_isActive('noFileCloseTag')) {
 			if ($this->tokenizer->checkProvidedToken($this->prvsToken, T_CLOSE_TAG)) {
 				// Closing tag is not recommended since PHP 5.0
-				$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_END_FILE_CLOSE_TAG, $this->_config->getTestLevel('noFileCloseTag'));
+				$this->_writeError('noFileCloseTag', PHPCHECKSTYLE_END_FILE_CLOSE_TAG);
 			}
 		}
 
 		// Inner HTML is OK for views but not for other classes (controllers, models, ...)
-		if ($this->_config->getTest('noFileFinishHTML') && !$this->_isView) {
+		if ($this->_isActive('noFileFinishHTML') && !$this->_isView) {
 			if ($this->tokenizer->checkProvidedToken($this->prvsToken, T_INLINE_HTML)) {
-				$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_END_FILE_INLINE_HTML, $this->_config->getTestLevel('noFileFinishHTML'));
+				$this->_writeError('noFileFinishHTML',PHPCHECKSTYLE_END_FILE_INLINE_HTML);
 			}
 		}
 
@@ -383,8 +392,10 @@ class PHPCheckstyle {
 	 * php (with extension .php and .tpl) files
 	 * Ignores files or subdirectories that are in the _excludeList
 	 *
-	 * @param $src source directory
-	 * @return an array of files that end with .php or .tpl
+	 * @param String $src source directory
+	 * @param Array $excludes paths to exclude
+	 * @param String $dir the base directory
+	 * @return an array of php files
 	 * @access private
 	 */
 	private function _getAllPhpFiles($src, $excludes, $dir = '') {
@@ -465,6 +476,7 @@ class PHPCheckstyle {
 			// if _inClassStatement is set then we are just after a class declaration
 			if ($this->_inClassStatement) {
 				$this->_inClassStatement = false;
+				$this->_processClassStart();
 				$stackitem = "class";
 			}
 
@@ -480,10 +492,10 @@ class PHPCheckstyle {
 			// "}" signifies the end of a block
 			// currently tests whether this token resides on a new line.
 			// This test is desactivated when in a view
-			if ($this->_config->getTest('controlCloseCurly') && !($this->_isView)) {
+			if ($this->_isActive('controlCloseCurly') && !($this->_isView)) {
 				$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
 				if ($previousTokenInfo->lineOffset == 0) { // the last token was on the same line
-					$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_END_BLOCK_NEW_LINE, $this->_config->getTestLevel('controlCloseCurly'));
+					$this->_writeError('controlCloseCurly', PHPCHECKSTYLE_END_BLOCK_NEW_LINE);
 				}
 			}
 
@@ -500,6 +512,11 @@ class PHPCheckstyle {
 				$this->_processFunctionStop();
 			}
 
+			// Test for the end of a class
+			if ($this->_levelOfNesting == $this->_classLevel && $this->_inClass) {
+				$this->_processClassStop();
+			}
+
 			break;
 
 		case ";":
@@ -511,8 +528,8 @@ class PHPCheckstyle {
 			if ($this->_justAfterControlStmt) {
 				$this->_justAfterControlStmt = false;
 
-				if ($this->_config->getTest('controlStructNeedCurly')) {
-					$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_CS_NO_OPEN_CURLY, $this->_config->getTestLevel('controlStructNeedCurly'));
+				if ($this->_isActive('controlStructNeedCurly')) {
+					$this->_writeError('controlStructNeedCurly', PHPCHECKSTYLE_CS_NO_OPEN_CURLY);
 				}
 			}
 
@@ -597,9 +614,9 @@ class PHPCheckstyle {
 
 		case "&":
 			// One of the function parameter is passed by reference
-			if ($this->_config->getTest('avoidPassingReferences')) {
+			if ($this->_isActive('avoidPassingReferences')) {
 				if ($this->_inFunctionStatement) {
-					$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_PASSING_REFERENCE, $this->_config->getTestLevel('avoidPassingReferences'));
+					$this->_writeError('avoidPassingReferences', PHPCHECKSTYLE_PASSING_REFERENCE);
 				}
 			}
 			break;
@@ -637,11 +654,11 @@ class PHPCheckstyle {
 		}
 
 		// Check if the token is in the list of prohibited tokens
-		if ($this->_config->getTest('checkProhibitedTokens') == 1) {
+		if ($this->_isActive('checkProhibitedTokens') == 1) {
 			foreach ($this->_prohibitedTokens as $prohibitedTokens) {
 				if ($this->tokenizer->getTokenName($tok) == $prohibitedTokens) {
 					$msg = sprintf(PHPCHECKSTYLE_PROHIBITED_TOKEN, $this->tokenizer->getTokenName($tok));
-					$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('checkProhibitedTokens'));
+					$this->_writeError('checkProhibitedTokens', $msg);
 				}
 			}
 		}
@@ -653,12 +670,12 @@ class PHPCheckstyle {
 			$this->_processComment($tok, $text);
 			break;
 
+		case T_OPEN_TAG:
 			// check if shorthand code tags are allowed
-			case T_OPEN_TAG:
-			if ($this->_config->getTest('noShortPhpCodeTag')) {
+			if ($this->_isActive('noShortPhpCodeTag')) {
 				$s = strpos($text, '<?php');
 				if ($s === false) {
-					$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_WRONG_OPEN_TAG, $this->_config->getTestLevel('noShortPhpCodeTag'));
+					$this->_writeError('noShortPhpCodeTag', PHPCHECKSTYLE_WRONG_OPEN_TAG);
 				}
 			}
 			break;
@@ -710,14 +727,14 @@ class PHPCheckstyle {
 			// beginning of a function definition
 			// check also for existance of docblock
 			case T_FUNCTION:
-			$this->_checkDocExists();
+			$this->_checkDocExists(T_FUNCTION);
 			$this->_processFunctionStatement();
 			break;
 
 			// beginning of a class
 			// check also for the existence of a docblock
 			case T_CLASS:
-			$this->_checkDocExists();
+			$this->_checkDocExists(T_CLASS);
 			$this->_processClassStatement();
 			break;
 
@@ -745,8 +762,8 @@ class PHPCheckstyle {
 			break;
 		case T_LOGICAL_AND:
 		case T_LOGICAL_OR:
-			if ($this->_config->getTest('useBooleanOperators')) {
-				$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_USE_BOOLEAN_OPERATORS, $this->_config->getTestLevel('useBooleanOperators'));
+			if ($this->_isActive('useBooleanOperators')) {
+				$this->_writeError('useBooleanOperators', PHPCHECKSTYLE_USE_BOOLEAN_OPERATORS);
 			}
 			$this->_checkSurroundingWhiteSpace($text);
 			break;
@@ -776,8 +793,8 @@ class PHPCheckstyle {
 
 			// Constant part of string with variables
 			case T_ENCAPSED_AND_WHITESPACE:
-			if ($this->_config->getTest('encapsedVariablesInsideString')) {
-				$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_VARIABLE_INSIDE_STRING, $this->_config->getTestLevel('encapsedVariablesInsideString'));
+			if ($this->_isActive('encapsedVariablesInsideString')) {
+				$this->_writeError('encapsedVariablesInsideString', PHPCHECKSTYLE_VARIABLE_INSIDE_STRING);
 			}
 			break;
 		case T_CURLY_OPEN: // for protected variables within strings "{$var}"
@@ -845,18 +862,18 @@ class PHPCheckstyle {
 	 * Checks to see if the constant follows the naming convention
 	 * Constants should only have uppercase letters and underscores
 	 *
-	 * @param $text the string containing the constant. note that the
+	 * @param String $text the string containing the constant. Note that the
 	 *        string also has the quotes (single or double), so we need
 	 *        remove them from the string before testing
 	 */
 	private function _checkConstantNaming($text) {
-		if ($this->_constantDef && $this->_config->getTest('constantNaming')) {
+		if ($this->_constantDef && $this->_isActive('constantNaming')) {
 			$text = ltrim($text, "\"'");
 			$text = rtrim($text, "\"'");
 			$ret = preg_match($this->_config->getTestRegExp('constantNaming'), $text);
 			if (!$ret) {
 				$msg = sprintf(PHPCHECKSTYLE_CONSTANT_NAMING, $text);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('constantNaming'));
+				$this->_writeError('constantNaming', $msg);
 			}
 
 			$this->_constantDef = false;
@@ -867,13 +884,13 @@ class PHPCheckstyle {
 	 * Checks to see if the variable follows the naming convention
 	 * Variables should only have letters, start with a lowercase and have no underscore.
 	 *
-	 * @param $text the string containing the variable. note that the
+	 * @param String $text the string containing the variable. note that the
 	 *        string also has the quotes (single or double), so we need
 	 *        remove them from the string before testing
 	 */
 	private function _checkVariableNaming($text) {
 
-		if ($this->_config->getTest('variableNaming')) {
+		if ($this->_isActive('variableNaming')) {
 			$texttoTest = ltrim($text, "\"'"); // remove the quotes
 			$texttoTest = rtrim($texttoTest, "\"'");
 			if (strpos($texttoTest, "$") === 0) { // remove the "&"
@@ -883,7 +900,7 @@ class PHPCheckstyle {
 			$ret = preg_match($this->_config->getTestRegExp('variableNaming'), $texttoTest);
 			if (!$ret) {
 				$msg = sprintf(PHPCHECKSTYLE_VARIABLE_NAMING, $text);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('variableNaming'));
+				$this->_writeError('variableNaming', $msg);
 			}
 		}
 	}
@@ -891,15 +908,15 @@ class PHPCheckstyle {
 	/**
 	 * Check the naming of a function.
 	 *
-	 * @param $text the name of the function.
+	 * @param String $text the name of the function.
 	 */
 	private function _checkFunctionNaming($text) {
-		if ($this->_config->getTest('functionNaming')) {
+		if ($this->_isActive('functionNaming')) {
 
 			$ret = preg_match($this->_config->getTestRegExp('functionNaming'), $text);
 			if (!$ret) {
 				$msg = sprintf(PHPCHECKSTYLE_FUNCNAME_NAMING, $text);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('functionNaming'));
+				$this->_writeError('functionNaming', $msg);
 			}
 		}
 	}
@@ -907,14 +924,14 @@ class PHPCheckstyle {
 	/**
 	 * Check the naming of a private function.
 	 *
-	 * @param $text the name of the function.
+	 * @param String $text the name of the function.
 	 */
 	private function _checkPrivateFunctionNaming($text) {
-		if ($this->_config->getTest('privateFunctionNaming')) {
+		if ($this->_isActive('privateFunctionNaming')) {
 			$ret = preg_match($this->_config->getTestRegExp('privateFunctionNaming'), $text);
 			if (!$ret) {
 				$msg = sprintf(PHPCHECKSTYLE_PRIVATE_FUNCNAME_NAMING, $text);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('privateFunctionNaming'));
+				$this->_writeError('privateFunctionNaming', $msg);
 			}
 		}
 	}
@@ -922,20 +939,22 @@ class PHPCheckstyle {
 	/**
 	 * Check the naming of a class.
 	 *
-	 * @param $text the name of the class.
+	 * @param String $text the name of the class.
 	 */
 	private function _checkClassNaming($text) {
-		if ($this->_config->getTest('classNaming')) {
+		if ($this->_isActive('classNaming')) {
 			$ret = preg_match($this->_config->getTestRegExp('classNaming'), $text);
 			if (!$ret) {
 				$msg = sprintf(PHPCHECKSTYLE_CLASSNAME_NAMING, $text);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('classNaming'));
+				$this->_writeError('classNaming', $msg);
 			}
 		}
 	}
 
 	/**
 	 * Check the validity of a function call.
+	 *
+	 * @param String $text the name of the function.
 	 */
 	private function _processFunctionCall($text) {
 
@@ -951,10 +970,10 @@ class PHPCheckstyle {
 			$this->_usedFunctions[$text] = $text;
 
 			// Detect prohibited functions
-			if ($this->_config->getTest('checkProhibitedFunctions')) {
+			if ($this->_isActive('checkProhibitedFunctions')) {
 				if (in_array($text, $this->_prohibitedFunctions)) {
 					$msg = sprintf(PHPCHECKSTYLE_PROHIBITED_FUNCTION, $text);
-					$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('checkProhibitedFunctions'));
+					$this->_writeError('checkProhibitedFunctions', $msg);
 				}
 			}
 
@@ -965,19 +984,19 @@ class PHPCheckstyle {
 			$this->_checkSilenced($text);
 
 			// Detect space after function name
-			if ($this->_config->getTest('noSpaceAfterFunctionName')) {
+			if ($this->_isActive('noSpaceAfterFunctionName')) {
 				if (!$this->tokenizer->checkNextTextToken("(")) {
-					$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_FUNCNAME_SPACE_AFTER, $this->_config->getTestLevel('noSpaceAfterFunctionName'));
+					$this->_writeError('noSpaceAfterFunctionName', PHPCHECKSTYLE_FUNCNAME_SPACE_AFTER);
 				}
 			}
 		}
 
 		// Optimisation : Avoid using count/sizeof inside a loop
-		if ($this->_config->getTest('functionInsideLoop')) {
+		if ($this->_isActive('functionInsideLoop')) {
 			if ((strtolower($text) == 'count' || strtolower($text) == 'sizeof') && $this->_inControlStatement) {
 				if ($this->_currentStatement == 'do' || $this->_currentStatement == 'while' || $this->_currentStatement == 'for' || $this->_currentStatement == 'foreach') {
 					$msg = sprintf(PHPCHECKSTYLE_FUNCTION_INSIDE_LOOP, strtolower($text));
-					$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('functionInsideLoop'));
+					$this->_writeError('functionInsideLoop', $msg);
 				}
 			}
 		}
@@ -985,6 +1004,8 @@ class PHPCheckstyle {
 
 	/**
 	 * Process a control statement declaration (do/while/for/...).
+	 *
+	 * @param String $csText the control statement.
 	 */
 	private function _processControlStatement($csText) {
 
@@ -994,10 +1015,10 @@ class PHPCheckstyle {
 		$this->_currentStatement = $csText;
 
 		// first token: if not one whitespace, error
-		if ($this->_config->getTest('spaceAfterControlStmt')) {
+		if ($this->_isActive('spaceAfterControlStmt')) {
 			if (!$this->tokenizer->checkNextToken(T_WHITESPACE)) {
 				$msg = sprintf(PHPCHECKSTYLE_SPACE_AFTER_TOKEN, $csText);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('spaceAfterControlStmt'));
+				$this->_writeError('spaceAfterControlStmt', $msg);
 			}
 		}
 
@@ -1025,11 +1046,11 @@ class PHPCheckstyle {
 			$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
 			if (($position == 'sl') && ($previousTokenInfo->lineOffset != 0)) {
 				$msg = sprintf(PHPCHECKSTYLE_CS_STMT_ALIGNED_WITH_CURLY, $csText);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('controlStructElse'));
+				$this->_writeError('controlStructElse', $msg);
 			}
 			if (($position == 'nl') && ($previousTokenInfo->lineOffset == 0)) {
 				$msg = sprintf(PHPCHECKSTYLE_CS_STMT_ON_NEW_LINE, $csText);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('controlStructElse'));
+				$this->_writeError('controlStructElse', $msg);
 			}
 		}
 	}
@@ -1040,7 +1061,7 @@ class PHPCheckstyle {
 	private function _processControlStructureStart() {
 
 		// check for curly braces
-		if ($this->_config->getTest('controlStructOpenCurly')) {
+		if ($this->_isActive('controlStructOpenCurly')) {
 
 			$pos = $this->_config->getTestProperty('controlStructOpenCurly', 'position');
 
@@ -1057,7 +1078,7 @@ class PHPCheckstyle {
 			if (!$isPosOk) {
 				$tmp = ($pos == "sl") ? "the previous line." : "a new line.";
 				$msg = sprintf(PHPCHECKSTYLE_LEFT_CURLY_POS, $tmp);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('controlStructOpenCurly'));
+				$this->_writeError('controlStructOpenCurly', $msg);
 			}
 		}
 
@@ -1066,7 +1087,24 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Process the start of a function declaration.
+	 * Process the start of a class.
+	 */
+	private function _processClassStart() {
+		$this->_inClass = true;
+		$this->_classLevel = $this->_levelOfNesting;
+	}
+
+	/**
+	 * Process the end of a class.
+	 */
+	private function _processClassStop() {
+
+		$this->_inClass = false; // We are out of the class
+		$this->_classSuppressWarnings = array(); // Reset the warnings
+	}
+
+	/**
+	 * Process the start of a function.
 	 */
 	private function _processFunctionStart() {
 
@@ -1076,9 +1114,11 @@ class PHPCheckstyle {
 		$this->_justAfterFuncStmt = false;
 
 		$this->_functionStartLine = $this->lineNumber;
+		
+		//echo "Warnings Suppressed : ".print_r($this->_functionSuppressWarnings,true).PHP_EOL;
 
 		// Check the position of the open curly after the function declaration
-		if ($this->_config->getTest('funcDefinitionOpenCurly')) {
+		if ($this->_isActive('funcDefinitionOpenCurly')) {
 			$pos = $this->_config->getTestProperty('funcDefinitionOpenCurly', 'position');
 
 			$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
@@ -1094,7 +1134,7 @@ class PHPCheckstyle {
 			if (!$isPosOk) {
 				$tmp = ($pos == "sl") ? "the previous line." : "a new line.";
 				$msg = sprintf(PHPCHECKSTYLE_LEFT_CURLY_POS, $tmp);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('funcDefinitionOpenCurly'));
+				$this->_writeError('funcDefinitionOpenCurly', $msg);
 			}
 		}
 	}
@@ -1104,20 +1144,21 @@ class PHPCheckstyle {
 	 */
 	private function _processFunctionStop() {
 
-		$this->_inFunction = false;
+		$this->_inFunction = false; // We are out of the function
+
 
 		// Check cyclomaticComplexity
-		if ($this->_config->getTest('cyclomaticComplexity')) {
+		if ($this->_isActive('cyclomaticComplexity')) {
 
 			$warningLevel = $this->_config->getTestProperty('cyclomaticComplexity', 'warningLevel');
 			$errorLevel = $this->_config->getTestProperty('cyclomaticComplexity', 'errorLevel');
 
 			if ($this->_cyclomaticComplexity > $warningLevel) {
 				$msg = sprintf(PHPCHECKSTYLE_CYCLOMATIC_COMPLEXITY, $this->_cyclomaticComplexity);
-				$this->_reporter->writeError($this->_functionStartLine, $msg, 'WARNING');
+				$this->_reporter->writeError($this->_functionStartLine, 'cyclomaticComplexity', $msg, 'WARNING');
 			} else if ($this->_cyclomaticComplexity > $errorLevel) {
 				$msg = sprintf(PHPCHECKSTYLE_CYCLOMATIC_COMPLEXITY, $this->_cyclomaticComplexity);
-				$this->_reporter->writeError($this->_functionStartLine, $msg, 'ERROR');
+				$this->_reporter->writeError($this->_functionStartLine, 'cyclomaticComplexity', $msg, 'ERROR');
 			}
 		}
 
@@ -1129,26 +1170,25 @@ class PHPCheckstyle {
 		if (!($isPrivateExcluded && $this->_isFunctionPrivate)) {
 
 			// Check the docblock @return
-			if ($this->_config->getTest('docBlocks') && $this->_config->getTestProperty('docBlocks', 'testReturn') != 'false') {
+			if ($this->_isActive('docBlocks') && ($this->_config->getTestProperty('docBlocks', 'testReturn') != 'false')) {
 
 				if ($this->_functionReturns && ($this->_docblocNbReturns == 0)) {
-					$this->_reporter->writeError($this->_functionStartLine, PHPCHECKSTYLE_DOCBLOCK_RETURN, $this->_config->getTestLevel('docBlocks'));
+					$this->_reporter->writeError($this->_functionStartLine, 'docBlocks', PHPCHECKSTYLE_DOCBLOCK_RETURN, $this->_config->getTestLevel('docBlocks'));
 				}
 			}
 
 			// Check the docblock @param
-			if ($this->_config->getTest('docBlocks') && $this->_config->getTestProperty('docBlocks', 'testParam') != 'false') {
-
+			if ($this->_isActive('docBlocks') && ($this->_config->getTestProperty('docBlocks', 'testParam') != 'false')) {
 				if ($this->_nbFunctionParameters != $this->_docblocNbParams) {
-					$this->_reporter->writeError($this->_functionStartLine, PHPCHECKSTYLE_DOCBLOCK_PARAM, $this->_config->getTestLevel('docBlocks'));
+					$this->_reporter->writeError($this->_functionStartLine, 'docBlocks', PHPCHECKSTYLE_DOCBLOCK_PARAM, $this->_config->getTestLevel('docBlocks'));
 				}
 			}
 
 			// Check the docblock @throw
-			if ($this->_config->getTest('docBlocks') && $this->_config->getTestProperty('docBlocks', 'testThrow') != 'false') {
+			if ($this->_isActive('docBlocks') && ($this->_config->getTestProperty('docBlocks', 'testThrow') != 'false')) {
 
 				if ($this->_functionThrows && ($this->_docblocNbThrows == 0)) {
-					$this->_reporter->writeError($this->_functionStartLine, PHPCHECKSTYLE_DOCBLOCK_THROW, $this->_config->getTestLevel('docBlocks'));
+					$this->_reporter->writeError($this->_functionStartLine, 'docBlocks', PHPCHECKSTYLE_DOCBLOCK_THROW, $this->_config->getTestLevel('docBlocks'));
 				}
 			}
 		}
@@ -1158,19 +1198,21 @@ class PHPCheckstyle {
 		$this->_docblocNbThrows = 0;
 
 		// Check the lenght of the function
-		if ($this->_config->getTest('functionLength')) {
+		if ($this->_isActive('functionLength')) {
 
 			$maxLength = $this->_config->getTestProperty('functionLength', 'maxLength');
 			$functionLength = $this->lineNumber - $this->_functionStartLine;
 
 			if ($functionLength > $maxLength) {
 				$msg = sprintf(PHPCHECKSTYLE_FUNCTION_LENGTH_THROW, $functionLength);
-				$this->_reporter->writeError($this->_functionStartLine, $msg, $this->_config->getTestLevel('functionLength'));
+				$this->_reporter->writeError($this->_functionStartLine, 'functionLength', $msg, $this->_config->getTestLevel('functionLength'));
 			}
 		}
 
 		// Check unused function parameters
 		$this->_checkUnusedFunctionParameters();
+				
+		$this->_functionSuppressWarnings = array(); // Reset the warnings suppressed
 
 	}
 
@@ -1215,10 +1257,10 @@ class PHPCheckstyle {
 		}
 
 		// Function is a constructor
-		if ($functionName == "__construct" && $this->_config->getTest('constructorNaming') && $this->_config->getTestProperty('constructorNaming', 'naming') == 'old') {
+		if ($functionName == "__construct" && $this->_isActive('constructorNaming') && $this->_config->getTestProperty('constructorNaming', 'naming') == 'old') {
 			$msg = sprintf(PHPCHECKSTYLE_CONSTRUCTOR_NAMING, 'old style : '.$this->_currentClassname);
 
-			$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('constructorNaming'));
+			$this->_writeError('constructorNaming', $msg);
 		}
 
 		// Special functions are not checked
@@ -1228,10 +1270,10 @@ class PHPCheckstyle {
 			if ($functionName == $this->_currentClassname) {
 
 				// Function is a constructor
-				if ($this->_config->getTest('constructorNaming') && $this->_config->getTestProperty('constructorNaming', 'naming') == 'new') {
+				if ($this->_isActive('constructorNaming') && $this->_config->getTestProperty('constructorNaming', 'naming') == 'new') {
 					$msg = sprintf(PHPCHECKSTYLE_CONSTRUCTOR_NAMING, 'new style : __construct()');
 
-					$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('constructorNaming'));
+					$this->_writeError('constructorNaming', $msg);
 				}
 
 			} else {
@@ -1274,9 +1316,9 @@ class PHPCheckstyle {
 				$hasDefaultValue = $this->tokenizer->checkProvidedText($nextTokenInfo->token, "=");
 
 				// Check if the parameter has a default value
-				if ($this->_config->getTest('defaultValuesOrder')) {
+				if ($this->_isActive('defaultValuesOrder')) {
 					if ($foundDefaultValues && !$hasDefaultValue) {
-						$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_FUNC_DEFAULTVALUE_ORDER, $this->_config->getTestLevel('defaultValuesOrder'));
+						$this->_writeError('defaultValuesOrder', PHPCHECKSTYLE_FUNC_DEFAULTVALUE_ORDER);
 						break;
 					}
 				}
@@ -1287,11 +1329,11 @@ class PHPCheckstyle {
 		}
 
 		// Test for the max number of parameters
-		if ($this->_config->getTest('functionMaxParameters')) {
+		if ($this->_isActive('functionMaxParameters')) {
 
 			if ($this->_nbFunctionParameters > $this->_config->getTestProperty('functionMaxParameters', 'maxParameters')) {
 				$msg = sprintf(PHPCHECKSTYLE_MAX_PARAMETERS, $this->_nbFunctionParameters);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('functionMaxParameters'));
+				$this->_writeError('functionMaxParameters', $msg);
 			}
 		}
 	}
@@ -1313,8 +1355,8 @@ class PHPCheckstyle {
 	private function _processSwitchStop() {
 		$this->_inSwitch = false;
 
-		if ($this->_config->getTest('switchNeedDefault') && !$this->_switchHasDefault) {
-			$this->_reporter->writeError($this->_switchStartLine, PHPCHECKSTYLE_SWITCH_DEFAULT, $this->_config->getTestLevel('switchNeedDefault'));
+		if ($this->_isActive('switchNeedDefault') && !$this->_switchHasDefault) {
+			$this->_reporter->writeError($this->_switchStartLine, 'switchNeedDefault', PHPCHECKSTYLE_SWITCH_DEFAULT, $this->_config->getTestLevel('switchNeedDefault'));
 		}
 	}
 
@@ -1324,13 +1366,13 @@ class PHPCheckstyle {
 	private function _processSwitchCase() {
 
 		// Test if the previous case had a break
-		if ($this->_config->getTest('switchCaseNeedBreak') && !$this->_caseHasBreak) {
-			$this->_reporter->writeError($this->_caseStartLine, PHPCHECKSTYLE_SWITCH_CASE_NEED_BREAK, $this->_config->getTestLevel('switchCaseNeedBreak'));
+		if ($this->_isActive('switchCaseNeedBreak') && !$this->_caseHasBreak) {
+			$this->_reporter->writeError($this->_caseStartLine, 'switchCaseNeedBreak', PHPCHECKSTYLE_SWITCH_CASE_NEED_BREAK, $this->_config->getTestLevel('switchCaseNeedBreak'));
 		}
 
 		// If the case arrives after the default
-		if ($this->_config->getTest('switchDefaultOrder') && $this->_switchHasDefault) {
-			$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_SWITCH_DEFAULT_ORDER, $this->_config->getTestLevel('switchDefaultOrder'));
+		if ($this->_isActive('switchDefaultOrder') && $this->_switchHasDefault) {
+			$this->_writeError('switchDefaultOrder', PHPCHECKSTYLE_SWITCH_DEFAULT_ORDER);
 		}
 
 		// For this break
@@ -1345,8 +1387,8 @@ class PHPCheckstyle {
 		$this->_switchHasDefault = true;
 
 		// Test if the previous case had a break
-		if ($this->_config->getTest('switchCaseNeedBreak') && !$this->_caseHasBreak) {
-			$this->_reporter->writeError($this->_caseStartLine, PHPCHECKSTYLE_SWITCH_CASE_NEED_BREAK, $this->_config->getTestLevel('switchCaseNeedBreak'));
+		if ($this->_isActive('switchCaseNeedBreak') && !$this->_caseHasBreak) {
+			$this->_reporter->writeError($this->_caseStartLine, 'switchCaseNeedBreak', PHPCHECKSTYLE_SWITCH_CASE_NEED_BREAK, $this->_config->getTestLevel('switchCaseNeedBreak'));
 		}
 	}
 
@@ -1366,8 +1408,8 @@ class PHPCheckstyle {
 		$this->_ncssFileClasses++;
 
 		// Test if there is more than one class per file
-		if ($this->_config->getTest('oneClassPerFile') && $this->_ncssFileClasses > 1) {
-			$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_ONE_CLASS_PER_FILE, $this->_config->getTestLevel('oneClassPerFile'));
+		if ($this->_isActive('oneClassPerFile') && $this->_ncssFileClasses > 1) {
+			$this->_writeError('oneClassPerFile', PHPCHECKSTYLE_ONE_CLASS_PER_FILE);
 		}
 
 		// Reset the default values
@@ -1404,11 +1446,11 @@ class PHPCheckstyle {
 	private function _checkEmptyBlock() {
 
 		// If the next valid token is } then the statement is empty.
-		if ($this->_config->getTest('checkEmptyBlock') && $this->_currentStatement) {
+		if ($this->_isActive('checkEmptyBlock') && $this->_currentStatement) {
 
 			if ($this->tokenizer->checkNextValidTextToken("}")) {
 				$msg = sprintf(PHPCHECKSTYLE_EMPTY_BLOCK, $this->_currentStatement);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('checkEmptyBlock'));
+				$this->_writeError('checkEmptyBlock', $msg);
 			}
 		}
 	}
@@ -1421,12 +1463,12 @@ class PHPCheckstyle {
 	private function _checkInnerAssignment() {
 
 		// If the test if active and we are inside a control statement
-		if ($this->_config->getTest('checkInnerAssignment') && $this->_inControlStatement) {
+		if ($this->_isActive('checkInnerAssignment') && $this->_inControlStatement) {
 
 			// If the control statement is not listed as an exception
 			$exceptions = $this->_config->getTestExceptions('checkInnerAssignment');
 			if (empty($exceptions) || !in_array($this->_currentStatement, $exceptions)) {
-				$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_INSIDE_ASSIGNMENT, $this->_config->getTestLevel('checkInnerAssignment'));
+				$this->_writeError('checkInnerAssignment', PHPCHECKSTYLE_INSIDE_ASSIGNMENT);
 
 			}
 		}
@@ -1440,10 +1482,10 @@ class PHPCheckstyle {
 	private function _checkEmptyStatement() {
 
 		// If the next valid token is ; then the statement is empty.
-		if ($this->_config->getTest('checkEmptyStatement') && $this->_currentStatement) {
+		if ($this->_isActive('checkEmptyStatement') && $this->_currentStatement) {
 
 			if ($this->tokenizer->checkNextValidTextToken(";")) {
-				$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_EMPTY_STATEMENT, $this->_config->getTestLevel('checkEmptyStatement'));
+				$this->_writeError('checkEmptyStatement', PHPCHECKSTYLE_EMPTY_STATEMENT);
 			}
 		}
 	}
@@ -1455,7 +1497,7 @@ class PHPCheckstyle {
 	 */
 	private function _checkUnusedPrivateFunctions() {
 
-		if ($this->_config->getTest('checkUnusedPrivateFunctions')) {
+		if ($this->_isActive('checkUnusedPrivateFunctions')) {
 
 			// We make a diff between the list of declared private functions and the list of called functions.
 			// This is a very simple and approximative test, we don't test that the called function is from the good class.
@@ -1464,7 +1506,7 @@ class PHPCheckstyle {
 
 			foreach ($uncalledFunctions as $uncalledFunction) {
 				$msg = sprintf(PHPCHECKSTYLE_UNUSED_PRIVATE_FUNCTION, $uncalledFunction);
-				$this->_reporter->writeError($this->_privateFunctionsStartLines[$uncalledFunction], $msg, $this->_config->getTestLevel('checkUnusedPrivateFunctions'));
+				$this->_reporter->writeError($this->_privateFunctionsStartLines[$uncalledFunction], 'checkUnusedPrivateFunctions', $msg, $this->_config->getTestLevel('checkUnusedPrivateFunctions'));
 			}
 		}
 	}
@@ -1476,12 +1518,12 @@ class PHPCheckstyle {
 	 */
 	private function _checkUnusedVariables() {
 
-		if ($this->_config->getTest('checkUnusedVariables')) {
+		if ($this->_isActive('checkUnusedVariables')) {
 
 			foreach ($this->_variables as $variableName => $value) {
 				if (($value != "used") && !($this->_isClass || $this->_isView)) {
 					$msg = sprintf(PHPCHECKSTYLE_UNUSED_VARIABLE, $variableName);
-					$this->_reporter->writeError($value, $msg, $this->_config->getTestLevel('checkUnusedVariables'));
+					$this->_reporter->writeError($value, 'checkUnusedVariables', $msg, $this->_config->getTestLevel('checkUnusedVariables'));
 				}
 			}
 		}
@@ -1494,12 +1536,12 @@ class PHPCheckstyle {
 	 */
 	private function _checkUnusedFunctionParameters() {
 
-		if ($this->_config->getTest('checkUnusedFunctionParameters')) {
+		if ($this->_isActive('checkUnusedFunctionParameters')) {
 
 			foreach ($this->_functionParameters as $variableName => $value) {
 				if ($value != "used") {
 					$msg = sprintf(PHPCHECKSTYLE_UNUSED_FUNCTION_PARAMETER, $variableName);
-					$this->_reporter->writeError($this->_functionStartLine, $msg, $this->_config->getTestLevel('checkUnusedFunctionParameters'));
+					$this->_reporter->writeError($this->_functionStartLine, 'checkUnusedFunctionParameters', $msg, $this->_config->getTestLevel('checkUnusedFunctionParameters'));
 				}
 			}
 		}
@@ -1509,6 +1551,8 @@ class PHPCheckstyle {
 	 * Check the variable use.
 	 *
 	 * This function is launched when the current token is T_VARIABLE
+	 *
+	 * @param String $text The variable name
 	 */
 	private function _processVariable($text) {
 
@@ -1568,7 +1612,7 @@ class PHPCheckstyle {
 		$this->_functionReturns = true;
 
 		// Search for unused code
-		if ($this->_config->getTest('checkUnusedCode')) {
+		if ($this->_isActive('checkUnusedCode')) {
 
 			// Look ahead
 			$stop = false;
@@ -1581,7 +1625,7 @@ class PHPCheckstyle {
 						$nbInstructions++;
 						if ($nbInstructions > 1) {
 							// more than 1 instruction after the return and before the closing of the statement
-							$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_UNUSED_CODE, $this->_config->getTestLevel('checkUnusedCode'));
+							$this->_writeError('checkUnusedCode', PHPCHECKSTYLE_UNUSED_CODE);
 							$stop = true;
 						}
 					} else if ($token == "}") {
@@ -1599,8 +1643,8 @@ class PHPCheckstyle {
 	 * This function is launched when the current token is T_START_HEREDOC
 	 */
 	private function _checkHeredoc() {
-		if ($this->_config->getTest('checkHeredoc')) {
-			$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_HEREDOC, $this->_config->getTestLevel('checkHeredoc'));
+		if ($this->_isActive('checkHeredoc')) {
+			$this->_writeError('checkHeredoc', PHPCHECKSTYLE_HEREDOC);
 		}
 	}
 
@@ -1621,7 +1665,7 @@ class PHPCheckstyle {
 	 * @param String $text The text of the token to test
 	 */
 	private function _checkWhiteSpaceBefore($text) {
-		if ($this->_config->getTest('checkWhiteSpaceBefore')) {
+		if ($this->_isActive('checkWhiteSpaceBefore')) {
 
 			$exceptions = $this->_config->getTestExceptions('checkWhiteSpaceBefore');
 
@@ -1629,7 +1673,7 @@ class PHPCheckstyle {
 
 				if (!$this->tokenizer->checkProvidedToken($this->prvsToken, T_WHITESPACE)) {
 					$msg = sprintf(PHPCHECKSTYLE_SPACE_BEFORE_TOKEN, $text);
-					$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('checkWhiteSpaceBefore'));
+					$this->_writeError('checkWhiteSpaceBefore', $msg);
 				}
 
 			}
@@ -1642,14 +1686,14 @@ class PHPCheckstyle {
 	 * @param String $text The text of the token to test
 	 */
 	private function _checkNoWhiteSpaceBefore($text) {
-		if ($this->_config->getTest('noSpaceBeforeToken')) {
+		if ($this->_isActive('noSpaceBeforeToken')) {
 
 			$exceptions = $this->_config->getTestExceptions('noSpaceBeforeToken');
 			if (empty($exceptions) || !in_array($text, $exceptions)) {
 
 				if ($this->tokenizer->checkProvidedToken($this->prvsToken, T_WHITESPACE)) {
 					$msg = sprintf(PHPCHECKSTYLE_NO_SPACE_BEFORE_TOKEN, $text);
-					$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('noSpaceBeforeToken'));
+					$this->_writeError('noSpaceBeforeToken', $msg);
 				}
 			}
 		}
@@ -1661,7 +1705,7 @@ class PHPCheckstyle {
 	 * @param String $text The text of the token to test
 	 */
 	private function _checkWhiteSpaceAfter($text) {
-		if ($this->_config->getTest('checkWhiteSpaceAfter')) {
+		if ($this->_isActive('checkWhiteSpaceAfter')) {
 
 			$exceptions = $this->_config->getTestExceptions('checkWhiteSpaceAfter');
 			if (empty($exceptions) || !in_array($text, $exceptions)) {
@@ -1670,7 +1714,7 @@ class PHPCheckstyle {
 					// In case of new line or a php closing tag it's OK
 					if (!($this->tokenizer->checkNextToken(T_NEW_LINE) || $this->tokenizer->checkNextToken(T_CLOSE_TAG))) {
 						$msg = sprintf(PHPCHECKSTYLE_SPACE_AFTER_TOKEN, $text);
-						$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('checkWhiteSpaceAfter'));
+						$this->_writeError('checkWhiteSpaceAfter', $msg);
 					}
 				}
 			}
@@ -1683,14 +1727,14 @@ class PHPCheckstyle {
 	 * @param String $text The text of the token to test
 	 */
 	private function _checkNoWhiteSpaceAfter($text) {
-		if ($this->_config->getTest('noSpaceAfterToken')) {
+		if ($this->_isActive('noSpaceAfterToken')) {
 
 			$exceptions = $this->_config->getTestExceptions('noSpaceAfterToken');
 			if (empty($exceptions) || !in_array($text, $exceptions)) {
 
 				if ($this->tokenizer->checkNextToken(T_WHITESPACE)) {
 					$msg = sprintf(PHPCHECKSTYLE_NO_SPACE_AFTER_TOKEN, $text);
-					$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('noSpaceAfterToken'));
+					$this->_writeError('noSpaceAfterToken', $msg);
 				}
 			}
 		}
@@ -1700,7 +1744,7 @@ class PHPCheckstyle {
 	 * Avoid using unary operators (++ or --) inside a control statement.
 	 */
 	private function _checkUnaryOperator() {
-		if ($this->_config->getTest('checkUnaryOperator')) {
+		if ($this->_isActive('checkUnaryOperator')) {
 
 			// If the control statement is not listed as an exception
 			$exceptions = $this->_config->getTestExceptions('checkUnaryOperator');
@@ -1708,7 +1752,7 @@ class PHPCheckstyle {
 			if (empty($exceptions) || !in_array($this->_currentStatement, $exceptions) || $this->_inArrayStatement) {
 				// And if we are currently in a control statement or an array statement
 				if ($this->_inControlStatement || $this->_inArrayStatement) {
-					$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_UNARY_OPERATOR, $this->_config->getTestLevel('checkUnaryOperator'));
+					$this->_writeError('checkUnaryOperator', PHPCHECKSTYLE_UNARY_OPERATOR);
 				}
 			}
 		}
@@ -1724,7 +1768,7 @@ class PHPCheckstyle {
 		$isHtml = $this->tokenizer->checkProvidedToken($this->token, T_INLINE_HTML);
 
 		// Test the lenght of the line
-		if (!$isHtml && $this->_config->getTest('lineLength')) {
+		if (!$isHtml && $this->_isActive('lineLength')) {
 			$this->_checkLargeLine();
 		}
 	}
@@ -1734,7 +1778,7 @@ class PHPCheckstyle {
 	 */
 	private function _checkLargeLine() {
 
-		if ($this->_config->getTest('lineLength')) {
+		if ($this->_isActive('lineLength')) {
 
 			// Comments are ignored
 			if (!($this->tokenizer->checkProvidedToken($this->token, T_COMMENT) || $this->tokenizer->checkProvidedToken($this->token, T_ML_COMMENT) || $this->tokenizer->checkProvidedToken($this->token, T_DOC_COMMENT))) {
@@ -1744,7 +1788,7 @@ class PHPCheckstyle {
 				$maxlen = $this->_config->getTestProperty('lineLength', 'maxLineLength');
 				$msg = sprintf(PHPCHECKSTYLE_LONG_LINE, $maxlen);
 				if (strlen($text) > $maxlen) {
-					$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('lineLength'));
+					$this->_writeError('lineLength', $msg);
 				}
 			}
 		}
@@ -1756,10 +1800,10 @@ class PHPCheckstyle {
 	 * @param String $ws
 	 */
 	private function _checkIndentation($ws) {
-		if ($this->_config->getTest('noTabs')) {
+		if ($this->_isActive('noTabs')) {
 			$tabfound = preg_match("/\t/", $ws);
 			if ($tabfound) {
-				$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_TAB_IN_LINE, $this->_config->getTestLevel('noTabs'));
+				$this->_writeError('noTabs', PHPCHECKSTYLE_TAB_IN_LINE);
 			}
 		}
 	}
@@ -1770,12 +1814,12 @@ class PHPCheckstyle {
 	 * This function is called we the current token is ) and we are in a control statement.
 	 */
 	private function _checkNeedBraces() {
-		if ($this->_config->getTest('needBraces')) {
+		if ($this->_isActive('needBraces')) {
 
 			$stmt = strtolower($this->_currentStatement);
 			if ($stmt == "if" || $stmt == "else" || $stmt == "elseif" || $stmt == "do" || $stmt == "while" || $stmt == "for" || $stmt == "foreach") {
 				if (!$this->tokenizer->checkNextValidTextToken("{")) {
-					$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_NEED_BRACES, $this->_config->getTestLevel('needBraces'));
+					$this->_writeError('needBraces', PHPCHECKSTYLE_NEED_BRACES);
 				}
 			}
 
@@ -1785,8 +1829,8 @@ class PHPCheckstyle {
 	/**
 	 * Process a comment.
 	 *
-	 * @param $tol the token
-	 * @param $text the text of the comment
+	 * @param Integer $tok the token
+	 * @param String $text the text of the comment
 	 */
 	private function _processComment($tok, $text) {
 
@@ -1829,19 +1873,19 @@ class PHPCheckstyle {
 		$this->lineNumber--; // One end of line is already counted
 
 		// Check if the comment starts with '#'
-		if ($this->_config->getTest("noShellComments")) {
+		if ($this->_isActive('noShellComments')) {
 			$s = strpos($text, '#');
 			if ($s === 0) {
-				$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_NO_SHELL_COMMENTS, $this->_config->getTestLevel('noShellComments'));
+				$this->_writeError('noShellComments', PHPCHECKSTYLE_NO_SHELL_COMMENTS);
 			}
 		}
 
 		// Check if the comment contains a TODO
-		if ($this->_config->getTest("showTODOs")) {
-			$s = strpos($text, 'TODO');
+		if ($this->_isActive('showTODOs')) {
+			$s = stripos($text, 'TODO');
 			if ($s != FALSE) {
-				$msg = sprintf(PHPCHECKSTYLE_TODO, substr($text, strpos($text, 'TODO') + 4));
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('showTODOs'));
+				$msg = sprintf(PHPCHECKSTYLE_TODO, substr($text, stripos($text, 'TODO') + 4));
+				$this->_writeError('showTODOs', $msg);
 			}
 		}
 
@@ -1861,10 +1905,10 @@ class PHPCheckstyle {
 	 * immediately preceded by docblock. Even regular comments are not
 	 * allowed, which I think is okay.
 	 *
-	 * @param $isPrivate specify whether private members are excluded from test
+	 * @param Integer $token T_CLASS or T_FUNCTION
 	 * @return true is docblock is found
 	 */
-	private function _checkDocExists() {
+	private function _checkDocExists($token) {
 
 		// current token = the token after T_CLASS or T_FUNCTION
 		//
@@ -1874,68 +1918,97 @@ class PHPCheckstyle {
 		//  .  curToken - 3 = T_ABSTRACT/T_PUBLIC/T_PROTECTED/T_PRIVATE/T_STATIC
 		//                    or T_DOC_COMMENT, if it is present
 		//
-		if ($this->_config->getTest('docBlocks')) {
 
-			$isPrivate = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
+		$isPrivateExcluded = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
 
-			// Locate the function or class token
-			$functionTokenPosition = $this->tokenizer->getCurrentPosition();
-			while (true) {
-				$functionToken = $this->tokenizer->peekTokenAt($functionTokenPosition);
-				if ($this->tokenizer->checkProvidedToken($functionToken, T_FUNCTION) || $this->tokenizer->checkProvidedToken($functionToken, T_CLASS)) {
-					break;
-				}
-
-				$functionTokenPosition--;
+		// Locate the function or class token
+		$functionTokenPosition = $this->tokenizer->getCurrentPosition();
+		while (true) {
+			$functionToken = $this->tokenizer->peekTokenAt($functionTokenPosition);
+			if ($this->tokenizer->checkProvidedToken($functionToken, T_FUNCTION) || $this->tokenizer->checkProvidedToken($functionToken, T_CLASS)) {
+				break;
 			}
 
-			$found = false;
-			$docTokenPosition = $functionTokenPosition - 1;
+			$functionTokenPosition--;
+		}
 
-			// Go backward and look for a T_DOC_COMMENT
-			while (true) {
-				$docToken = $this->tokenizer->peekTokenAt($docTokenPosition);
+		$found = false;
+		$isPrivate = false;
+		$docTokenPosition = $functionTokenPosition - 1;
 
-				if (is_array($docToken)) {
+		// Go backward and look for a T_DOC_COMMENT
+		while (true) {
+			$docToken = $this->tokenizer->peekTokenAt($docTokenPosition);
 
-					if ($this->tokenizer->checkProvidedToken($docToken, T_STATIC) || $this->tokenizer->checkProvidedToken($docToken, T_ABSTRACT) || $this->tokenizer->checkProvidedToken($docToken, T_PROTECTED) || $this->tokenizer->checkProvidedToken($docToken, T_PUBLIC) || $this->tokenizer->checkProvidedToken($docToken, T_WHITESPACE) || $this->tokenizer->checkProvidedToken($docToken, T_COMMENT) || $this->tokenizer->checkProvidedToken($docToken, T_ML_COMMENT) || $this->tokenizer->checkProvidedToken($docToken, T_NEW_LINE)) {
-						// All these tokens are ignored
-						} else if ($this->tokenizer->checkProvidedToken($docToken, T_PRIVATE)) {
-						// We don't care if we find anything, private functions are not tested
-						if ($isPrivate) {
-							$found = true;
-						}
-						break;
-					} else if ($this->tokenizer->checkProvidedToken($docToken, T_DOC_COMMENT)) {
-						// We have found a doc comment
-						$found = true;
-						break;
-					} else {
-						// Any other token found, we stop
-						$found = false;
-						break;
-					}
+			if (is_array($docToken)) {
+				if ($this->tokenizer->checkProvidedToken($docToken, T_STATIC) || $this->tokenizer->checkProvidedToken($docToken, T_ABSTRACT) || $this->tokenizer->checkProvidedToken($docToken, T_PROTECTED) || $this->tokenizer->checkProvidedToken($docToken, T_PUBLIC) || $this->tokenizer->checkProvidedToken($docToken, T_WHITESPACE) || $this->tokenizer->checkProvidedToken($docToken, T_COMMENT) || $this->tokenizer->checkProvidedToken($docToken, T_ML_COMMENT) || $this->tokenizer->checkProvidedToken($docToken, T_NEW_LINE)) {
+					// All these tokens are ignored
+					} else if ($this->tokenizer->checkProvidedToken($docToken, T_PRIVATE)) {
+					$isPrivate = true; // we are in a private function
+
+				} else if ($this->tokenizer->checkProvidedToken($docToken, T_DOC_COMMENT)) {
+					// We have found a doc comment
+					$found = true;
+					break;
 				} else {
-					// The previous token is a string
+					// Any other token found, we stop
+					$found = false;
 					break;
 				}
+			} else {
+				// The previous token is a string
+				break;
+			}
+			$docTokenPosition--;
 
-				$docTokenPosition--;
+			if ($docTokenPosition == 0) {
+				break;
+			}
+		}
+		if ($found) {
+			// Doc found, look for annotations
+			$this->_processAnnotation($token, $docToken[1]);
 
-				if ($docTokenPosition == 0) {
-					break;
+		} else {
+			// No documentation found
+			if ($this->_isActive('docBlocks') && !($isPrivateExcluded && $isPrivate)) {
+				$this->_writeError('docBlocks', PHPCHECKSTYLE_MISSING_DOCBLOCK);
+			}
+		}
+
+	}
+	/**
+	 * Process PHP_DOC looking for annotations.
+	 *
+	 * @param Integer $token T_CLASS or T_FUNCTION
+	 * @param String $comment the comment to analyse
+	 */
+	private function _processAnnotation($token, $comment) {
+
+		// Read the documentation line by line
+		$subToken = strtok($comment, PHP_EOL);
+		while ($subToken !== false) {
+
+			// Manage annotations
+			$pos = stripos($subToken, "@SuppressWarnings");
+			if ($pos !== false) {
+				$suppressedCheck = trim(substr($subToken, $pos + strlen("@SuppressWarnings")));
+				$supprArray = explode(' ', $suppressedCheck);
+				$suppressedCheck = trim($supprArray[0]);
+				// Store the suppressed warning in the corresponding array					
+				if ($token == T_CLASS) {
+					$this->_classSuppressWarnings[] = $suppressedCheck;
+				} else {
+					$this->_functionSuppressWarnings[] = $suppressedCheck;
 				}
 			}
 
-			if (!$found) {
-				$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_MISSING_DOCBLOCK, $this->_config->getTestLevel('docBlocks'));
-			}
-
+			$subToken = strtok(PHP_EOL);
 		}
 	}
 
 	/**
-	 * Display the current branching stack?
+	 * Display the current branching stack.
 	 */
 	private function _dumpStack() {
 		foreach ($this->_branchingStack as $item) {
@@ -1950,12 +2023,12 @@ class PHPCheckstyle {
 	 * @param String $text The text of the token to test
 	 */
 	private function _checkSilenced($text) {
-		if ($this->_config->getTest('checkSilencedError')) {
+		if ($this->_isActive('checkSilencedError')) {
 
 			$exceptions = $this->_config->getTestExceptions('checkSilencedError');
 			if (empty($exceptions) || !in_array($text, $exceptions)) {
 				if ($this->prvsToken == "@") {
-					$this->_reporter->writeError($this->lineNumber, PHPCHECKSTYLE_SILENCED_ERROR, $this->_config->getTestLevel('checkSilencedError'));
+					$this->_writeError('checkSilencedError', PHPCHECKSTYLE_SILENCED_ERROR);
 				}
 			}
 		}
@@ -1967,12 +2040,39 @@ class PHPCheckstyle {
 	 * @param String $text The text of the token to test
 	 */
 	private function _checkDeprecation($text) {
-		if ($this->_config->getTest('checkDeprecation')) {
+		if ($this->_isActive('checkDeprecation')) {
 			if (array_key_exists($text, $this->_deprecatedFunctions)) {
 				$msg = sprintf(PHPCHECKSTYLE_DEPRECATED_FUNCTION, $this->_deprecatedFunctions[$text]['old'], $this->_deprecatedFunctions[$text]['version'], $this->_deprecatedFunctions[$text]['new']);
-				$this->_reporter->writeError($this->lineNumber, $msg, $this->_config->getTestLevel('checkDeprecation'));
+				$this->_writeError('checkDeprecation', $msg);
 			}
 		}
 	}
 
+	/**
+	 * Tell is a check is active.
+	 *
+	 * @param String $check the name of the check
+	 * @return a boolean
+	 */
+	private function _isActive($check) {
+
+		// Check if the check is configured
+		$active = $this->_config->getTest($check);
+
+		// Check if the check is not disabled by annotation
+		$active = $active && !(in_array($check, $this->_functionSuppressWarnings) || in_array($check, $this->_classSuppressWarnings));
+
+		return $active;
+	}
+	
+	
+	/**
+	 * Output the error to the seelcted reporter.
+	 *
+	 * @param String $check the name of the check
+	 * @param String $message the error message
+	 */
+	private function _writeError($check, $message) {
+		$this->_reporter->writeError($this->lineNumber, $check, $message, $this->_config->getTestLevel($check));
+	}
 }

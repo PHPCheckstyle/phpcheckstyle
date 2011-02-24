@@ -87,4 +87,14 @@ public function functionWithException() {
 	$this->test;
 }
 
+	/**
+	 * Error of naming, but for a good reason we decide to suppress the warning using an annotation. 
+	 * @SuppressWarnings privateFunctionNaming
+	 */
+	private function privateFunction() { // should have a underscore because it is private
+	}
+	
+	// Call the private function
+	$this->privateFunction();
+
 }

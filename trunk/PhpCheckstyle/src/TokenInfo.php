@@ -15,5 +15,4 @@ class TokenInfo {
 
 	var $lineOffset; // The offset of the line number.
 
-
 }

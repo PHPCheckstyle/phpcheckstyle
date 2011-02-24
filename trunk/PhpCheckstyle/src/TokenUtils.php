@@ -42,8 +42,8 @@ class TokenUtils {
 	 * Tokenizes the input php file and stores all the tokens in the
 	 * $this->tokens variable.
 	 *
-	 * @param &$line the line where the token is found
-	 * @return true if the token is found (and update the line value)
+	 * @param String $filename the line where the token is found
+	 * @return Integer the total nomber of tokens in the file
 	 */
 	public function tokenize($filename) {
 		$contents = "";
@@ -78,7 +78,7 @@ class TokenUtils {
 	/**
 	 * Peeks the token at a given position.
 	 *
-	 * @param $position the position of the token
+	 * @param Integer $position the position of the token
 	 * @return the token found
 	 */
 	public function peekTokenAt($position) {
@@ -224,9 +224,9 @@ class TokenUtils {
 	/**
 	 * Check if a token is equal to a given token ID
 	 *
-	 * @param $token the token to test
-	 * @param $value the token ID we're looking for
-	 * @param $text (optional) the text we're looking for
+	 * @param Array $token the token to test
+	 * @param Integer $value the token ID we're looking for
+	 * @param String $text (optional) the text we're looking for
 	 * @return true if the token correspond
 	 */
 	public function checkProvidedToken($token, $value, $text = false) {
@@ -249,8 +249,8 @@ class TokenUtils {
 	/**
 	 * Check if the previous valid token (ignoring whitespace) correspond to the specified token.
 	 *
-	 * @param $value the token ID we're looking for
-	 * @param $text (optional) the text we're looking for
+	 * @param Array $value the token ID we're looking for
+	 * @param String $text (optional) the text we're looking for
 	 * @return true if the token is found
 	 */
 	public function checkPreviousValidToken($value, $text = false) {
@@ -275,7 +275,7 @@ class TokenUtils {
 	/**
 	 * Check if a the next token exists (and if its value correspond to what is expected).
 	 *
-	 
+	 * @param Integer $value the token we're looking for
 	 * @param String $text (optional) the text we're looking for
 	 * @return true if the token is found
 	 */
@@ -293,7 +293,7 @@ class TokenUtils {
 					$ret = true;
 				}
 			}
-		} 
+		}
 		return $ret;
 	}
 
@@ -361,8 +361,8 @@ class TokenUtils {
 	/**
 	 * Check if the token correspond to a given text
 	 *
-	 * @param $token the token
-	 * @param $text the text
+	 * @param Integer $token the token
+	 * @param String $text the text
 	 * @return true if the token contains the text
 	 */
 	public function checkProvidedText($token, $text) {
@@ -378,7 +378,7 @@ class TokenUtils {
 	/**
 	 * Extract the text contained in a token.
 	 *
-	 * @param $token the token
+	 * @param Integer $token the token
 	 * @return the text content of the token
 	 */
 	public function extractTokenText($token) {
@@ -394,7 +394,7 @@ class TokenUtils {
 	 *
 	 * Found here : http://php.net/manual/function.token-get-all.php
 	 *
-	 * @param source The source code to analyse
+	 * @param String $source The source code to analyse
 	 * @return an array of tokens
 	 */
 	private function _getAllTokens($source) {
@@ -434,7 +434,7 @@ class TokenUtils {
 	/**
 	 * Return the name of a token, including the NEW_LINE one.
 	 *
-	 * @param $token a token
+	 * @param Integer $token a token
 	 * @return the name of the token
 	 */
 	public function getTokenName($token) {

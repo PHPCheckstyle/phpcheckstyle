@@ -1,7 +1,6 @@
 <?php
 /**
  * This file is an exemple of PHP file containing bad style (according to the default ruleset).
- * 
  */
 class BadTest {
 ?>
@@ -20,7 +19,7 @@ class BadTest {
     
     $to_to; // Incorrect variable naming
 
-	// Docblock is missing
+	// Docblock is missing	
 	function toto()  
 	{ // Curly brace should be on same line
 		

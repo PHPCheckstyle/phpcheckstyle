@@ -1,11 +1,13 @@
-################################################################################
-#  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
-#  Licensed under the Open Source License version 2.1
-#  (See http://www.spikesource.com/license.html)
-################################################################################
-
-                        Spike PHPCheckstyle Release Notes
-                        =================================
+                         PHPCheckstyle Release Notes
+                         ===========================
+                        
+Version 0.9
+-------------
+* Dependency on lib_xsl removed
+* Documentation updated to link to the new project home (http://code.google.com/p/phpcheckstyle/)
+* HTML Report validated with W3C validator, HTML characters escaped
+* Possibility to suppress some warnings using annotations before a class or a function in the code (@SuppressWarnings)
+* New logo
 
 Version 0.8.11
 -------------

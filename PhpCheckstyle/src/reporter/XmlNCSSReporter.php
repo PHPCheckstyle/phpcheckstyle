@@ -7,11 +7,6 @@
  *  (See http://www.spikesource.com/license.html)
  */
 
-if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
-	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__)."/../..");
-	define('PHPCHECKSTYLE_HOME_DIR', dirname(__FILE__)."/../..");
-}
-
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporter.php";
 
 /**
@@ -92,6 +87,7 @@ class XmlNCSSReporter {
 	 * for the new file
 	 *
 	 * @param $phpFile the file currently processed
+	 * @SuppressWarnings checkUnusedFunctionParameters The parameter is inherited
 	 */
 	public function currentlyProcessing($phpFile) {
 	}

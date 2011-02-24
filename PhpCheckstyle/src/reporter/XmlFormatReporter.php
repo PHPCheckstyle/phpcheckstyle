@@ -6,13 +6,8 @@
  *  Licensed under the Open Source License version 2.1
  *  (See http://www.spikesource.com/license.html)
  */
-if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
-	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__) . "/../..");
-	define('PHPCHECKSTYLE_HOME_DIR', dirname(__FILE__) . "/../..");
-}
 
-require_once PHPCHECKSTYLE_HOME_DIR . "/src/reporter/Reporter.php";
-
+require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporter.php";
 
 /**
  * Writes the errors into an xml file
@@ -83,16 +78,17 @@ class XmlFormatReporter extends Reporter {
 	 * @see Reporter::writeError
 	 * creates a <error> element for the current doc element
 	 *
-	 * @param $line line number of the error
-	 * @param $message error message
-	 * @param $level the severity level
+	 * @param Integer $line the line number
+	 * @param String $check the name of the check
+	 * @param String $message error message
+	 * @param String $level the severity level
 	 */
-	public function writeError($line, $message, $level = WARNING) {
+	public function writeError($line, $check, $message, $level = WARNING) {
 		$e = $this->document->createElement("error");
 		$e->setAttribute("line", $line);
 		$e->setAttribute("severity", $level);
 		$e->setAttribute("message", $message);
-		$e->setAttribute("source", "http://code.google.com/p/phpcheckstyle"); // en dur ...
+		$e->setAttribute("source", "http://code.google.com/p/phpcheckstyle"); 
 		$this->currentElement->appendChild($e);
 	}
 

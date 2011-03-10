@@ -19,10 +19,9 @@
 2. Requirements
 ----------------
 
-  * PHP 5.0 or newer. XSL extension needs to be enabled. It is enabled 
-    by providing the --with-xsl=[libxslt-install-dir] to the configure line.
+  * PHP 5.0 or newer. 
   * Web browser to view the checkstyle report (only for html view)
-  * Tested to be working on Linux and Windows. 
+  * That's all. 
 
 
 3. Installation

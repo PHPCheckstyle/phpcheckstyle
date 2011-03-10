@@ -131,7 +131,6 @@ class PHPCheckstyle {
 	private $_lineCountReporter;
 
 	private $_excludeList = array();
-	private $_rootSourceDir = "";
 
 	private $_config;
 
@@ -209,9 +208,14 @@ class PHPCheckstyle {
 	 * @access public
 	 */
 	public function processFiles($src, $excludes) {
-		$this->_rootSourceDir = $src;
 		$this->_excludeList = $excludes;
-		$files = $this->_getAllPhpFiles($src, $excludes);
+
+		$roots = explode(",", $src);
+		$files = array();
+
+		foreach ($roots as $root) {
+			$files = array_merge($files, $this->_getAllPhpFiles($root, $excludes));
+		}
 
 		// Start reporting the results
 		$this->_reporter->start();
@@ -370,7 +374,7 @@ class PHPCheckstyle {
 		// Inner HTML is OK for views but not for other classes (controllers, models, ...)
 		if ($this->_isActive('noFileFinishHTML') && !$this->_isView) {
 			if ($this->tokenizer->checkProvidedToken($this->prvsToken, T_INLINE_HTML)) {
-				$this->_writeError('noFileFinishHTML',PHPCHECKSTYLE_END_FILE_INLINE_HTML);
+				$this->_writeError('noFileFinishHTML', PHPCHECKSTYLE_END_FILE_INLINE_HTML);
 			}
 		}
 
@@ -1101,7 +1105,7 @@ class PHPCheckstyle {
 
 		$this->_inClass = false; // We are out of the class
 		$this->_classSuppressWarnings = array(); // Reset the warnings
-	}
+		}
 
 	/**
 	 * Process the start of a function.
@@ -1114,7 +1118,7 @@ class PHPCheckstyle {
 		$this->_justAfterFuncStmt = false;
 
 		$this->_functionStartLine = $this->lineNumber;
-		
+
 		//echo "Warnings Suppressed : ".print_r($this->_functionSuppressWarnings,true).PHP_EOL;
 
 		// Check the position of the open curly after the function declaration
@@ -1145,7 +1149,6 @@ class PHPCheckstyle {
 	private function _processFunctionStop() {
 
 		$this->_inFunction = false; // We are out of the function
-
 
 		// Check cyclomaticComplexity
 		if ($this->_isActive('cyclomaticComplexity')) {
@@ -1211,7 +1214,7 @@ class PHPCheckstyle {
 
 		// Check unused function parameters
 		$this->_checkUnusedFunctionParameters();
-				
+
 		$this->_functionSuppressWarnings = array(); // Reset the warnings suppressed
 
 	}
@@ -2064,8 +2067,7 @@ class PHPCheckstyle {
 
 		return $active;
 	}
-	
-	
+
 	/**
 	 * Output the error to the seelcted reporter.
 	 *

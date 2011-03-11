@@ -1,6 +1,10 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.9.2
+-------------
+* Multiple output files (separated by a comma in the --format command line parameter)
+  
 Version 0.9.1
 -------------
 * Possibility to scan multiple source directories (separated by a comma in the --src command line parameter)

@@ -153,29 +153,32 @@ class PHPCheckstyle {
 	/**
 	 * Constructor.
 	 *
-	 * @param String $outformat output format "text" or "html".
-	 * 					Accordingly creates a formatter object
+	 * @param String $formats Array of output formats ("text", "html", "console", ...)
+	 * 					Accordingly creates the formatter objects
 	 * @param String $outfile  output file where results are stored.
 	 * 					Note that in case of "html" format, the output is xml and run.php transforms the xml file into html
 	 * @param String $linecountfile output file where line counts are stored
 	 * @access public
 	 */
-	public function PHPCheckstyle($outformat, $outfile, $linecountfile = null) {
+	public function PHPCheckstyle($formats, $outDir, $linecountfile = null) {
 
 		// Initialise the Tokenizer
 		$this->tokenizer = new TokenUtils();
 
-		// Initialise the Reporter
-		if ($outformat == "text") {
-			$this->_reporter = new PlainFormatReporter($outfile);
-		} elseif ($outformat == "html") {
-			$this->_reporter = new HTMLFormatReporter($outfile);
-		} elseif ($outformat == "xml") {
-			$this->_reporter = new XmlFormatReporter($outfile);
-		} elseif ($outformat == "console") {
+		// Initialise the Reporters
+
+		if (in_array("text", $formats)) {
+			$this->_reporter = new PlainFormatReporter($outDir."/style-report.txt");
+		}
+		if (in_array("html", $formats)) {
+			$this->_reporter = new HTMLFormatReporter($outDir."/index.html");
+		}
+		if (in_array("xml", $formats)) {
+			$this->_reporter = new XmlFormatReporter($outDir."/style-report.xml");
+		}
+		if (in_array("console", $formats)) {
 			$this->_reporter = new ConsoleReporter();
 		}
-
 		if ($linecountfile != null) {
 			$this->_lineCountReporter = new XmlNCSSReporter($linecountfile);
 		}

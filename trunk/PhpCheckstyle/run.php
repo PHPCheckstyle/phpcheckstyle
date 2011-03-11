@@ -28,12 +28,10 @@ function usage() {
 // default values
 $options['src'] = false;
 $options['exclude'] = array();
-$options['format'] = "html";
-$options['outdir'] = "./style-report";
+$options['format'] = "html"; // default format
+$options['outdir'] = "./style-report"; // default ouput directory
 $options['config'] = "default.cfg.xml";
 $options['debug'] = false;
-$xmlOutFile = "style-report.xml";
-$txtOutFile = "style-report.txt";
 $lineCountFile = "ncss.xml";
 
 // loop through user input
@@ -96,19 +94,11 @@ if (!file_exists($outDir)) {
 	$util->makeDirRecursive($outDir);
 }
 
-
 // check for valid format and set the output file name
 // right now the output file name is not configurable, only
 // the output directory is configurable (from command line)
-if ($options['format'] == "html") {
-	$outputFile = $outDir."/index.html";;
-} elseif ($options['format'] == "xml") {
-	$outputFile = $outDir."/".$xmlOutFile;
-} elseif ($options['format'] == "text") {
-	$outputFile = $outDir."/".$txtOutFile;
-} elseif ($options['format'] == "console") {
-	$outputFile = "";
-} else {
+$formats = explode(',', $options['format']);
+if (!(in_array("html", $formats) || in_array("xml", $formats) || in_array("text", $formats) || in_array("console", $formats))) {
 	echo "\nUnknown format.\n\n";
 	usage();
 }
@@ -123,15 +113,14 @@ if (!empty($options['linecount'])) {
 	$lineCountFile = $outDir."/".$lineCountFile;
 }
 
-$style = new PHPCheckstyle($options['format'], $outputFile, $lineCountFile);
+$style = new PHPCheckstyle($formats, $outDir, $lineCountFile);
 $style->processFiles($options['src'], $options['exclude']);
 
-// if output format is html, run the xml file through xsl to generate
-// the html file
+// if output format is html, copie the html files
 if ($options['format'] == "html") {
 	// copy the css and images
 	$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/css", $outDir."/css");
 	$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/images", $outDir."/images");
 }
 
-echo "Reporting Completed. Please check the results in the file ".$outputFile."\n\n";
+echo "Reporting Completed. Please check the results in directory ".$outDir."\n\n";

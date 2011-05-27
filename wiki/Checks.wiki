@@ -24,11 +24,14 @@ Variables should start with a lowercase or an underscores and should contain onl
 
 == functionNaming ==
 Checks to see if the function follows the naming convention.
-Function name has to start with lowercase.
+Function name has to start with lowercase (the pattern is customizable with a regexp).
 Special functions (like "__construct" are not checked).
 
+== protectedFunctionNaming ==
+Activates the testing for protected functions.
+
 == privateFunctionNaming ==
-Activates the testing for private functions also (private functions have to start with underscore followed by lowercase).
+Activates the testing for private functions (private functions should start with a underscore followed by lowercase, the pattern is customizable).
 
 == constructorNaming ==
 Checks the naming of the constructor, the property "naming" can be set to "old" for old PHP constructor style (the name of the class) or to "new" for the new constructor style "__construct()".
@@ -68,8 +71,8 @@ Tests that every function and class is immediately preceded by a docblock. A pro
 = Indentation =
 
 
-== noTabs == 
-Tests to make sure that a line does not contain the tab character.
+== indentation == 
+Check the indentation type. If spaces are expected, checks that a line does not contain the tab character and that the number of spaces is correct. If tabs are expected, checks that the line contains no spaces.
 
 == controlStructNeedCurly == 
 Tests to make sure that every control structure is included within a {} block, even if it is syntactically optional.

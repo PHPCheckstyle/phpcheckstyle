@@ -13,7 +13,12 @@
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
  */
 
-define("PHPCHECKSTYLE_TAB_IN_LINE", "The line contains a tab");
+define("PHPCHECKSTYLE_INDENTATION_TAB", "The indentation line contains a tab");
+define("PHPCHECKSTYLE_INDENTATION_WHITESPACE", "The indentation line contains a whitespace");
+
+define("PHPCHECKSTYLE_INDENTATION_LEVEL", "Indentation problem, level shoud be %s but was %s");
+
+define("PHPCHECKSTYLE_INDENTATION_LEVEL_MORE", "Indentation problem, level shoud be at least %s but was %s");
 
 define("PHPCHECKSTYLE_WRONG_OPEN_TAG", "The php open tag must be '<?php'");
 
@@ -39,9 +44,11 @@ define("PHPCHECKSTYLE_VARIABLE_NAMING", "Variable '%s' should start with a lower
 
 define("PHPCHECKSTYLE_FUNCNAME_SPACE_AFTER", "Function call should not have a whitespace between function name and opening paranthesis");
 
-define("PHPCHECKSTYLE_PRIVATE_FUNCNAME_NAMING", "Private function '%s' name should start with an underscore followed by lowercase letter");
+define("PHPCHECKSTYLE_PRIVATE_FUNCNAME_NAMING", "Private function '%s' name should follow the pattern %s");
 
-define("PHPCHECKSTYLE_FUNCNAME_NAMING", "Function '%s' name should start with a lowercase letter");
+define("PHPCHECKSTYLE_PROTECTED_FUNCNAME_NAMING", "Protected function '%s' name should follow the pattern %s");
+
+define("PHPCHECKSTYLE_FUNCNAME_NAMING", "Function '%s' name should follow the pattern %s");
 
 define("PHPCHECKSTYLE_FUNC_DEFAULTVALUE_ORDER", "All arguments with default values should be at the end");
 

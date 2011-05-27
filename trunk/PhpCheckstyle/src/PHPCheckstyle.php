@@ -16,6 +16,7 @@ require_once PHPCHECKSTYLE_HOME_DIR."/src/styleErrors.inc.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/errorLevels.inc.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/TokenUtils.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/TokenInfo.php";
+require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporters.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/PlainFormatReporter.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/XmlFormatReporter.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/HTMLFormatReporter.php";
@@ -49,6 +50,7 @@ class PHPCheckstyle {
 	private $prvsToken = false;
 	private $lineNumber = 0; // Store the current line number
 
+	private $_isLineStart = true; // Start of a line (just after a return)
 	private $_inControlStatement = false; // We are in a control statement declaration (for, if, while, ...)
 	private $_inArrayStatement = false; // We are in a array statement
 	private $_inClassStatement = false; // Wa are in a class statement (declaration)	
@@ -166,18 +168,18 @@ class PHPCheckstyle {
 		$this->tokenizer = new TokenUtils();
 
 		// Initialise the Reporters
-
+		$this->_reporter = new Reporters();
 		if (in_array("text", $formats)) {
-			$this->_reporter = new PlainFormatReporter($outDir."/style-report.txt");
+			$this->_reporter->addReporter(new PlainFormatReporter($outDir."/style-report.txt"));
 		}
 		if (in_array("html", $formats)) {
-			$this->_reporter = new HTMLFormatReporter($outDir."/index.html");
+			$this->_reporter->addReporter(new HTMLFormatReporter($outDir."/index.html"));
 		}
 		if (in_array("xml", $formats)) {
-			$this->_reporter = new XmlFormatReporter($outDir."/style-report.xml");
+			$this->_reporter->addReporter(new XmlFormatReporter($outDir."/style-report.xml"));
 		}
 		if (in_array("console", $formats)) {
-			$this->_reporter = new ConsoleReporter();
+			$this->_reporter->addReporter(new ConsoleReporter());
 		}
 		if ($linecountfile != null) {
 			$this->_lineCountReporter = new XmlNCSSReporter($linecountfile);
@@ -456,6 +458,9 @@ class PHPCheckstyle {
 			$this->_dumpStack();
 		}
 
+		// by defaut any token means we are not at the start of the line
+		$this->_isLineStart = false;
+
 		switch ($text) {
 
 		case "{":
@@ -724,7 +729,11 @@ class PHPCheckstyle {
 			break;
 		case T_WHITESPACE:
 			{
-				$this->_checkIndentation($text);
+				// T_WHITESPACE can be a tab or a whitespace
+				if ($this->_isLineStart) {
+					// If the whitespace is at the start of the line, we check for indentation
+					$this->_checkIndentation($text);
+				}
 				break;
 			}
 
@@ -842,6 +851,9 @@ class PHPCheckstyle {
 		default:
 			break;
 		}
+
+		// If the last token is a NEW_LINE, the next token will be at the start of the line
+		$this->_isLineStart = ($tok == T_NEW_LINE);
 	}
 
 	/**
@@ -922,7 +934,7 @@ class PHPCheckstyle {
 
 			$ret = preg_match($this->_config->getTestRegExp('functionNaming'), $text);
 			if (!$ret) {
-				$msg = sprintf(PHPCHECKSTYLE_FUNCNAME_NAMING, $text);
+				$msg = sprintf(PHPCHECKSTYLE_FUNCNAME_NAMING, $text, $this->_config->getTestRegExp('functionNaming'));
 				$this->_writeError('functionNaming', $msg);
 			}
 		}
@@ -937,8 +949,23 @@ class PHPCheckstyle {
 		if ($this->_isActive('privateFunctionNaming')) {
 			$ret = preg_match($this->_config->getTestRegExp('privateFunctionNaming'), $text);
 			if (!$ret) {
-				$msg = sprintf(PHPCHECKSTYLE_PRIVATE_FUNCNAME_NAMING, $text);
+				$msg = sprintf(PHPCHECKSTYLE_PRIVATE_FUNCNAME_NAMING, $text, $this->_config->getTestRegExp('privateFunctionNaming'));
 				$this->_writeError('privateFunctionNaming', $msg);
+			}
+		}
+	}
+
+	/**
+	 * Check the naming of a protected function.
+	 *
+	 * @param String $text the name of the function.
+	 */
+	private function _checkProtectedFunctionNaming($text) {
+		if ($this->_isActive('protectedFunctionNaming')) {
+			$ret = preg_match($this->_config->getTestRegExp('protectedFunctionNaming'), $text);
+			if (!$ret) {
+				$msg = sprintf(PHPCHECKSTYLE_PROTECTED_FUNCNAME_NAMING, $text, $this->_config->getTestRegExp('protectedFunctionNaming'));
+				$this->_writeError('protectedFunctionNaming', $msg);
 			}
 		}
 	}
@@ -1026,6 +1053,15 @@ class PHPCheckstyle {
 			if (!$this->tokenizer->checkNextToken(T_WHITESPACE)) {
 				$msg = sprintf(PHPCHECKSTYLE_SPACE_AFTER_TOKEN, $csText);
 				$this->_writeError('spaceAfterControlStmt', $msg);
+			}
+		}
+
+		if ($this->_isActive('noSpaceAfterControlStmt')) {
+			if (!$this->tokenizer->checkNextTextToken('(')) {
+				if ($csText != 'else' && $csText != 'try') {
+					$msg = sprintf(PHPCHECKSTYLE_NO_SPACE_AFTER_TOKEN, $csText);
+					$this->_writeError('noSpaceAfterControlStmt', $msg);
+				}
 			}
 		}
 
@@ -1248,6 +1284,14 @@ class PHPCheckstyle {
 			$this->_isFunctionPrivate = true; // We are currently in a private function
 			}
 
+		$protected = false;
+		if ($this->tokenizer->checkPreviousValidToken(T_PROTECTED)) {
+			$protected = true;
+		}
+
+		if ($this->tokenizer->checkPreviousValidToken(T_PRIVATE)) {
+			$this->_isFunctionPrivate = true; // We are currently in a private function
+			}
 		// Skip until T_STRING representing the function name
 		while (!$this->tokenizer->checkProvidedToken($this->token, T_STRING)) {
 			$this->_moveToken();
@@ -1272,7 +1316,7 @@ class PHPCheckstyle {
 		// Special functions are not checked
 		if (!in_array($functionName, $this->_specialFunctions)) {
 
-			// Constructor
+			// Constructors
 			if ($functionName == $this->_currentClassname) {
 
 				// Function is a constructor
@@ -1283,12 +1327,17 @@ class PHPCheckstyle {
 				}
 
 			} else {
+
+				// Other funnction
 				if ($this->_isFunctionPrivate) {
 					$this->_checkPrivateFunctionNaming($functionName);
+				} else if ($protected) {
+					$this->_checkProtectedFunctionNaming($functionName);
 				} else {
 					$this->_checkFunctionNaming($functionName);
 				}
 			}
+
 		}
 
 		// List the arguments of the currently analyzed function.
@@ -1801,17 +1850,100 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Only checks for presence of tab in the whitespace character string
+	 * Checks for presence of tab in the whitespace character string.
 	 *
-	 * @param String $ws
+	 * @param String $whitespaceString the whitespace string used for indentation
 	 */
-	private function _checkIndentation($ws) {
-		if ($this->_isActive('noTabs')) {
-			$tabfound = preg_match("/\t/", $ws);
-			if ($tabfound) {
-				$this->_writeError('noTabs', PHPCHECKSTYLE_TAB_IN_LINE);
+	private function _checkIndentation($whitespaceString) {
+		if ($this->_isActive('indentation')) {
+
+			$indentationType = $this->_config->getTestProperty('indentation', 'type');
+
+			// If indentation type is space, we look for tabs in the string
+			if (strtolower($indentationType) == 'space' || strtolower($indentationType) == 'spaces') {
+				$tabfound = preg_match("/\t/", $whitespaceString);
+				if ($tabfound) {
+					$this->_writeError('indentation', PHPCHECKSTYLE_INDENTATION_TAB);
+				}
+
+				$indentationNumber = $this->_config->getTestProperty('indentation', 'number');
+				if (empty($indentationNumber)) {
+					$indentationNumber = 2;
+				}
+				$this->_checkIndentationLevel($whitespaceString, $indentationNumber);
+			} else if (strtolower($indentationType) == 'tab' || strtolower($indentationType) == 'tabs') {
+				// If indentation type is tabs, we look for whitespace in the string
+				$whitespacefound = preg_match("/[ ]/", $whitespaceString);
+				if ($whitespacefound) {
+					$this->_writeError('indentation', PHPCHECKSTYLE_INDENTATION_WHITESPACE);
+				}
+			}
+
+		}
+
+	}
+
+	/**
+	 * Check the indentation level.
+	 *
+	 * @param String $whitespaceString the whitespace string used for indentation
+	 * @param String $indentationNumber the expected number of whitespaces used for indentation
+	 */
+	private function _checkIndentationLevel($whitespaceString, $indentationNumber) {
+
+		//doesn't work if we are not in a class
+		if (!$this->_inClass) {
+			return;
+		}
+
+		//doesn't check empty line and where we are in a control statement
+		if ($this->_inControlStatement || $this->_inFuncCall || !isset($this->lineNumber) || !isset($this->_levelOfNesting) || $this->tokenizer->checkNextToken(T_NEW_LINE) || $this->tokenizer->checkNextValidTextToken(")")) {
+			return;
+		}
+
+		$previousToken = $this->tokenizer->peekPrvsToken();
+		// only check a line once
+		if (!isset($this->indentationLevel['previousLine']) || $this->lineNumber != $this->indentationLevel['previousLine']) {
+			$nesting = $this->_levelOfNesting;
+			if ($this->tokenizer->checkNextValidTextToken("{")) {
+				$nesting++;
+			}
+
+			$expectedIndentation = $nesting * $indentationNumber;
+			$indentation = strlen($whitespaceString);
+			if ($previousToken[0] != T_NEW_LINE) {
+				$indentation = 0;
+			}
+
+			// don't check when the line is a comment
+			if ($this->tokenizer->checkNextToken(T_COMMENT)) {
+				return;
+			}
+
+			// control switch statement indentation
+			if ($this->_inSwitch) {
+				if (!$this->tokenizer->checkNextToken(T_CASE) && !$this->tokenizer->checkNextToken(T_DEFAULT)) {
+					$expectedIndentation = $expectedIndentation + $indentationNumber;
+				}
+
+				// don't check bracket in a switch (TODO)
+				if ($this->tokenizer->checkNextValidTextToken("{") || $this->tokenizer->checkNextValidTextToken("}")) {
+					return;
+				}
+			}
+
+			// the indentation is almost free if it is a multiligne array
+			if ($this->tokenizer->checkNextToken(T_CONSTANT_ENCAPSED_STRING) || $this->tokenizer->checkNextToken(T_OBJECT_OPERATOR) || $this->tokenizer->checkNextToken(T_ARRAY) || $this->tokenizer->checkNextToken(T_NEW)) {
+				if (($expectedIndentation + 2) > $indentation) {
+					$msg = sprintf(PHPCHECKSTYLE_INDENTATION_LEVEL_MORE, ($expectedIndentation + $defaultIndentation), $indentation);
+					$this->_writeError('indentationLevel', $msg);
+				}
+			} elseif ($expectedIndentation != $indentation) {
+				$msg = sprintf(PHPCHECKSTYLE_INDENTATION_LEVEL, $expectedIndentation, $indentation);
+				$this->_writeError('indentationLevel', $msg);
 			}
 		}
+		$this->indentationLevel['previousLine'] = $this->lineNumber;
 	}
 
 	/**
@@ -1981,8 +2113,8 @@ class PHPCheckstyle {
 				$this->_writeError('docBlocks', PHPCHECKSTYLE_MISSING_DOCBLOCK);
 			}
 		}
-
 	}
+
 	/**
 	 * Process PHP_DOC looking for annotations.
 	 *

@@ -14,9 +14,12 @@
     <!-- Check Function Naming -->
     <test name="functionNaming" regexp="/^[a-z]/" level="ERROR"/>
     
+    <!-- Check Protected Naming -->
+    <test name="protectedFunctionNaming" regexp="/^[a-z]/" level="ERROR"/>
+        
     <!-- Check Private Function Naming -->
     <test name="privateFunctionNaming" regexp="/^_[a-z]/" level="ERROR"/>
-    
+        
     <!-- Checks the constuctor naming -->
     <!-- old = old style (constructor = name of the class) -->
     <!-- new = "__construct()" -->    
@@ -63,7 +66,10 @@
     <!--  ****************  -->    
              
     <!-- Tests to make sure that a line does not contain the tab character. -->
-    <!-- <test name="noTabs"/>  -->
+    <test name="indentation">  <!-- noTabs -->
+    	<property name="type" value="tabs"/> <!-- tabs or spaces -->
+    	<property name="number" value="4"/> <!-- number of spaces if type = spaces -->
+    </test>
     
     <!-- Test to make sure that every control structure is included within a {} block, even if it is syntactically optional. -->
     <test name="controlStructNeedCurly"/>
@@ -103,6 +109,7 @@
          PEAR standard stipulates this to distinguish it from function calls. 
     -->
    <test name="spaceAfterControlStmt"/>
+   <!-- <test name="noSpaceAfterControlStmt"/> -->
    
     <!-- Check that there is no space after a function name in a function call -->
     <!-- <test name="noSpaceAfterFunctionName" level="INFO"></test>  -->  

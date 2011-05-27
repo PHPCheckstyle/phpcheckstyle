@@ -117,7 +117,7 @@ $style = new PHPCheckstyle($formats, $outDir, $lineCountFile);
 $style->processFiles($options['src'], $options['exclude']);
 
 // if output format is html, copie the html files
-if ($options['format'] == "html") {
+if (in_array("html", $formats)) {
 	// copy the css and images
 	$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/css", $outDir."/css");
 	$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/images", $outDir."/images");

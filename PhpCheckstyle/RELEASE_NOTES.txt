@@ -1,6 +1,12 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.9.3
+-------------
+* Refactoring of the indentation check (thanks to Charles Marion). The "noTabs" rule is replaced by the "indentation" rule.
+* Reactivation of the "noSpaceAfterControlStmt" rule.
+* Correction of a bug with multiple output files. 
+
 Version 0.9.2
 -------------
 * Multiple output files (separated by a comma in the --format command line parameter)

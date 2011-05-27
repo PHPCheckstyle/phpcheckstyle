@@ -13,7 +13,7 @@ class GoodTest {
 
 <?php
 
-define ("CONSTANT", 100);  // Constant Naming correct
+define("CONSTANT", 100);  // Constant Naming correct
 
 /**
  * This function is documented

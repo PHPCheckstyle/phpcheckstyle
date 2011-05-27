@@ -76,8 +76,8 @@ class PHPCheckstyle {
 	private $_functionReturns = false; // Does the function return a value ?
 	private $_functionThrows = false; // Does the function throw an exception ?
 	private $_functionLevel = 0; // Level of Nesting of the function
+	private $_functionVisibility = 'PUBLIC'; // PUBLIC, PRIVATE or PROTECTED
 	private $_classLevel = 0; // Level of Nesting of the class
-	private $_isFunctionPrivate = false; // Is the function a private function
 	private $_constantDef = false;
 	private $_currentClassname = null;
 	private $_currentFilename = null;
@@ -285,7 +285,7 @@ class PHPCheckstyle {
 		$this->_functionStartLine = 0;
 		$this->_functionReturns = false;
 		$this->_functionThrows = false;
-		$this->_isFunctionPrivate = false;
+		$this->_functionVisibility = 'PUBLIC';
 		$this->_currentStatement = false;
 		$this->_inClassStatement = false;
 
@@ -1209,7 +1209,7 @@ class PHPCheckstyle {
 		//
 		// If the function is not private and we check the doc
 		$isPrivateExcluded = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
-		if (!($isPrivateExcluded && $this->_isFunctionPrivate)) {
+		if (!($isPrivateExcluded && $this->_functionVisibility == 'PRIVATE')) {
 
 			// Check the docblock @return
 			if ($this->_isActive('docBlocks') && ($this->_config->getTestProperty('docBlocks', 'testReturn') != 'false')) {
@@ -1278,20 +1278,14 @@ class PHPCheckstyle {
 		$this->_currentStatement = false;
 		$this->_inClassStatement = false;
 
-		// Check if the function is private or not
-		$this->_isFunctionPrivate = false;
+		// Detect the function visibility
+		$this->_functionVisibility = 'PUBLIC';
 		if ($this->tokenizer->checkPreviousValidToken(T_PRIVATE)) {
-			$this->_isFunctionPrivate = true; // We are currently in a private function
-			}
-
-		$protected = false;
-		if ($this->tokenizer->checkPreviousValidToken(T_PROTECTED)) {
-			$protected = true;
+			$this->_functionVisibility = 'PRIVATE';
+		} else if ($this->tokenizer->checkPreviousValidToken(T_PROTECTED)) {
+			$this->_functionVisibility = 'PROTECTED';
 		}
 
-		if ($this->tokenizer->checkPreviousValidToken(T_PRIVATE)) {
-			$this->_isFunctionPrivate = true; // We are currently in a private function
-			}
 		// Skip until T_STRING representing the function name
 		while (!$this->tokenizer->checkProvidedToken($this->token, T_STRING)) {
 			$this->_moveToken();
@@ -1301,7 +1295,7 @@ class PHPCheckstyle {
 		$functionName = $this->token[1];
 
 		// If the function is private we add it to the list of function to use (and store the line number)
-		if ($this->_isFunctionPrivate) {
+		if ($this->_functionVisibility == 'PRIVATE') {
 			$this->_privateFunctions[$functionName] = $functionName;
 			$this->_privateFunctionsStartLines[$functionName] = $this->lineNumber;
 		}
@@ -1329,9 +1323,9 @@ class PHPCheckstyle {
 			} else {
 
 				// Other funnction
-				if ($this->_isFunctionPrivate) {
+				if ($this->_functionVisibility == 'PRIVATE') {
 					$this->_checkPrivateFunctionNaming($functionName);
-				} else if ($protected) {
+				} else if ($this->_functionVisibility == 'PROTECTED') {
 					$this->_checkProtectedFunctionNaming($functionName);
 				} else {
 					$this->_checkFunctionNaming($functionName);

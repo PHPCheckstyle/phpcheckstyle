@@ -6,6 +6,7 @@ Version 0.9.3
 * Refactoring of the indentation check (thanks to Charles Marion). The "noTabs" rule is replaced by the "indentation" rule.
 * Reactivation of the "noSpaceAfterControlStmt" rule.
 * Correction of a bug with multiple output files. 
+* Added a rule for the naming of protected functions. 
 
 Version 0.9.2
 -------------

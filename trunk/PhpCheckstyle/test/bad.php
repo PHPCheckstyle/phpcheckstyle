@@ -88,6 +88,13 @@ class BadTest {
 	/**
 	 *
 	 */
+	protected function _protectedFunction($a) { // should not have a underscore because it is protected
+		$a;
+	}
+
+	/**
+	 *
+	 */
 	public function publicFunction(&$toto) { // parameter passed by reference
 
 		return $a; // the returned parameter should be documented

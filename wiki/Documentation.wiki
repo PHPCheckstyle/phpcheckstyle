@@ -69,7 +69,7 @@ To change the configuration file used, use the --config flag of the command line
 
 == Using PHPCheckstyle with Eclipse ==
 
-Eclipse is already able to do some checks and to reformat your code (CTRL + SHIFT 9+ F) with [http://www.eclipse.org/pdt/ PDT].
+Eclipse is already able to do some checks and to reformat your code (CTRL + SHIFT + F) with [http://www.eclipse.org/pdt/ PDT].
 
 It is also possible to add some extenal tools like PHPCodeSniffer or PHPCheckstyle to verify the code you're editing.
 

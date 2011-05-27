@@ -14,7 +14,8 @@ This project was originally written by Hari Kodungallur. Other contributors are:
   * Benoit Pesty
   * Nimish Pachapurkar
   * Joshua Kaiser
+  * Marion Charles
 
 == Details ==
 
-Spike PHPCheckstyle works on PHP 5.0 and newer. For more information, see the [Documentation].
+PHPCheckstyle works on PHP 5.0 and newer. For more information, see the [Documentation].

@@ -1,6 +1,25 @@
 #summary Project History
 #labels Featured
 
+== Version 0.9.3 ==
+  * Refactoring of the indentation check (thanks to Charles Marion). The "noTabs" rule is replaced by the "indentation" rule.
+  * Reactivation of the "noSpaceAfterControlStmt" rule.
+  * Correction of a bug with multiple output files. 
+  * Added a rule for the naming of protected functions. 
+
+== Version 0.9.2 ==
+  * Multiple output files (separated by a comma in the --format command line parameter)
+  
+== Version 0.9.1 ==
+  * Possibility to scan multiple source directories (separated by a comma in the --src command line parameter)
+                        
+== Version 0.9 == 
+  * Dependency on lib_xsl removed
+  * Documentation updated to link to the new project home (http://code.google.com/p/phpcheckstyle/)
+  * HTML Report validated with W3C validator, HTML characters escaped
+  * Possibility to suppress some warnings using annotations before a class or a function in the code (@SuppressWarnings)
+  * New logo
+
 == Version 0.8.11 ==
   * Refactoring : Added the current stack of instruction to provide contextual information
   * New test : unusedCode

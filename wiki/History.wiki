@@ -1,6 +1,12 @@
 #summary Project History
 #labels Featured
 
+== Version 0.9.5 ==
+  * Corrected a bug with @SuppressWarnings on a class.
+
+== Version 0.9.4 ==
+  * Added  __invoke and __callStatic to the special functions.
+
 == Version 0.9.3 ==
   * Refactoring of the indentation check (thanks to Charles Marion). The "noTabs" rule is replaced by the "indentation" rule.
   * Reactivation of the "noSpaceAfterControlStmt" rule.

@@ -393,6 +393,9 @@ class PHPCheckstyle {
 		if ($this->_lineCountReporter != null) {
 			$this->_lineCountReporter->writeFileCount($f, $this->_ncssFileClasses, $this->_ncssFileFunctions, $this->_ncssFileLinesOfCode, $this->_ncssFilePhpdoc, $this->_ncssFileLinesPhpdoc, $this->_ncssFileSingleComment, $this->_ncssFileMultiComment);
 		}
+		
+		// Reset the class warnings suppression
+		$this->_classSuppressWarnings = array(); 
 
 	}
 
@@ -1141,9 +1144,10 @@ class PHPCheckstyle {
 	 * Process the end of a class.
 	 */
 	private function _processClassStop() {
+		// We are out of the class
+		$this->_inClass = false;
 
-		$this->_inClass = false; // We are out of the class
-		$this->_classSuppressWarnings = array(); // Reset the warnings
+		// Reset of the warnings suppression is done at the end of the file, hoping we have 1 file / class
 		}
 
 	/**

@@ -1,6 +1,10 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.9.5
+-------------
+* Corrected a bug with @SuppressWarnings on a class.
+
 Version 0.9.4
 -------------
 * Add  __invoke and __callStatic to the special functions.

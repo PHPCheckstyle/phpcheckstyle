@@ -1,6 +1,10 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.9.4
+-------------
+* Add  __invoke and __callStatic to the special functions.
+
 Version 0.9.3
 -------------
 * Refactoring of the indentation check (thanks to Charles Marion). The "noTabs" rule is replaced by the "indentation" rule.

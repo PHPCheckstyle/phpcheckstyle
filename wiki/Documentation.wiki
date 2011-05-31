@@ -105,3 +105,28 @@ The [http://wiki.hudson-ci.org/display/HUDSON/Violations Violation plugin] of [h
 By adding the "--linecount" option to the command line, PHPCheckstyle will generate an XML file compatible with the [http://kclee.de/clemens/java/javancss/ JavaNCSS] format
 
 This could be used with the [http://wiki.hudson-ci.org/pages/viewpage.action?pageId=36603031 JavaNCSS plugin] of Hudson.
+
+== Suppressing Warnings ==
+Warnings can be removed with the help of annotations on a function level or a class level. 
+
+To remove a warning add the annotation "@SuppressWarnings warningName" in the PHPDoc where warningName is the identifier of the check rule. 
+
+The identifier of the rule is displayed as a tooltip in the generated HTML report.
+
+{{{
+/**
+ * This is a data objet without getter or setter.
+ *
+ * @package classes
+ * @SuppressWarnings checkUnusedVariables
+ */
+class MyDataObject {
+
+  /**
+   * This property is not used in the class and would have raised a warning.
+   */
+   var $myProperty;
+
+}
+
+}}}

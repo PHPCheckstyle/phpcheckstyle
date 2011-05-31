@@ -106,7 +106,7 @@ class PHPCheckstyle {
 	 * @var array   List of the magic methods
 	 * @link http://www.php.net/manual/en/language.oop5.magic.php
 	 */
-	private $_specialFunctions = array("__construct", "__destruct", "__call", "__get", "__set", "__isset", "__unset", "__sleep", "__wakeup", "__toString", "__set_state", "__clone", "__autoload");
+	private $_specialFunctions = array("__construct", "__destruct", "__call", "__get", "__set", "__isset", "__unset", "__sleep", "__wakeup", "__toString", "__set_state", "__clone", "__autoload", "__invoke", "__callStatic");
 
 	private $_prohibitedFunctions = array('echo', 'system', "print_r", 'dl',
 		'exec', 'passthru', 'shell_exec',

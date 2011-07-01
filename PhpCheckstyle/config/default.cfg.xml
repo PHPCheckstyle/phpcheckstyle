@@ -332,6 +332,8 @@
     	<deprecated old="session_is_registered" new="$_SESSION" version="5.3"/>
     	<deprecated old="mysql_db_query" new="mysql_select_db and mysql_query" version="5.3"/>
     	<deprecated old="mysql_escape_string" new="mysql_real_escape_string" version="5.3"/>
+    	<deprecated old="dl" new="extension_loaded" version="5.3"/>
+    	<deprecated old="set_socket_blocking" new="stream_set_blocking" version="5.3"/>
     </test>
     
 </phpcheckstyle-configuration>

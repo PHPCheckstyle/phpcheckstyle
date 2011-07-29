@@ -14,7 +14,7 @@ This project was originally written by Hari Kodungallur. Other contributors are:
   * Benoit Pesty
   * Nimish Pachapurkar
   * Joshua Kaiser
-  * Marion Charles
+  * Charles Marion
   * Adrien Pessu
 
 == Details ==

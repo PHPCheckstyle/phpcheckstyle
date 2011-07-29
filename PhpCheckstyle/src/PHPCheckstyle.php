@@ -1,11 +1,11 @@
 <?php
 /*
  *  $Id: PHPCheckstyle.php 28215 2005-07-28 02:53:05Z hkodungallur $
- *
- *  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
- *  Licensed under the Open Source License version 2.1
- *  (See http://www.spikesource.com/license.html)
- */
+*
+*  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
+*  Licensed under the Open Source License version 2.1
+*  (See http://www.spikesource.com/license.html)
+*/
 
 if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
 	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__)."/..");
@@ -42,8 +42,8 @@ class PHPCheckstyle {
 	private $validExtensions = array("php", "tpl");
 
 	// variables used while processing control structure
-	private $_csLeftBracket = 0;
-	private $_fcLeftBracket = 0;
+	private $_csLeftParenthesis = 0; // Left brackets opened in control statement or function statement
+	private $_fcLeftParenthesis = 0; // Left brackets opened in function call
 	private $inDoWhile = false;
 
 	private $token = false;
@@ -51,9 +51,14 @@ class PHPCheckstyle {
 	private $lineNumber = 0; // Store the current line number
 
 	private $_isLineStart = true; // Start of a line (just after a return)
-	private $_inControlStatement = false; // We are in a control statement declaration (for, if, while, ...)
+
+	// Indicate if we are in a control statement declaration (for, if, while, ...)
+	// The control statement starts just after the statement token
+	// and stops at the closing of the parenthesis or the new line if no parenthesis is used
+	private $_inControlStatement = false;
+
 	private $_inArrayStatement = false; // We are in a array statement
-	private $_inClassStatement = false; // Wa are in a class statement (declaration)	
+	private $_inClassStatement = false; // Wa are in a class statement (declaration)
 	private $_inFunctionStatement = false; // We are in a function statement (declaration)
 	private $_inFuncCall = false; // We are in a function call
 	private $_inFunction = false; // We are inside a function
@@ -262,8 +267,8 @@ class PHPCheckstyle {
 		$this->lineNumber = 1;
 
 		// Reset the current attributes
-		$this->_csLeftBracket = 0;
-		$this->_fcLeftBracket = 0;
+		$this->_csLeftParenthesis = 0;
+		$this->_fcLeftParenthesis = 0;
 		$this->inDoWhile = false;
 
 		$this->_inControlStatement = false;
@@ -339,7 +344,8 @@ class PHPCheckstyle {
 		if (stripos($f, 'controller') !== false) {
 			$this->_isController = true;
 		}
-		if (stripos($f, 'class') !== false) { // simple simple data objects
+		if (stripos($f, 'class') !== false) {
+			// simple simple data objects
 			$this->_isClass = true;
 		}
 
@@ -393,9 +399,9 @@ class PHPCheckstyle {
 		if ($this->_lineCountReporter != null) {
 			$this->_lineCountReporter->writeFileCount($f, $this->_ncssFileClasses, $this->_ncssFileFunctions, $this->_ncssFileLinesOfCode, $this->_ncssFilePhpdoc, $this->_ncssFileLinesPhpdoc, $this->_ncssFileSingleComment, $this->_ncssFileMultiComment);
 		}
-		
+
 		// Reset the class warnings suppression
-		$this->_classSuppressWarnings = array(); 
+		$this->_classSuppressWarnings = array();
 
 	}
 
@@ -466,183 +472,191 @@ class PHPCheckstyle {
 
 		switch ($text) {
 
-		case "{":
+			case "{":
 
-			// "{" signifies beginning of a block. We need to look for
-			// its position when it is a beginning of a control structure
-			// or a function or class definition.
+				// "{" signifies beginning of a block. We need to look for
+				// its position when it is a beginning of a control structure
+				// or a function or class definition.
 
-			// Check we have a white space before a curly opening
-			$this->_checkWhiteSpaceBefore($text);
-			$stackitem = "";
-
-			// if _justAfterFuncStmt is set, the "{" is the beginning of a function definition block
-			if ($this->_justAfterFuncStmt) {
-				$this->_processFunctionStart();
-				$stackitem = "function";
-			}
-
-			// if _justAfterControlStmt is set, the "{" is the beginning of a control structure block
-			if ($this->_justAfterControlStmt) {
-				$this->_processControlStructureStart();
-				$stackitem = $this->_currentStatement;
-			}
-
-			// if _inClassStatement is set then we are just after a class declaration
-			if ($this->_inClassStatement) {
-				$this->_inClassStatement = false;
-				$this->_processClassStart();
-				$stackitem = "class";
-			}
-
-			// Check if the block is not empty
-			$this->_checkEmptyBlock();
-
-			$this->_levelOfNesting++;
-			array_push($this->_branchingStack, $stackitem);
-
-			break;
-
-		case "}":
-			// "}" signifies the end of a block
-			// currently tests whether this token resides on a new line.
-			// This test is desactivated when in a view
-			if ($this->_isActive('controlCloseCurly') && !($this->_isView)) {
-				$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
-				if ($previousTokenInfo->lineOffset == 0) { // the last token was on the same line
-					$this->_writeError('controlCloseCurly', PHPCHECKSTYLE_END_BLOCK_NEW_LINE);
-				}
-			}
-
-			$this->_levelOfNesting--;
-			array_pop($this->_branchingStack);
-
-			// Test for the end of a switch bloc
-			if ($this->_inSwitch && $this->_levelOfNesting == $this->_switchLevel) {
-				$this->_processSwitchStop();
-			}
-
-			// Test for the end of a function
-			if ($this->_levelOfNesting == $this->_functionLevel && $this->_inFunction) {
-				$this->_processFunctionStop();
-			}
-
-			// Test for the end of a class
-			if ($this->_levelOfNesting == $this->_classLevel && $this->_inClass) {
-				$this->_processClassStop();
-			}
-
-			break;
-
-		case ";":
-			// ";" -> end of statement
-			// we only need to make sure that we are not hitting ":"
-			// before "{" in the case of a control structure, in which
-			// case we have a control structure is not using the curly
-			// brackets
-			if ($this->_justAfterControlStmt) {
-				$this->_justAfterControlStmt = false;
-
-				if ($this->_isActive('controlStructNeedCurly')) {
-					$this->_writeError('controlStructNeedCurly', PHPCHECKSTYLE_CS_NO_OPEN_CURLY);
-				}
-			}
-
-			// ";" should never be preceded by a whitespace
-			$this->_checkNoWhiteSpaceBefore($text);
-			$this->_checkEmptyStatement();
-
-			break;
-
-		case "-":
-			if (!$this->_inFuncCall) {
+				// Check we have a white space before a curly opening
 				$this->_checkWhiteSpaceBefore($text);
-			}
-			// We allow some '-' signs to skip the the space afterwards for negative numbers
-			if (!($this->tokenizer->checkNextToken(T_LNUMBER) || // float number
-			$this->tokenizer->checkNextToken(T_DNUMBER))) { // integer
+				$stackitem = "";
+
+				// if _justAfterFuncStmt is set, the "{" is the beginning of a function definition block
+				if ($this->_justAfterFuncStmt) {
+					$this->_processFunctionStart();
+					$stackitem = "function";
+				}
+
+				// if _justAfterControlStmt is set, the "{" is the beginning of a control structure block
+				if ($this->_justAfterControlStmt) {
+					$this->_processControlStructureStart();
+					$stackitem = $this->_currentStatement;
+				}
+
+				// if _inClassStatement is set then we are just after a class declaration
+				if ($this->_inClassStatement) {
+					$this->_inClassStatement = false;
+					$this->_processClassStart();
+					$stackitem = "class";
+				}
+
+				// Check if the block is not empty
+				$this->_checkEmptyBlock();
+
+				$this->_levelOfNesting++;
+				array_push($this->_branchingStack, $stackitem);
+
+				break;
+
+			case "}":
+				// "}" signifies the end of a block
+				// currently tests whether this token resides on a new line.
+				// This test is desactivated when in a view
+				if ($this->_isActive('controlCloseCurly') && !($this->_isView)) {
+					$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
+					if ($previousTokenInfo->lineOffset == 0) {
+						// the last token was on the same line
+						$this->_writeError('controlCloseCurly', PHPCHECKSTYLE_END_BLOCK_NEW_LINE);
+					}
+				}
+
+				$this->_levelOfNesting--;
+				array_pop($this->_branchingStack);
+
+				// Test for the end of a switch bloc
+				if ($this->_inSwitch && $this->_levelOfNesting == $this->_switchLevel) {
+					$this->_processSwitchStop();
+				}
+
+				// Test for the end of a function
+				if ($this->_levelOfNesting == $this->_functionLevel && $this->_inFunction) {
+					$this->_processFunctionStop();
+				}
+
+				// Test for the end of a class
+				if ($this->_levelOfNesting == $this->_classLevel && $this->_inClass) {
+					$this->_processClassStop();
+				}
+
+				break;
+
+			case ";":
+				// ";" -> end of statement
+				// we only need to make sure that we are not hitting ":"
+				// before "{" in the case of a control structure, in which
+				// case we have a control structure is not using the curly
+				// brackets
+				if ($this->_justAfterControlStmt) {
+					$this->_justAfterControlStmt = false;
+
+					if ($this->_isActive('controlStructNeedCurly')) {
+						$this->_writeError('controlStructNeedCurly', PHPCHECKSTYLE_CS_NO_OPEN_CURLY);
+					}
+				}
+
+				// ";" should never be preceded by a whitespace
+				$this->_checkNoWhiteSpaceBefore($text);
+				$this->_checkEmptyStatement();
+
+				break;
+
+			case "-":
+				if (!$this->_inFuncCall) {
+					$this->_checkWhiteSpaceBefore($text);
+				}
+				// We allow some '-' signs to skip the the space afterwards for negative numbers
+				if (!($this->tokenizer->checkNextToken(T_LNUMBER) || // float number
+				$this->tokenizer->checkNextToken(T_DNUMBER))) {
+					// integer
+					$this->_checkWhiteSpaceAfter($text);
+				}
+
+				break;
+			case "=":
+				$this->_checkInnerAssignment();
+				$this->_checkSurroundingWhiteSpace($text);
+				break;
+			case "<":
+			case ">":
+			case "+":
+			case ".":
+			case "*":
+			case "/":
+			case "?":
+			case "==":
+			case ":":
+			case "%":
+				// operators generally will need to be surrounded by whitespaces
+				$this->_checkSurroundingWhiteSpace($text);
+				break;
+
+			case ",":
+				$this->_checkNoWhiteSpaceBefore($text);
 				$this->_checkWhiteSpaceAfter($text);
-			}
+				break;
 
-			break;
-		case "=":
-			$this->_checkInnerAssignment();
-			$this->_checkSurroundingWhiteSpace($text);
-			break;
-		case "<":
-		case ">":
-		case "+":
-		case ".":
-		case "*":
-		case "/":
-		case "?":
-		case "==":
-		case ":":
-		case "%":
-			// operators generally will need to be surrounded by whitespaces
-			$this->_checkSurroundingWhiteSpace($text);
-			break;
+			case "!":
+				$this->_checkNoWhiteSpaceAfter($text);
+				break;
 
-		case ",":
-			$this->_checkNoWhiteSpaceBefore($text);
-			$this->_checkWhiteSpaceAfter($text);
-			break;
-
-		case "!":
-			$this->_checkNoWhiteSpaceAfter($text);
-			break;
-
-		case "(":
-			// the only issue with "(" is generally whether there should be space after it or not
-			if ($this->_inFuncCall) { // inside a function call
-				$this->_fcLeftBracket += 1;
-			} elseif ($this->_inControlStatement || $this->_inFunctionStatement) { // inside a function or control statement
-				$this->_csLeftBracket += 1;
-			}
-
-			$this->_checkNoWhiteSpaceAfter($text);
-			break;
-
-		case ")":
-			// again the only issue here the space after/before it
-			if ($this->_inFuncCall) {
-				$this->_fcLeftBracket -= 1;
-			} elseif ($this->_inControlStatement || $this->_inFunctionStatement) {
-				$this->_csLeftBracket -= 1;
-			}
-			if ($this->_fcLeftBracket == 0) {
-				$this->_inFuncCall = false;
-			}
-			if ($this->_csLeftBracket == 0) {
-				if ($this->_inControlStatement) {
-					$this->_inControlStatement = false;
-					$this->_checkNeedBraces();
-					$this->_justAfterControlStmt = true;
-				} elseif ($this->_inFunctionStatement) {
-					$this->_inFunctionStatement = false;
-					$this->_justAfterFuncStmt = true;
+			case "(":
+				// the only issue with "(" is generally whether there should be space after it or not
+				if ($this->_inFuncCall) {
+					// inside a function call
+					$this->_fcLeftParenthesis += 1;
+				} elseif ($this->_inControlStatement || $this->_inFunctionStatement) {
+					// inside a function or control statement
+					$this->_csLeftParenthesis += 1;
 				}
-			}
 
-			$this->_checkNoWhiteSpaceBefore($text);
-			break;
+				$this->_checkNoWhiteSpaceAfter($text);
+				break;
 
-		case "&":
-			// One of the function parameter is passed by reference
-			if ($this->_isActive('avoidPassingReferences')) {
-				if ($this->_inFunctionStatement) {
-					$this->_writeError('avoidPassingReferences', PHPCHECKSTYLE_PASSING_REFERENCE);
+			case ")":
+				// Decrease the number of opened brackets
+				if ($this->_inFuncCall) {
+					$this->_fcLeftParenthesis -= 1;
+				} elseif ($this->_inControlStatement || $this->_inFunctionStatement) {
+					$this->_csLeftParenthesis -= 1;
 				}
-			}
-			break;
-		case "[":
-			$this->_inArrayStatement = true;
-			break;
-		case "]":
-			$this->_inArrayStatement = false;
-			break;
-		default:
-			break;
+
+				// If 0 we are not in the call anymore
+				if ($this->_fcLeftParenthesis == 0) {
+					$this->_inFuncCall = false;
+				}
+				// If 0 we are not in the statement anymore
+				if ($this->_csLeftParenthesis == 0) {
+
+					if ($this->_inControlStatement) {
+						$this->_inControlStatement = false;
+						$this->_justAfterControlStmt = true;
+						$this->_checkNeedBraces();
+					} elseif ($this->_inFunctionStatement) {
+						$this->_inFunctionStatement = false;
+						$this->_justAfterFuncStmt = true;
+					}
+				}
+
+				$this->_checkNoWhiteSpaceBefore($text);
+				break;
+
+			case "&":
+				// One of the function parameter is passed by reference
+				if ($this->_isActive('avoidPassingReferences')) {
+					if ($this->_inFunctionStatement) {
+						$this->_writeError('avoidPassingReferences', PHPCHECKSTYLE_PASSING_REFERENCE);
+					}
+				}
+				break;
+			case "[":
+				$this->_inArrayStatement = true;
+				break;
+			case "]":
+				$this->_inArrayStatement = false;
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -679,180 +693,184 @@ class PHPCheckstyle {
 		}
 
 		switch ($tok) {
-		case T_COMMENT:
-		case T_ML_COMMENT:
-		case T_DOC_COMMENT:
-			$this->_processComment($tok, $text);
-			break;
+			case T_COMMENT:
+			case T_ML_COMMENT:
+			case T_DOC_COMMENT:
+				$this->_processComment($tok, $text);
+				break;
 
-		case T_OPEN_TAG:
-			// check if shorthand code tags are allowed
-			if ($this->_isActive('noShortPhpCodeTag')) {
-				$s = strpos($text, '<?php');
-				if ($s === false) {
-					$this->_writeError('noShortPhpCodeTag', PHPCHECKSTYLE_WRONG_OPEN_TAG);
-				}
-			}
-			break;
-
-			// Beginning of a control statement
-			case T_DO:
-		case T_WHILE:
-		case T_IF:
-		case T_ELSEIF:
-		case T_FOR:
-		case T_FOREACH:
-			$this->_processControlStatement($text);
-			$this->_cyclomaticComplexity++;
-			break;
-		case T_SWITCH:
-			$this->_processSwitchStart();
-			$this->_processControlStatement($text);
-			$this->_cyclomaticComplexity++;
-			break;
-		case T_ELSE:
-			// We don't increment the cyclomatic complexity for the last else
-			$this->_processControlStatement($text);
-			break;
-		case T_CASE:
-			$this->_processSwitchCase();
-			$this->_cyclomaticComplexity++;
-			break;
-		case T_DEFAULT:
-			$this->_processSwitchDefault();
-			break;
-		case T_BREAK:
-			$this->_processSwitchBreak();
-			break;
-		case T_TRY:
-			$this->_processControlStatement($text);
-			break;
-		case T_CATCH:
-			$this->_processControlStatement($text);
-			break;
-		case T_WHITESPACE:
-			{
-				// T_WHITESPACE can be a tab or a whitespace
-				if ($this->_isLineStart) {
-					// If the whitespace is at the start of the line, we check for indentation
-					$this->_checkIndentation($text);
+			case T_OPEN_TAG:
+				// check if shorthand code tags are allowed
+				if ($this->_isActive('noShortPhpCodeTag')) {
+					$s = strpos($text, '<?php');
+					if ($s === false) {
+						$this->_writeError('noShortPhpCodeTag', PHPCHECKSTYLE_WRONG_OPEN_TAG);
+					}
 				}
 				break;
-			}
 
-		case T_INLINE_HTML:
-			break;
+				// Beginning of a control statement
+			case T_DO:
+			case T_WHILE:
+			case T_IF:
+			case T_ELSEIF:
+			case T_FOR:
+			case T_FOREACH:
+				$this->_processControlStatement($text);
+				$this->_cyclomaticComplexity++;
+				break;
+			case T_SWITCH:
+				$this->_processSwitchStart();
+				$this->_processControlStatement($text);
+				$this->_cyclomaticComplexity++;
+				break;
+			case T_ELSE:
+				// We don't increment the cyclomatic complexity for the last else
+				$this->_processControlStatement($text);
+				break;
+			case T_CASE:
+				$this->_processSwitchCase();
+				$this->_cyclomaticComplexity++;
+				break;
+			case T_DEFAULT:
+				$this->_processSwitchDefault();
+				break;
+			case T_BREAK:
+				$this->_processSwitchBreak();
+				break;
+			case T_TRY:
+				$this->_processControlStatement($text);
+				break;
+			case T_CATCH:
+				$this->_processControlStatement($text);
+				break;
+			case T_WHITESPACE:
+				{
+					// T_WHITESPACE can be a tab or a whitespace
+					if ($this->_isLineStart) {
+						// If the whitespace is at the start of the line, we check for indentation
+						$this->_checkIndentation($text);
+					}
+					break;
+				}
 
-			// beginning of a function definition
-			// check also for existance of docblock
+			case T_INLINE_HTML:
+				break;
+
+				// beginning of a function definition
+				// check also for existance of docblock
 			case T_FUNCTION:
-			$this->_checkDocExists(T_FUNCTION);
-			$this->_processFunctionStatement();
-			break;
+				$this->_checkDocExists(T_FUNCTION);
+				$this->_processFunctionStatement();
+				break;
 
-			// beginning of a class
-			// check also for the existence of a docblock
+				// beginning of a class
+				// check also for the existence of a docblock
 			case T_CLASS:
-			$this->_checkDocExists(T_CLASS);
-			$this->_processClassStatement();
-			break;
+				$this->_checkDocExists(T_CLASS);
+				$this->_processClassStatement();
+				break;
 
-			// operators, generally, need to be surrounded by whitespace
+				// operators, generally, need to be surrounded by whitespace
 			case T_PLUS_EQUAL:
-		case T_MINUS_EQUAL:
-		case T_MUL_EQUAL:
-		case T_DIV_EQUAL:
-		case T_CONCAT_EQUAL:
-		case T_MOD_EQUAL:
-		case T_AND_EQUAL:
-		case T_OR_EQUAL:
-		case T_XOR_EQUAL:
-		case T_SL_EQUAL:
-		case T_SR_EQUAL:
-		case T_BOOLEAN_OR:
-		case T_BOOLEAN_AND:
-		case T_IS_EQUAL:
-		case T_IS_NOT_EQUAL:
-		case T_IS_IDENTICAL:
-		case T_IS_NOT_IDENTICAL:
-		case T_IS_SMALLER_OR_EQUAL:
-		case T_IS_GREATER_OR_EQUAL:
-			$this->_checkSurroundingWhiteSpace($text);
-			break;
-		case T_LOGICAL_AND:
-		case T_LOGICAL_OR:
-			if ($this->_isActive('useBooleanOperators')) {
-				$this->_writeError('useBooleanOperators', PHPCHECKSTYLE_USE_BOOLEAN_OPERATORS);
-			}
-			$this->_checkSurroundingWhiteSpace($text);
-			break;
+			case T_MINUS_EQUAL:
+			case T_MUL_EQUAL:
+			case T_DIV_EQUAL:
+			case T_CONCAT_EQUAL:
+			case T_MOD_EQUAL:
+			case T_AND_EQUAL:
+			case T_OR_EQUAL:
+			case T_XOR_EQUAL:
+			case T_SL_EQUAL:
+			case T_SR_EQUAL:
+			case T_BOOLEAN_OR:
+			case T_BOOLEAN_AND:
+			case T_IS_EQUAL:
+			case T_IS_NOT_EQUAL:
+			case T_IS_IDENTICAL:
+			case T_IS_NOT_IDENTICAL:
+			case T_IS_SMALLER_OR_EQUAL:
+			case T_IS_GREATER_OR_EQUAL:
+				$this->_checkSurroundingWhiteSpace($text);
+				break;
+			case T_LOGICAL_AND:
+			case T_LOGICAL_OR:
+				if ($this->_isActive('useBooleanOperators')) {
+					$this->_writeError('useBooleanOperators', PHPCHECKSTYLE_USE_BOOLEAN_OPERATORS);
+				}
+				$this->_checkSurroundingWhiteSpace($text);
+				break;
 
-			// ASSUMPTION:
-			//   that T_STRING followed by "(" is a function call
-			//   Actually, I am not sure how good an assumption this is.
+				// ASSUMPTION:
+				//   that T_STRING followed by "(" is a function call
+				//   Actually, I am not sure how good an assumption this is.
 			case T_STRING:
-			// Check whether this is a function call
-			$this->_processFunctionCall($text);
-			break;
+				// Check whether this is a function call
+				$this->_processFunctionCall($text);
+				break;
 
-			// found constant definition
+				// found constant definition
 			case T_CONSTANT_ENCAPSED_STRING:
-			$this->_checkConstantNaming($text);
+				$this->_checkConstantNaming($text);
 
-			// Manage new lines inside string
-			$subToken = strtok($text, PHP_EOL);
-			while ($subToken !== false) {
-				// Increment the lines number (one comment is only one token)
-				$this->lineNumber++;
-				$subToken = strtok(PHP_EOL);
-			}
-			$this->lineNumber--; // One end of line is already counted
+				// Manage new lines inside string
+				$subToken = strtok($text, PHP_EOL);
+				while ($subToken !== false) {
+					// Increment the lines number (one comment is only one token)
+					$this->lineNumber++;
+					$subToken = strtok(PHP_EOL);
+				}
+				$this->lineNumber--; // One end of line is already counted
 
-			break;
+				break;
 
-			// Constant part of string with variables
+				// Constant part of string with variables
 			case T_ENCAPSED_AND_WHITESPACE:
-			if ($this->_isActive('encapsedVariablesInsideString')) {
-				$this->_writeError('encapsedVariablesInsideString', PHPCHECKSTYLE_VARIABLE_INSIDE_STRING);
-			}
-			break;
-		case T_CURLY_OPEN: // for protected variables within strings "{$var}"
-			$this->_levelOfNesting++;
-			array_push($this->_branchingStack, 'curly_open');
-			break;
-		case T_DOLLAR_OPEN_CURLY_BRACES: // for extended format "${var}"
-			$this->_levelOfNesting++;
-			array_push($this->_branchingStack, 'dollar_curly_open');
-			break;
-		case T_NEW_LINE:
-			$this->_countLinesOfCode();
-			$this->lineNumber++;
-			break;
-		case T_RETURN:
-			$this->_processReturn();
-			break;
-		case T_THROW:
-			$this->_functionThrows = true;
-			break;
-		case T_INC:
-		case T_DEC:
-			$this->_checkUnaryOperator();
-			break;
-		case T_DOUBLE_ARROW:
-			$this->_checkSurroundingWhiteSpace($text);
-			break;
-		case T_OBJECT_OPERATOR:
-			$this->_checkNoWhiteSpaceBefore($text);
-			$this->_checkNoWhiteSpaceAfter($text);
-			break;
-		case T_START_HEREDOC:
-			$this->_checkHeredoc();
-			break;
-		case T_VARIABLE:
-			$this->_processVariable($text);
-			break;
-		default:
-			break;
+				if ($this->_isActive('encapsedVariablesInsideString')) {
+					$this->_writeError('encapsedVariablesInsideString', PHPCHECKSTYLE_VARIABLE_INSIDE_STRING);
+				}
+				break;
+			case T_CURLY_OPEN: // for protected variables within strings "{$var}"
+				$this->_levelOfNesting++;
+				array_push($this->_branchingStack, 'curly_open');
+				break;
+			case T_DOLLAR_OPEN_CURLY_BRACES: // for extended format "${var}"
+				$this->_levelOfNesting++;
+				array_push($this->_branchingStack, 'dollar_curly_open');
+				break;
+			case T_NEW_LINE:
+				$this->_countLinesOfCode();
+				$this->lineNumber++;
+				// Case of a control statement without parenthesis, it closes at the end of the line
+				if ($this->_inControlStatement && $this->_csLeftParenthesis ==0) {
+					$this->_inControlStatement = false;
+				}
+				break;
+			case T_RETURN:
+				$this->_processReturn();
+				break;
+			case T_THROW:
+				$this->_functionThrows = true;
+				break;
+			case T_INC:
+			case T_DEC:
+				$this->_checkUnaryOperator();
+				break;
+			case T_DOUBLE_ARROW:
+				$this->_checkSurroundingWhiteSpace($text);
+				break;
+			case T_OBJECT_OPERATOR:
+				$this->_checkNoWhiteSpaceBefore($text);
+				$this->_checkNoWhiteSpaceAfter($text);
+				break;
+			case T_START_HEREDOC:
+				$this->_checkHeredoc();
+				break;
+			case T_VARIABLE:
+				$this->_processVariable($text);
+				break;
+			default:
+				break;
 		}
 
 		// If the last token is a NEW_LINE, the next token will be at the start of the line
@@ -915,7 +933,8 @@ class PHPCheckstyle {
 		if ($this->_isActive('variableNaming')) {
 			$texttoTest = ltrim($text, "\"'"); // remove the quotes
 			$texttoTest = rtrim($texttoTest, "\"'");
-			if (strpos($texttoTest, "$") === 0) { // remove the "&"
+			if (strpos($texttoTest, "$") === 0) {
+				// remove the "&"
 				$texttoTest = substr($texttoTest, 1);
 			}
 
@@ -1040,7 +1059,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Process a control statement declaration (do/while/for/...).
+	 * Process a control statement declaration (if/do/while/for/...).
 	 *
 	 * @param String $csText the control statement.
 	 */
@@ -1148,7 +1167,7 @@ class PHPCheckstyle {
 		$this->_inClass = false;
 
 		// Reset of the warnings suppression is done at the end of the file, hoping we have 1 file / class
-		}
+	}
 
 	/**
 	 * Process the start of a function.
@@ -1632,9 +1651,9 @@ class PHPCheckstyle {
 			if (empty($this->_variables[$text]) && !in_array($text, $this->_systemVariables)) {
 				// The variable is met for the first time
 				$this->_variables[$text] = $this->lineNumber; // We store the first declaration of the variable
-				} else if ($isAffectation) {
+			} else if ($isAffectation) {
 				// The variable is reaffected another value, this doesn't count as a valid use.
-				} else {
+			} else {
 
 				// Manage the case of $this->attribute
 				if ($text == '$this') {
@@ -2079,7 +2098,7 @@ class PHPCheckstyle {
 			if (is_array($docToken)) {
 				if ($this->tokenizer->checkProvidedToken($docToken, T_STATIC) || $this->tokenizer->checkProvidedToken($docToken, T_ABSTRACT) || $this->tokenizer->checkProvidedToken($docToken, T_PROTECTED) || $this->tokenizer->checkProvidedToken($docToken, T_PUBLIC) || $this->tokenizer->checkProvidedToken($docToken, T_WHITESPACE) || $this->tokenizer->checkProvidedToken($docToken, T_COMMENT) || $this->tokenizer->checkProvidedToken($docToken, T_ML_COMMENT) || $this->tokenizer->checkProvidedToken($docToken, T_NEW_LINE)) {
 					// All these tokens are ignored
-					} else if ($this->tokenizer->checkProvidedToken($docToken, T_PRIVATE)) {
+				} else if ($this->tokenizer->checkProvidedToken($docToken, T_PRIVATE)) {
 					$isPrivate = true; // we are in a private function
 
 				} else if ($this->tokenizer->checkProvidedToken($docToken, T_DOC_COMMENT)) {
@@ -2131,7 +2150,7 @@ class PHPCheckstyle {
 				$suppressedCheck = trim(substr($subToken, $pos + strlen("@SuppressWarnings")));
 				$supprArray = explode(' ', $suppressedCheck);
 				$suppressedCheck = trim($supprArray[0]);
-				// Store the suppressed warning in the corresponding array					
+				// Store the suppressed warning in the corresponding array
 				if ($token == T_CLASS) {
 					$this->_classSuppressWarnings[] = $suppressedCheck;
 				} else {

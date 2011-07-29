@@ -129,7 +129,7 @@ class PHPCheckstyle {
 
 	private $_deprecatedFunctions = array();
 
-	private $_systemVariables = array('$this', '$_GET', '$_POST', '$_FILES', '$_COOKIE', '$_SESSION', '$_ENV', '$_SERVER');
+	private $_systemVariables = array('$this', '$_GET', '$_POST', '$_FILES', '$_COOKIE', '$_SESSION', '$_ENV', '$_SERVER', '$_REQUEST');
 
 	// The class used to export the result
 	private $_reporter;
@@ -420,7 +420,7 @@ class PHPCheckstyle {
 
 		$files = array();
 		if (!is_dir($src)) {
-				
+
 			// Source is a file
 			$isExcluded = false;
 			foreach($excludes as $patternExcluded)
@@ -960,14 +960,19 @@ class PHPCheckstyle {
 				// remove the "&"
 				$texttoTest = substr($texttoTest, 1);
 			}
+			// If the variable is not listed as an exception
+			$exceptions = $this->_config->getTestExceptions('variableNaming');
+			if (empty($exceptions) || !in_array($text, $exceptions)) {
 
-			$ret = preg_match($this->_config->getTestRegExp('variableNaming'), $texttoTest);
-			if (!$ret) {
-				$msg = sprintf(PHPCHECKSTYLE_VARIABLE_NAMING, $text);
-				$this->_writeError('variableNaming', $msg);
+				$ret = preg_match($this->_config->getTestRegExp('variableNaming'), $texttoTest);
+				if (!$ret) {
+					$msg = sprintf(PHPCHECKSTYLE_VARIABLE_NAMING, $text);
+					$this->_writeError('variableNaming', $msg);
+				}
 			}
 		}
 	}
+
 
 	/**
 	 * Check the naming of a function.

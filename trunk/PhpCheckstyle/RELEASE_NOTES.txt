@@ -1,6 +1,13 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.9.6
+-------------
+* Corrected the inner assignement rule (wasn't detecting the end of a control statement if no brackets).
+* Corrected the file exclusion list.
+* Corrected a bug with nextToken at the end of a file.
+* Added the possibility to add exceptions to the checkVariableNaming rule
+
 Version 0.9.5
 -------------
 * Corrected a bug with @SuppressWarnings on a class.

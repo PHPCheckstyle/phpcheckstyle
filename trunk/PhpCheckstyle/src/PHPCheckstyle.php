@@ -417,10 +417,24 @@ class PHPCheckstyle {
 	 * @access private
 	 */
 	private function _getAllPhpFiles($src, $excludes, $dir = '') {
-		$files[] = array();
+
+		$files = array();
 		if (!is_dir($src)) {
-			$files[] = $src;
+				
+			// Source is a file
+			$isExcluded = false;
+			foreach($excludes as $patternExcluded)
+			{
+				if(strstr($src, $patternExcluded)){
+					$isExcluded = true;
+				}
+			}
+			if(!$isExcluded){
+				$files[] = $src;
+			}
 		} else {
+
+			// Source is a directory
 			$root = opendir($src);
 			if ($root) {
 				while ($file = readdir($root)) {
@@ -435,7 +449,15 @@ class PHPCheckstyle {
 					}
 					$fullPath = $src."/".$file;
 					$relPath = substr($fullPath, strlen($src) - strlen($dir) + 1);
-					if (!in_array($relPath, $excludes)) {
+					$isExcluded = false;
+					foreach($excludes as $patternExcluded)
+					{
+						if(strstr($relPath, $patternExcluded)){
+							$isExcluded = true;
+						}
+					}
+
+					if(!$isExcluded){
 						if (is_dir($src."/".$file)) {
 							$files = array_merge($files, $this->_getAllPhpFiles($src."/".$file, $excludes, $dir.'/'.$file));
 						} else {
@@ -450,6 +472,7 @@ class PHPCheckstyle {
 				}
 			}
 		}
+
 		return $files;
 	}
 

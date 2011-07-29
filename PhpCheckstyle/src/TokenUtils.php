@@ -1,13 +1,13 @@
 <?php
 /*
  *  $Id: TokenUtils.php 28215 2005-07-28 02:53:05Z hkodungallur $
- *
- *  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
- *  Licensed under the Open Source License version 2.1
- *  (See http://www.spikesource.com/license.html)
- *
- *  Lexical Analysis.
- */
+*
+*  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
+*  Licensed under the Open Source License version 2.1
+*  (See http://www.spikesource.com/license.html)
+*
+*  Lexical Analysis.
+*/
 
 if (!defined("T_ML_COMMENT")) {
 	define("T_ML_COMMENT", T_COMMENT);
@@ -282,7 +282,8 @@ class TokenUtils {
 	public function checkNextToken($value, $text = false) {
 		$ret = false;
 		$token = $this->peekNextToken();
-		if (is_array($token)) { // Case of a real token
+		if (is_array($token)) {
+			// Case of a real token
 			list($k, $v) = $token;
 			if ($k == $value) {
 				if ($text) {
@@ -323,10 +324,12 @@ class TokenUtils {
 	public function checkNextValidTextToken($text) {
 		$ret = false;
 		$retInfo = $this->peekNextValidToken();
-		$token = $retInfo->token;
-		if (is_string($token)) {
-			if ($token == $text) {
-				$ret = true;
+		if ($retInfo!=null) {
+			$token = $retInfo->token;
+			if (is_string($token)) {
+				if ($token == $text) {
+					$ret = true;
+				}
 			}
 		}
 		return $ret;

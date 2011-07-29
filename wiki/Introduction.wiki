@@ -15,6 +15,7 @@ This project was originally written by Hari Kodungallur. Other contributors are:
   * Nimish Pachapurkar
   * Joshua Kaiser
   * Marion Charles
+  * Adrien Pessu
 
 == Details ==
 

@@ -107,11 +107,8 @@ class PHPCheckstyle {
 
 	/**
 	 * These functions are not tested for naming.
-	 *
-	 * @var array   List of the magic methods
-	 * @link http://www.php.net/manual/en/language.oop5.magic.php
 	 */
-	private $_specialFunctions = array("__construct", "__destruct", "__call", "__get", "__set", "__isset", "__unset", "__sleep", "__wakeup", "__toString", "__set_state", "__clone", "__autoload", "__invoke", "__callStatic");
+	private $_specialFunctions = array();
 
 	private $_prohibitedFunctions = array('echo', 'system', "print_r", 'dl',
 		'exec', 'passthru', 'shell_exec',
@@ -129,7 +126,7 @@ class PHPCheckstyle {
 
 	private $_deprecatedFunctions = array();
 
-	private $_systemVariables = array('$this', '$_GET', '$_POST', '$_FILES', '$_COOKIE', '$_SESSION', '$_ENV', '$_SERVER', '$_REQUEST');
+	private $_systemVariables = array();
 
 	// The class used to export the result
 	private $_reporter;
@@ -193,6 +190,12 @@ class PHPCheckstyle {
 		// Initialise the configuration
 		$this->_config = new CheckStyleConfig("");
 		$this->_config->parse();
+		
+		// Load the list of system variables
+		$this->_systemVariables = $this->_config->getConfigItems('systemVariables');		
+		
+		// Load the list of special functions
+		$this->_specialFunctions = $this->_config->getConfigItems('specialFunctions');		
 
 		// Load the list of forbidden functions
 		$this->_prohibitedFunctions = $this->_config->getTestItems('checkProhibitedFunctions');
@@ -202,6 +205,7 @@ class PHPCheckstyle {
 
 		// Load the list of deprecated function
 		$this->_deprecatedFunctions = $this->_config->getTestDeprecations('checkDeprecation');
+
 
 	}
 
@@ -1661,6 +1665,9 @@ class PHPCheckstyle {
 			$this->_checkVariableNaming($text);
 		}
 
+		// Check if the variable is not a deprecated system variable
+		$this->_checkDeprecation($text);
+
 		// Check if the variable is a function parameter
 		if (!empty($this->_functionParameters[$text]) && $this->_inFunction) {
 
@@ -2224,8 +2231,10 @@ class PHPCheckstyle {
 	 */
 	private function _checkDeprecation($text) {
 		if ($this->_isActive('checkDeprecation')) {
-			if (array_key_exists($text, $this->_deprecatedFunctions)) {
-				$msg = sprintf(PHPCHECKSTYLE_DEPRECATED_FUNCTION, $this->_deprecatedFunctions[$text]['old'], $this->_deprecatedFunctions[$text]['version'], $this->_deprecatedFunctions[$text]['new']);
+				
+			$key = strtolower($text);
+			if (array_key_exists($key, $this->_deprecatedFunctions)) {
+				$msg = sprintf(PHPCHECKSTYLE_DEPRECATED_FUNCTION, $this->_deprecatedFunctions[$key]['old'], $this->_deprecatedFunctions[$key]['version'], $this->_deprecatedFunctions[$key]['new']);
 				$this->_writeError('checkDeprecation', $msg);
 			}
 		}

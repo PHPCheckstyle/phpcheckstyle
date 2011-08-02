@@ -1,6 +1,49 @@
 <!-- somewhat inspired by java checkstyle -->
 <phpcheckstyle-configuration>
 
+	<!-- *********************************************************  -->
+	<!-- These functions are not tested for naming                  -->
+	<!-- cf http://www.php.net/manual/en/language.oop5.magic.php    -->
+	<!-- *********************************************************  -->	
+	<config name="specialFunctions">
+		<configItem value="__construct"/>
+		<configItem value="__destruct"/>
+		<configItem value="__call"/>
+		<configItem value="__get"/>
+		<configItem value="__set"/>
+		<configItem value="__isset"/>
+		<configItem value="__unset"/>
+		<configItem value="__sleep"/>
+		<configItem value="__wakeup"/>
+		<configItem value="__toString"/>
+		<configItem value="__set_state"/>
+		<configItem value="__clone"/>
+		<configItem value="__autoload"/>
+		<configItem value="__invoke"/>
+		<configItem value="__callStatic"/>
+	</config>
+	
+	<!-- *********************************************************  -->
+	<!-- These variables are not tested for naming                  -->
+	<!-- *********************************************************  -->
+	<config name="systemVariables">
+		<configItem value="$this"/>
+		<configItem value="$_GET"/>
+		<configItem value="$_POST"/>
+		<configItem value="$_FILES"/>
+		<configItem value="$_COOKIE"/>
+		<configItem value="$_SESSION"/>
+		<configItem value="$_ENV"/>
+		<configItem value="$_SERVER"/>
+		<configItem value="$_REQUEST"/>
+		<configItem value="$HTTP_GET_VARS"/>
+		<configItem value="$HTTP_POST_VARS"/>
+		<configItem value="$HTTP_COOKIE_VARS"/>
+		<configItem value="$HTTP_SERVER_VARS"/>
+		<configItem value="$HTTP_ENV_VARS"/>
+		<configItem value="$HTTP_SESSION_VARS"/>
+	</config>
+
 	<!--  ****************  -->
     <!--        Naming      -->
     <!--  ****************  -->
@@ -334,6 +377,12 @@
     	<deprecated old="mysql_escape_string" new="mysql_real_escape_string" version="5.3"/>
     	<deprecated old="dl" new="extension_loaded" version="5.3"/>
     	<deprecated old="set_socket_blocking" new="stream_set_blocking" version="5.3"/>
+    	<deprecated old="$HTTP_GET_VARS" new="$_GET" version="5.3"/>
+    	<deprecated old="$HTTP_POST_VARS" new="$_POST" version="5.3"/>
+    	<deprecated old="$HTTP_COOKIE_VARS" new="$_COOKIE" version="5.3"/>
+    	<deprecated old="$HTTP_SERVER_VARS" new="$_SERVER" version="5.3"/>
+    	<deprecated old="$HTTP_ENV_VARS" new="$_ENV" version="5.3"/>
+    	<deprecated old="$HTTP_SESSION_VARS" new="$_SESSION" version="5.3"/>
     </test>
     
 </phpcheckstyle-configuration>

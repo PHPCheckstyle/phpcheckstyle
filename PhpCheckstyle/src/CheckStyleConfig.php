@@ -1,11 +1,11 @@
 <?php
 /*
  *  $Id: CheckStyleConfig.php 28215 2005-07-28 02:53:05Z hkodungallur $
- *
- *  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
- *  Licensed under the Open Source License version 2.1
- *  (See http://www.spikesource.com/license.html)
- */
+*
+*  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
+*  Licensed under the Open Source License version 2.1
+*  (See http://www.spikesource.com/license.html)
+*/
 
 if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
 	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__)."/..");
@@ -20,9 +20,12 @@ if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
 class CheckStyleConfig {
 	private $file;
 
-	// Array that will contain the loaded configuration
-	private $_myConfig = array();
+	// Array that contains the loaded checks
+	public $_myConfig = array();
+
 	private $_currentTest = false;
+
+	private $_currentConfig = false;
 
 	private $_xmlParser;
 
@@ -84,6 +87,16 @@ class CheckStyleConfig {
 	public function getTestItems($test) {
 		$test = strtolower($test);
 		return isset($this->_myConfig[$test]['item']) ? $this->_myConfig[$test]['item'] : false;
+	}
+
+	/**
+	 * Return a list of items associed with a configuration.
+	 *
+	 * @param $config name of the config
+	 * @return array the list of items for this config.
+	 */
+	public function getConfigItems($config) {
+		return $this->_myConfig[strtolower($config)];
 	}
 
 	/**
@@ -188,64 +201,71 @@ class CheckStyleConfig {
 	 */
 	private function _startElement($parser, $elem, $attrs) {
 		switch ($elem) {
+				
+			// Case of a configuration property
+			case 'CONFIG':
+				$this->_currentConfig = strtolower($attrs['NAME']);
+				$this->_myConfig[$this->_currentConfig] = array();
+				break;
 
-			// Case of a test rule
+				// Case of a configuration property item
+			case 'CONFIGITEM':
+				$this->_myConfig[$this->_currentConfig][] = $attrs['VALUE'];
+				break;
+
+				// Case of a test rule
 			case 'TEST':
-			$this->_currentTest = $attrs['NAME'];
-			$this->_myConfig[strtolower($this->_currentTest)] = array();
+				$this->_currentTest = strtolower($attrs['NAME']);
+				$this->_myConfig[$this->_currentTest] = array();
 
-			if (isset($attrs['LEVEL'])) {
-				$this->_myConfig[strtolower($this->_currentTest)]['level'] = $attrs['LEVEL'];
-			}
+				if (isset($attrs['LEVEL'])) {
+					$this->_myConfig[$this->_currentTest]['level'] = $attrs['LEVEL'];
+				}
 
-			if (isset($attrs['REGEXP'])) {
-				$this->_myConfig[strtolower($this->_currentTest)]['regexp'] = $attrs['REGEXP'];
-			}
+				if (isset($attrs['REGEXP'])) {
+					$this->_myConfig[$this->_currentTest]['regexp'] = $attrs['REGEXP'];
+				}
+				break;
 
-			break;
-
-			// Case of a propertie of a rule (name / value)
+				// Case of a propertie of a rule (name / value)
 			case 'PROPERTY':
-			$pname = $attrs['NAME'];
-			$pval = true;
-			if (array_key_exists('VALUE', $attrs)) {
-				$pval = $attrs['VALUE'];
-			}
-			$this->_myConfig[strtolower($this->_currentTest)][strtolower($pname)] = $pval;
-			break;
+				$pname = $attrs['NAME'];
+				$pval = true;
+				if (array_key_exists('VALUE', $attrs)) {
+					$pval = $attrs['VALUE'];
+				}
+				$this->_myConfig[$this->_currentTest][strtolower($pname)] = $pval;
+				break;
 
-			// Case of a item of a list of values of a rule
+				// Case of a item of a list of values of a rule
 			case 'ITEM':
-			if (isset($attrs['VALUE'])) {
-				$this->_myConfig[strtolower($this->_currentTest)]['item'][] = $attrs['VALUE'];
-			}
+				if (isset($attrs['VALUE'])) {
+					$this->_myConfig[$this->_currentTest]['item'][] = $attrs['VALUE'];
+				}
+				break;
 
-			break;
-
-			// Case of an exception to a rule
+				// Case of an exception to a rule
 			case 'EXCEPTION':
-			if (isset($attrs['VALUE'])) {
-				$this->_myConfig[strtolower($this->_currentTest)]['exception'][] = $attrs['VALUE'];
-			}
+				if (isset($attrs['VALUE'])) {
+					$this->_myConfig[$this->_currentTest]['exception'][] = $attrs['VALUE'];
+				}
+				break;
 
-			break;
-
-			// Case of a deprecated function
+				// Case of a deprecated function
 			case 'DEPRECATED':
-			if (isset($attrs['OLD'])) {
-				$this->_myConfig[strtolower($this->_currentTest)][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
-			}
-			if (isset($attrs['NEW'])) {
-				$this->_myConfig[strtolower($this->_currentTest)][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
-			}
-			if (isset($attrs['VERSION'])) {
-				$this->_myConfig[strtolower($this->_currentTest)][strtolower($attrs['OLD'])]['version'] = $attrs['VERSION'];
-			}
+				if (isset($attrs['OLD'])) {
+					$this->_myConfig[$this->_currentTest][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
+				}
+				if (isset($attrs['NEW'])) {
+					$this->_myConfig[$this->_currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
+				}
+				if (isset($attrs['VERSION'])) {
+					$this->_myConfig[$this->_currentTest][strtolower($attrs['OLD'])]['version'] = $attrs['VERSION'];
+				}
+				break;
 
-			break;
-
-		default:
-			break;
+			default:
+				break;
 		}
 	}
 

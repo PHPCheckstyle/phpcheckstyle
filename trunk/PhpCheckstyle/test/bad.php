@@ -74,6 +74,8 @@ class BadTest {
 			break;
 			// default is missing
 		}
+		
+		$z = $HTTP_POST_VARS; // deprecated predefined variables
 
 	}
 

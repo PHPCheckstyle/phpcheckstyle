@@ -1,6 +1,11 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.9.7
+-------------
+* Deprecation of long $HTTP_*_VARS predefined variables
+* Configuration of system variables lists
+
 Version 0.9.6
 -------------
 * Corrected the inner assignement rule (wasn't detecting the end of a control statement if no brackets).

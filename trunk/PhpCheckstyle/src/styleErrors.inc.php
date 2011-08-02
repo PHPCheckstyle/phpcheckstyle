@@ -124,4 +124,4 @@ define("PHPCHECKSTYLE_FUNCTION_INSIDE_LOOP", "Consider moving the %s function ou
 
 define("PHPCHECKSTYLE_UNUSED_CODE", "Unused code after return");
 
-define("PHPCHECKSTYLE_DEPRECATED_FUNCTION", "Function %s is deprecated since PHP %s, use %s instead");
+define("PHPCHECKSTYLE_DEPRECATED_FUNCTION", "%s is deprecated since PHP %s, use %s instead");

@@ -1,6 +1,10 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.9.8
+-------------
+* Issue 10:	Don't blindly remove first 2 chars of file path
+
 Version 0.9.7
 -------------
 * Deprecation of long $HTTP_*_VARS predefined variables

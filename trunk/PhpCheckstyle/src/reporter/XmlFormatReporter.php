@@ -1,11 +1,11 @@
 <?php
 /*
  *  $Id: XmlFormatReporter.php 26740 2005-07-15 01:37:10Z hkodungallur $
- *
- *  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
- *  Licensed under the Open Source License version 2.1
- *  (See http://www.spikesource.com/license.html)
- */
+*
+*  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
+*  Licensed under the Open Source License version 2.1
+*  (See http://www.spikesource.com/license.html)
+*/
 
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporter.php";
 
@@ -88,7 +88,7 @@ class XmlFormatReporter extends Reporter {
 		$e->setAttribute("line", $line);
 		$e->setAttribute("severity", $level);
 		$e->setAttribute("message", $message);
-		$e->setAttribute("source", "http://code.google.com/p/phpcheckstyle"); 
+		$e->setAttribute("source", "http://code.google.com/p/phpcheckstyle");
 		$this->currentElement->appendChild($e);
 	}
 
@@ -101,8 +101,11 @@ class XmlFormatReporter extends Reporter {
 	private function _startNewElement($f) {
 		$this->currentElement = $this->document->createElement("file");
 
-		// remove the "./" at the beginning ot the path
-		$this->currentElement->setAttribute("name", substr($f, 2));
+		// remove the "./" at the beginning ot the path in case of relative path
+		if (substr($f, 0, 2) == './') {
+			$f = substr($f, 2);
+		}
+		$this->currentElement->setAttribute("name", $f);
 
 	}
 

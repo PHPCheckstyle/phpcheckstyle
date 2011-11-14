@@ -190,12 +190,12 @@ class PHPCheckstyle {
 		// Initialise the configuration
 		$this->_config = new CheckStyleConfig("");
 		$this->_config->parse();
-		
+
 		// Load the list of system variables
-		$this->_systemVariables = $this->_config->getConfigItems('systemVariables');		
-		
+		$this->_systemVariables = $this->_config->getConfigItems('systemVariables');
+
 		// Load the list of special functions
-		$this->_specialFunctions = $this->_config->getConfigItems('specialFunctions');		
+		$this->_specialFunctions = $this->_config->getConfigItems('specialFunctions');
 
 		// Load the list of forbidden functions
 		$this->_prohibitedFunctions = $this->_config->getTestItems('checkProhibitedFunctions');
@@ -1720,26 +1720,20 @@ class PHPCheckstyle {
 
 		// Search for unused code
 		if ($this->_isActive('checkUnusedCode')) {
+				
+			// Find the end of the return statement
+			$pos = $this->tokenizer->findNextStringPosition(';');
+				
+			// Find the next valid token after the return statement
+			$nextValidToken = $this->tokenizer->peekNextValidToken($pos);
+			$nextValidToken = $this->tokenizer->peekNextValidToken($nextValidToken->position);
+				
+			// Find the end of the function or bloc of code
+			$posClose = $this->tokenizer->findNextStringPosition('}');
 
-			// Look ahead
-			$stop = false;
-			$nbInstructions = 0;
-			$position = $this->tokenizer->getCurrentPosition();
-			while (!$stop) {
-				$token = $this->tokenizer->peekTokenAt($position);
-				if (is_string($token)) {
-					if ($token == ";") {
-						$nbInstructions++;
-						if ($nbInstructions > 1) {
-							// more than 1 instruction after the return and before the closing of the statement
-							$this->_writeError('checkUnusedCode', PHPCHECKSTYLE_UNUSED_CODE);
-							$stop = true;
-						}
-					} else if ($token == "}") {
-						$stop = true;
-					}
-				}
-				$position++;
+			// If the end of bloc if not right after the return statement, we have dead code
+			if ($posClose > $nextValidToken->position) {
+				$this->_writeError('checkUnusedCode', PHPCHECKSTYLE_UNUSED_CODE);
 			}
 		}
 	}
@@ -2231,7 +2225,7 @@ class PHPCheckstyle {
 	 */
 	private function _checkDeprecation($text) {
 		if ($this->_isActive('checkDeprecation')) {
-				
+
 			$key = strtolower($text);
 			if (array_key_exists($key, $this->_deprecatedFunctions)) {
 				$msg = sprintf(PHPCHECKSTYLE_DEPRECATED_FUNCTION, $this->_deprecatedFunctions[$key]['old'], $this->_deprecatedFunctions[$key]['version'], $this->_deprecatedFunctions[$key]['new']);

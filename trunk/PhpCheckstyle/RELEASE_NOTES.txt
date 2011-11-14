@@ -1,6 +1,10 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.9.8
+-------------
+* Issue 3:	Check for unused code
+
 Version 0.9.7
 -------------
 * Deprecation of long $HTTP_*_VARS predefined variables

@@ -82,7 +82,7 @@ Tests for the location of the open curly bracket for a control structure. Defaul
 
 * Property position (sl/nl)
 
-Example: open curly bracket on the same line:
+Exemple: open curly bracket on the same line:
 {{{
 if ($ret === false) {
     // statements
@@ -247,12 +247,41 @@ This one is a bit experimental and can generate false positives (variables decla
 == checkUnusedFunctionParameters ==
 Detect unused function parameters.
 
+== checkUnusedCode ==
+Detect unused code (after return or throw).
+
+Exemple:
+{{{
+function foo { 
+  // do something
+  return;
+  // do something else
+}
+}}}
+
 == oneClassPerFile ==
 Check that there is only one class declaration per PHP file.
 
 
 = Optimisation =
 
-
 == functionInsideLoop ==
-Avoid using a count/sizeof function inside a loop
+Avoid using a count/sizeof function inside a loop.
+
+Exemple:
+{{{
+while ($a < count($b)) { 
+  // do something
+}
+}}}
+= Deprecation =
+
+== checkDeprecation ==
+Check for deprecated methods in PHP and propose some replacement.
+
+Exemple:
+{{{
+split($a);
+}}}
+
+* Function split is deprecated since PHP 5.3, use explode($pattern, $string) or preg_split('@'.$pattern.'@', $string) instead

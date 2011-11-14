@@ -1,6 +1,14 @@
 #summary Project History
 #labels Featured
 
+== Version 0.9.8 == 
+  * Issue 3: Check for unreachable code
+
+== Version 0.9.7 == 
+  * Deprecation of long $HTTP VARS predefined variables
+  * Configuration of system variables lists
+  * Issue 10:	Don't blindly remove first 2 chars of file path
+
 == Version 0.9.6 ==
   * Corrected the inner assignement rule (wasn't detecting the end of a control statement if no brackets).
   * Corrected the file exclusion list.

@@ -140,7 +140,8 @@ class BadTest2 { // 2 class declaration in the same file
 	while ($a < count($b)) { // Optimisation : store count($b) in a temp variable
 	}
 	
-	split($a); // deprecated finction
+	// unreachable code
+	split($a); // deprecated function
 	
 }
 	

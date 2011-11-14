@@ -127,20 +127,20 @@ class TokenUtils {
 	 * Peeks at the next valid token.
 	 * A valid token is one that is neither a whitespace or a comment
 	 *
-	 * @param Integer $tokenNumber the start position for the search
+	 * @param Integer $startPos the start position for the search
 	 * @param Boolean $stopOnNewLine Indicate if we need to stop when we meet a new line
 	 * @return TokenInfo the info about the token found
 	 */
-	public function peekNextValidToken($tokenNumber = null, $stopOnNewLine = false) {
+	public function peekNextValidToken($startPos = null, $stopOnNewLine = false) {
 		$ret = false;
 		$lineOffset = 0;
-		$tmpTokenNumber = $this->curTokenNumber;
-		if ($tokenNumber != null) {
-			$tmpTokenNumber = $tokenNumber;
+		$pos = $this->curTokenNumber; // defaut position for the search
+		if ($startPos != null) {
+			$pos = $startPos; // if defined, set the start position 
 		}
-		while ($tmpTokenNumber < $this->totalNumTokens) {
-			$ret = $this->tokens[$tmpTokenNumber];
-			$tmpTokenNumber++;
+		while ($pos < $this->totalNumTokens) {
+			$ret = $this->tokens[$pos];
+			$pos++;
 			if (is_array($ret)) {
 				list($k, $v) = $ret;
 				if ($k == T_WHITESPACE || $k == T_COMMENT || $k == T_ML_COMMENT || $k == T_DOC_COMMENT) {
@@ -162,7 +162,7 @@ class TokenUtils {
 		if ($ret) {
 			$result = new TokenInfo();
 			$result->token = $ret;
-			$result->position = $tmpTokenNumber;
+			$result->position = $pos;
 			$result->lineOffset = $lineOffset;
 			return $result;
 		} else {
@@ -296,6 +296,29 @@ class TokenUtils {
 			}
 		}
 		return $ret;
+	}
+
+	/**
+	 * Find the next position of the string after the current position.
+	 *
+	 * @param String $text the text we're looking for
+	 * @return Integer the position, -1 if not found
+	 */
+	public function findNextStringPosition($text) {
+
+		$pos = $this->getCurrentPosition() + 1;
+
+		while  ($pos < $this->totalNumTokens) {
+			$token = $this->tokens[$pos];
+
+			if ($text == $this->extractTokenText($token)) {
+				return $pos;
+			}
+
+			$pos++;
+		}
+
+		return -1;
 	}
 
 	/**

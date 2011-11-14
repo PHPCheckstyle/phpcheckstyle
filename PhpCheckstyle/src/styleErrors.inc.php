@@ -122,6 +122,6 @@ define("PHPCHECKSTYLE_ONE_CLASS_PER_FILE", "Only one class declaration is allowe
 
 define("PHPCHECKSTYLE_FUNCTION_INSIDE_LOOP", "Consider moving the %s function outside the loop");
 
-define("PHPCHECKSTYLE_UNUSED_CODE", "Unused code after return");
+define("PHPCHECKSTYLE_UNUSED_CODE", "Unused code after return or throw");
 
 define("PHPCHECKSTYLE_DEPRECATED_FUNCTION", "%s is deprecated since PHP %s, use %s instead");

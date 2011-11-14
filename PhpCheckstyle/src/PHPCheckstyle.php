@@ -877,7 +877,7 @@ class PHPCheckstyle {
 				$this->_processReturn();
 				break;
 			case T_THROW:
-				$this->_functionThrows = true;
+				$this->_processThrow();
 				break;
 			case T_INC:
 			case T_DEC:
@@ -1634,6 +1634,31 @@ class PHPCheckstyle {
 	}
 
 	/**
+	 * Check for unused code.
+	 *
+	 * Dead code after a return or a throw TOKEN.
+	 */
+	private function _checkUnusedCode() {
+		if ($this->_isActive('checkUnusedCode')) {
+
+			// Find the end of the return statement
+			$pos = $this->tokenizer->findNextStringPosition(';');
+
+			// Find the next valid token after the return statement
+			$nextValidToken = $this->tokenizer->peekNextValidToken($pos);
+			$nextValidToken = $this->tokenizer->peekNextValidToken($nextValidToken->position);
+
+			// Find the end of the function or bloc of code
+			$posClose = $this->tokenizer->findNextStringPosition('}');
+
+			// If the end of bloc if not right after the return statement, we have dead code
+			if ($posClose > $nextValidToken->position) {
+				$this->_writeError('checkUnusedCode', PHPCHECKSTYLE_UNUSED_CODE);
+			}
+		}
+	}
+
+	/**
 	 * Check for unused function parameters.
 	 *
 	 * This function is launched at the end of a function
@@ -1710,7 +1735,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Check the return token.
+	 * Process the return token.
 	 *
 	 * This function is launched when the current token is T_RETURN
 	 */
@@ -1718,24 +1743,22 @@ class PHPCheckstyle {
 		// Remember that the current function does return something (for PHPDoc)
 		$this->_functionReturns = true;
 
-		// Search for unused code
-		if ($this->_isActive('checkUnusedCode')) {
-				
-			// Find the end of the return statement
-			$pos = $this->tokenizer->findNextStringPosition(';');
-				
-			// Find the next valid token after the return statement
-			$nextValidToken = $this->tokenizer->peekNextValidToken($pos);
-			$nextValidToken = $this->tokenizer->peekNextValidToken($nextValidToken->position);
-				
-			// Find the end of the function or bloc of code
-			$posClose = $this->tokenizer->findNextStringPosition('}');
+		// Search for unused code after the return
+		$this->_checkUnusedCode();
+	}
 
-			// If the end of bloc if not right after the return statement, we have dead code
-			if ($posClose > $nextValidToken->position) {
-				$this->_writeError('checkUnusedCode', PHPCHECKSTYLE_UNUSED_CODE);
-			}
-		}
+	/**
+	 * Process the throw token.
+	 *
+	 * This function is launched when the current token is T_THROW
+	 */
+	private function _processThrow() {
+
+		// Remember that the current function does throw an exception
+		$this->_functionThrows = true;
+
+		// Search for unused code after the throw of an exception
+		$this->_checkUnusedCode();
 	}
 
 	/**

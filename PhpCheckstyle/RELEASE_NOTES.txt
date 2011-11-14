@@ -3,7 +3,7 @@
 
 Version 0.9.8
 -------------
-* Issue 3:	Check for unused code
+* Issue 3:	Check for unreachable code
 
 Version 0.9.7
 -------------

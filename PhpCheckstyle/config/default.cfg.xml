@@ -339,7 +339,7 @@
     <test name="checkUnusedFunctionParameters">
     </test>
     
-    <!-- Detect unused code (after return) -->
+    <!-- Detect unused code (after return or throw) -->
     <test name="checkUnusedCode">
     </test>
     

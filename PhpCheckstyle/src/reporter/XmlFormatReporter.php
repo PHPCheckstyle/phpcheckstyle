@@ -31,14 +31,15 @@ class XmlFormatReporter extends Reporter {
 	private $document = false;
 	private $root = false;
 	private $currentElement = false;
+	private $ofile = "/style-report.xml";  //The output file name
 
 	/**
 	 * Constructor; calls parent's constructor
 	 *
-	 * @param $ofile the file name
+	 * @param $ofolder the folder name
 	 */
-	public function XmlFormatReporter($ofile = false) {
-		parent::__construct($ofile);
+	public function XmlFormatReporter($ofolder = false) {
+		parent::__construct($ofolder, $this->ofile);
 	}
 
 	/**
@@ -63,7 +64,7 @@ class XmlFormatReporter extends Reporter {
 
 	/**
 	 * @see Reporter::currentlyProcessing
-	 * add the previous element to the tree and start a new elemtn
+	 * add the previous element to the tree and start a new element
 	 * for the new file
 	 *
 	 * @param $phpFile the file currently processed
@@ -88,7 +89,6 @@ class XmlFormatReporter extends Reporter {
 		$e->setAttribute("line", $line);
 		$e->setAttribute("severity", $level);
 		$e->setAttribute("message", $message);
-		$e->setAttribute("source", "http://code.google.com/p/phpcheckstyle");
 		$this->currentElement->appendChild($e);
 	}
 

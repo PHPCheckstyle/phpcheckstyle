@@ -7,6 +7,8 @@
  *  (See http://www.spikesource.com/license.html)
  */
 
+require_once PHPCHECKSTYLE_HOME_DIR."/src/util/Utility.php";
+
 /**
  * Abstract base class for any type of report generators
  * writeError function is abstract, which will need to be implemented
@@ -16,6 +18,8 @@
  */
 abstract class Reporter {
 
+
+
 	protected $currentPhpFile;
 	protected $outputFile;
 
@@ -24,11 +28,20 @@ abstract class Reporter {
 	 * Intializes variables. Note that the output file is initialized
 	 * to stdout if not provided
 	 *
-	 * @param $ofile = false
+	 * @param $ofolder the output folder
+	 * @param $ofile the output filename
 	 */
-	public function Reporter($ofile = false) {
-		$this->outputFile = $ofile;
-		if (!$this->outputFile) {
+	public function Reporter($ofolder = false, $ofile="error.txt") {
+		// Creating a util object.
+		global $util;
+		//creating the folder if it does not already exist.
+		if (!file_exists($ofolder)) {
+			$util->makeDirRecursive($ofolder);
+		}
+		//setting the output file to default.
+		$this->outputFile = $ofolder.$ofile;
+		
+		if (!($this->outputFile) ) {
 			$this->outputFile = "php://output";
 		}
 	}
@@ -65,6 +78,7 @@ abstract class Reporter {
 	 * @param $line line number of the error
 	 * @param String $check the name of the check
 	 * @param $message error message
+	 * @param $regex the regular expression (if applicable)
 	 * @param $level the severity level
 	 */
 	public abstract function writeError($line, $check, $message, $level = WARNING);

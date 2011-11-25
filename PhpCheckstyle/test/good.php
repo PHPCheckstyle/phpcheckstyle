@@ -18,7 +18,7 @@ define("CONSTANT", 100);  // Constant Naming correct
 /**
  * This function is documented
  */
-function toto() {
+function totoTwo(PARAMETER1, PARAMETER11) {
 	
 	$a, $b, $c = 0;
 	$text = "";  // correct variable naming
@@ -37,6 +37,26 @@ function toto() {
 
 	switch ($text) {
 		case "a":
+			switch ($text) {
+				case "a":
+					switch ($text) {
+						case "a":
+							break;
+						case "b":
+							break;
+						case "c":
+							break;
+						default:
+							break;
+					}
+					break;
+				case "b":
+					break;
+				case "c":
+					break;
+				default:
+					break;
+			}
 			break;
 		case "b":
 			break;
@@ -59,6 +79,9 @@ function toto() {
  */
 private function _privateFunction($a, $b, $c = false) { // should have a underscore
 
+	// Call the private function toto
+	$this->badlyNamedPrivateFunction();
+	
 	if ($c) {
 		return $a + $b;
 	} else {
@@ -87,14 +110,13 @@ public function functionWithException() {
 	$this->test;
 }
 
-	/**
-	 * Error of naming, but for a good reason we decide to suppress the warning using an annotation. 
-	 * @SuppressWarnings privateFunctionNaming
-	 */
-	private function privateFunction() { // should have a underscore because it is private
-	}
-	
+/**
+ * Error of naming, but for a good reason we decide to suppress the warning using an annotation. 
+ * @SuppressWarnings privateFunctionNaming
+ */
+private function badlyNamedPrivateFunction(PARAMETER1, PARAMETER) { // should have a underscore because it is private
+
 	// Call the private function
-	$this->privateFunction();
+	$this->_privateFunction();
 
 }

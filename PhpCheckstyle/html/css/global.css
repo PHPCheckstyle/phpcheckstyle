@@ -17,34 +17,37 @@ body {
 }
 
 .title {
-	font-size: 26px;
+	font-size: 30px;
 	font-weight: bold;
 	vertical-align: top;	
 }
 
 h1 {
-	font-size: 17px;
+	font-size: 20px;
 	font-weight: bold;
+	text-align: center;
 	
 }
 
 h2 {
 	font-size: 15px;
 	font-weight: bold;
+	text-align: center;
 }
 
 .dataTable {
 	border: 1px solid #CCCCCC;
 	border-spacing: 0px;
+	background-color: #F1F1F1;
 	border-collapse: collapse;
 }
 
 .tableHead {
-	background-color: #D2E7FC;
+	background-color: #92A9ED;
 	font-weight: bold;
 	padding: 2px;
-	padding-left: 5px;	
-	text-align: left;
+	padding-left: 5px;
+	text-align: center;
 	vertical-align: top;
 	border: 1px solid #CCCCCC;
 }
@@ -55,8 +58,15 @@ h2 {
 	
 }
 
+.tableCellBold {
+	border: 1px solid #CCCCCC;
+	padding: 2px;
+	font-weight:bold;
+	
+}
+
 .emphasis {
-	color: #FF6600;
+	color: #990000;
 	font-weight: bold;
 }
 

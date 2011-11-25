@@ -41,6 +41,7 @@ class XmlNCSSReporter {
 	private $lastPackageChild = false;
 	private $nbPackages = 0;
 	private $packageClasses = 0;
+	private $packageInterfaces = 0;
 	private $packageFunctions = 0;
 	private $packageNCSS = 0;
 	private $packageJavadocs = 0;
@@ -51,12 +52,19 @@ class XmlNCSSReporter {
 	/**
 	 * Constructor; calls parent's constructor
 	 *
-	 * @param $ofile the output file name
+	 * @param $ofolder the output folder
+	 * @param $ofile the output filename
 	 */
-	public function XmlNCSSReporter($ofile = false) {
-		$this->outputFile = $ofile;
+	public function XmlNCSSReporter($ofolder = false, $ofile = null) {
+		$this->outputFile = $ofolder.$ofile;
 		if (!$this->outputFile) {
 			$this->outputFile = "php://output";
+		}
+		// Creating a util object to allow copying.
+		global $util;
+		//creating the folder if it does not already exist.
+		if (!file_exists($ofolder)) {
+			$util->makeDirRecursive($ofolder);
 		}
 	}
 
@@ -97,6 +105,7 @@ class XmlNCSSReporter {
 	 *
 	 * @param $fileName the file name
 	 * @param $classes the number of classes in the file
+	 * @param $interfaces the number of interfaces in the file
 	 * @param $functions the number of functions
 	 * @param $ncss the number of non empty lines of code
 	 * @param $javadocs the number of PHPDoc blocks
@@ -104,7 +113,7 @@ class XmlNCSSReporter {
 	 * @param $singleCommentLines the number of single line comments
 	 * @param $multiCommentLines the number of multi-line comments
 	 */
-	public function writeFileCount($fileName, $classes, $functions, $ncss, $javadocs, $javadocLines, $singleCommentLines, $multiCommentLines) {
+	public function writeFileCount($fileName, $classes, $interfaces, $functions, $ncss, $javadocs, $javadocLines, $singleCommentLines, $multiCommentLines) {
 
 		$fileName = str_replace('/', '.', $fileName);
 		while (strpos($fileName, '.') == 0) {
@@ -120,6 +129,7 @@ class XmlNCSSReporter {
 
 			// Add the values
 			$this->packageClasses = $this->packageClasses + $classes;
+			$this->packageInterfaces = $this->packageInterfaces + $interfaces;
 			$this->packageFunctions = $this->packageFunctions + $functions;
 			$this->packageNCSS = $this->packageNCSS + $ncss;
 			$this->packageJavadocs = $this->packageJavadocs + $javadocs;
@@ -136,6 +146,7 @@ class XmlNCSSReporter {
 
 			// Reset the values
 			$this->packageClasses = $classes;
+			$this->packageInterfaces = $interfaces;
 			$this->packageFunctions = $functions;
 			$this->packageNCSS = $ncss;
 			$this->packageJavadocs = $javadocs;
@@ -154,6 +165,9 @@ class XmlNCSSReporter {
 
 		$classesE = $this->document->createElement('classes', $this->packageClasses);
 		$e->appendChild($classesE);
+
+		$interfacesE = $this->document->createElement('interfaces', $this->packageInterfaces);
+		$e->appendChild($interfacesE);
 
 		$functionsE = $this->document->createElement('functions', $this->packageFunctions);
 		$e->appendChild($functionsE);
@@ -206,6 +220,7 @@ class XmlNCSSReporter {
 	 *
 	 * @param $nbFiles the number of files.
 	 * @param $classes the number of classes
+	 * @param $interfaces the number of interfaces
 	 * @param $functions the number of functions
 	 * @param $ncss the number of non empty lines of code
 	 * @param $javadocs the number of PHPDoc blocks
@@ -213,7 +228,7 @@ class XmlNCSSReporter {
 	 * @param $singleCommentLines the number of single line comments
 	 * @param $multiCommentLines the number of multi-line comments
 	 */
-	public function writeTotalCount($nbFiles, $classes, $functions, $ncss, $javadocs, $javadocLines, $singleCommentLines, $multiCommentLines) {
+	public function writeTotalCount($nbFiles, $classes, $interfaces, $functions, $ncss, $javadocs, $javadocLines, $singleCommentLines, $multiCommentLines) {
 
 		//
 		// Create the total bloc
@@ -222,6 +237,9 @@ class XmlNCSSReporter {
 
 		$classesE = $this->document->createElement('classes', $classes);
 		$e->appendChild($classesE);
+
+		$interfacesE = $this->document->createElement('interfaces', $interfaces);
+		$e->appendChild($interfacesE);
 
 		$functionsE = $this->document->createElement('functions', $functions);
 		$e->appendChild($functionsE);

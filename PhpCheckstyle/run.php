@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /*
  *  $Id: run.php 27242 2005-07-21 01:21:42Z hkodungallur $
@@ -16,11 +17,12 @@ function usage() {
 	echo "    Options: \n";
 	echo "       --src          Root of the source directory tree or a file.\n";
 	echo "       --exclude      [Optional] A directory or file that needs to be excluded.\n";
-	echo "       --format       [Optional] Output format (html/text/console). Defaults to 'html'.\n";
+	echo "       --format       [Optional] Output format (html/text/console/html_console). Defaults to 'html'.\n";
 	echo "       --outdir       [Optional] Report Directory. Defaults to './style-report'.\n";
 	echo "       --config       [Optional] The name of the config file'.\n";
 	echo "       --debug        [Optional] Add some debug logs (warning, very verbose)'.\n";
 	echo "       --linecount    [Optional] Generate a report on the number of lines of code (JavaNCSS format)'.\n";
+	echo "       --progress  	[Optional] Prints a message noting the file and every line that is covered by PHPCheckStyle.\n";
 	echo "       --help         Display this usage information.\n";
 	exit;
 }
@@ -32,7 +34,8 @@ $options['format'] = "html"; // default format
 $options['outdir'] = "./style-report"; // default ouput directory
 $options['config'] = "default.cfg.xml";
 $options['debug'] = false;
-$lineCountFile = "ncss.xml";
+$options['progress'] = false;
+$lineCountFile = null;
 
 // loop through user input
 for ($i = 1; $i < $_SERVER["argc"]; $i++) {
@@ -69,6 +72,9 @@ for ($i = 1; $i < $_SERVER["argc"]; $i++) {
 	case "--linecount":
 		$options['linecount'] = true;
 		break;
+	case "--progress":
+		$options['progress'] = true;
+		break;
 
 	case "--help":
 		usage();
@@ -88,17 +94,11 @@ global $util;
 define("CONFIG_FILE", $options['config']);
 define("DEBUG", $options['debug']);
 
-$outDir = $options['outdir'];
-// if output directory does not exist, create it
-if (!file_exists($outDir)) {
-	$util->makeDirRecursive($outDir);
-}
-
 // check for valid format and set the output file name
 // right now the output file name is not configurable, only
 // the output directory is configurable (from command line)
 $formats = explode(',', $options['format']);
-if (!(in_array("html", $formats) || in_array("xml", $formats) || in_array("text", $formats) || in_array("console", $formats))) {
+if (!(in_array("html", $formats) || in_array("html_console", $formats) || in_array("xml", $formats) || in_array("text", $formats) || in_array("console", $formats))) {
 	echo "\nUnknown format.\n\n";
 	usage();
 }
@@ -110,17 +110,10 @@ if ($options['src'] == false) {
 }
 
 if (!empty($options['linecount'])) {
-	$lineCountFile = $outDir."/".$lineCountFile;
+	$lineCountFile = "ncss.xml";
 }
 
-$style = new PHPCheckstyle($formats, $outDir, $lineCountFile);
+$style = new PHPCheckstyle($formats, $options['outdir'], $lineCountFile, $options['progress']);
 $style->processFiles($options['src'], $options['exclude']);
 
-// if output format is html, copie the html files
-if (in_array("html", $formats)) {
-	// copy the css and images
-	$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/css", $outDir."/css");
-	$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/images", $outDir."/images");
-}
-
-echo "Reporting Completed. Please check the results in directory ".$outDir."\n\n";
+echo "\nReporting Completed.\n";

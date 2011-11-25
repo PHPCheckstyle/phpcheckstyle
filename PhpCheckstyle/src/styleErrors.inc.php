@@ -13,115 +13,131 @@
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
  */
 
-define("PHPCHECKSTYLE_INDENTATION_TAB", "The indentation line contains a tab");
-define("PHPCHECKSTYLE_INDENTATION_WHITESPACE", "The indentation line contains a whitespace");
+define("PHPCHECKSTYLE_INDENTATION_TAB", "Tab indentation must not be used.");
+define("PHPCHECKSTYLE_INDENTATION_WHITESPACE", "Whitespace indentation must not be used.");
 
-define("PHPCHECKSTYLE_INDENTATION_LEVEL", "Indentation problem, level shoud be %s but was %s");
+define("PHPCHECKSTYLE_INDENTATION_LEVEL", "The indentation level must be %s but was %s.");
 
-define("PHPCHECKSTYLE_INDENTATION_LEVEL_MORE", "Indentation problem, level shoud be at least %s but was %s");
+define("PHPCHECKSTYLE_INDENTATION_LEVEL_MORE", "The indentation level must be at least %s but was %s.");
 
-define("PHPCHECKSTYLE_WRONG_OPEN_TAG", "The php open tag must be '<?php'");
+define("PHPCHECKSTYLE_WRONG_OPEN_TAG", "The php open tag must be '<?php'.");
 
-define("PHPCHECKSTYLE_NO_SPACE_BEFORE_TOKEN", "%s should not be preceded by whitespace");
+define("PHPCHECKSTYLE_NO_SPACE_BEFORE_TOKEN", "Whitespace must not preceed '%s' .");
 
-define("PHPCHECKSTYLE_NO_SPACE_AFTER_TOKEN", "%s should not be followed by whitespace");
+define("PHPCHECKSTYLE_NO_SPACE_AFTER_TOKEN", "Whitespace must not follow '%s' .");
 
-define("PHPCHECKSTYLE_SPACE_BEFORE_TOKEN", "Provide whitespace before %s");
+define("PHPCHECKSTYLE_SPACE_BEFORE_TOKEN", "Whitespace must preceed '%s' .");
 
-define("PHPCHECKSTYLE_SPACE_AFTER_TOKEN", "Provide whitespace after %s");
+define("PHPCHECKSTYLE_SPACE_AFTER_TOKEN", "Whitespace must follow '%s' .");
 
-define("PHPCHECKSTYLE_LEFT_CURLY_POS", "'{' should be on %s");
+define("PHPCHECKSTYLE_LEFT_CURLY_POS", "The block opening '{' must be on %s");
 
-define("PHPCHECKSTYLE_CS_NO_OPEN_CURLY", "Control statement should always be placed within {} blocks");
+define("PHPCHECKSTYLE_CS_NO_OPEN_CURLY", "A {} block must enclose the control statement '%s'.");
 
-define("PHPCHECKSTYLE_CS_STMT_ALIGNED_WITH_CURLY", "'%s' should be in the same line as '}'");
+define("PHPCHECKSTYLE_CS_STMT_ALIGNED_WITH_CURLY", "The block closure '}' must be on %s");
 
-define("PHPCHECKSTYLE_END_BLOCK_NEW_LINE", "'}' should be on a new line");
+define("PHPCHECKSTYLE_END_BLOCK_NEW_LINE", "The block closure '}' must be on a new line.");
 
-define("PHPCHECKSTYLE_CONSTANT_NAMING", "Constant '%s' should be all uppercase (starting with a letter) with underscores to separate words");
+define("PHPCHECKSTYLE_CONSTANT_NAMING", "Constant '%s' must be ALL_CAPS_WITH_UNDERSCORES (%s).");
 
-define("PHPCHECKSTYLE_VARIABLE_NAMING", "Variable '%s' should start with a lowercase letter with no underscores to separate words");
+define("PHPCHECKSTYLE_LOCAL_VARIABLE_NAMING", "Local variable '%s' name should follow the pattern %s.");
 
-define("PHPCHECKSTYLE_FUNCNAME_SPACE_AFTER", "Function call should not have a whitespace between function name and opening paranthesis");
+define("PHPCHECKSTYLE_MEMBER_VARIABLE_NAMING", "Member variable '%s' name should follow the pattern %s.");
 
-define("PHPCHECKSTYLE_PRIVATE_FUNCNAME_NAMING", "Private function '%s' name should follow the pattern %s");
+define("PHPCHECKSTYLE_TOPLEVEL_VARIABLE_NAMING", "Top level variable '%s'name should follow the pattern %s.");
 
-define("PHPCHECKSTYLE_PROTECTED_FUNCNAME_NAMING", "Protected function '%s' name should follow the pattern %s");
+define("PHPCHECKSTYLE_FUNCNAME_SPACE_AFTER", "Whitespace must not be between the function '%s' and the opening parenthesis '{'.");
 
-define("PHPCHECKSTYLE_FUNCNAME_NAMING", "Function '%s' name should follow the pattern %s");
+define("PHPCHECKSTYLE_PRIVATE_FUNCNAME_NAMING", "Private function '%s' 's name should follow the pattern %s.");
 
-define("PHPCHECKSTYLE_FUNC_DEFAULTVALUE_ORDER", "All arguments with default values should be at the end");
+define("PHPCHECKSTYLE_PROTECTED_FUNCNAME_NAMING", "Protected function '%s' 's name should follow the pattern %s.");
 
-define("PHPCHECKSTYLE_CLASSNAME_NAMING", "Class name should start with an uppercase letter");
+define("PHPCHECKSTYLE_FUNCNAME_NAMING", "Function '%s' 's name should follow the pattern %s.");
 
-define("PHPCHECKSTYLE_NO_SHELL_COMMENTS", "Shell/Perl like comments (starting with '#') are not allowed");
+define("PHPCHECKSTYLE_FUNC_DEFAULTVALUE_ORDER", "All arguments with default values must be at the end of the block or statement.");
 
-define("PHPCHECKSTYLE_MISSING_DOCBLOCK", "Docblock missing");
+define("PHPCHECKSTYLE_TYPE_FILE_NAME_MISMATCH", "Type name '%s' must match file name '%s'.");
 
-define("PHPCHECKSTYLE_LONG_LINE", "Line contains more than %s characters");
+define("PHPCHECKSTYLE_CLASSNAME_NAMING", "Class '%s' name should follow the pattern %s.");
 
-define("PHPCHECKSTYLE_PROHIBITED_FUNCTION", "Calling function %s is prohibited");
+define("PHPCHECKSTYLE_INTERFACENAME_NAMING", "Interface '%s' name should follow the pattern %s.");
 
-define("PHPCHECKSTYLE_PROHIBITED_TOKEN", "Token %s is prohibited");
+define("PHPCHECKSTYLE_FILENAME_NAMING", "File '%s' name should follow the pattern %s.");
 
-define("PHPCHECKSTYLE_CS_STMT_ON_NEW_LINE", "'%s' should be on the line after '}'");
+define("PHPCHECKSTYLE_NO_SHELL_COMMENTS", "Shell/Perl like comments (starting with '#') must not be used.");
 
-define("PHPCHECKSTYLE_END_FILE_INLINE_HTML", "There is inline HTML at the end of the file");
+define("PHPCHECKSTYLE_MISSING_DOCBLOCK", "The %s '%s' must have a docblock comment.");
 
-define("PHPCHECKSTYLE_END_FILE_CLOSE_TAG", "There is a PHP close tag at the end of the file, this is not recommended");
+define("PHPCHECKSTYLE_LONG_LINE", "Line length (%s characters) must not exceed %s characters.");
 
-define("PHPCHECKSTYLE_SILENCED_ERROR", "Errors should not be silenced when calling a function");
+define("PHPCHECKSTYLE_PROHIBITED_FUNCTION", "Function %s must not be called.");
 
-define("PHPCHECKSTYLE_VARIABLE_INSIDE_STRING", "Avoid encapsed variables inside a string");
+define("PHPCHECKSTYLE_PROHIBITED_TOKEN", "Token %s must not be used.");
 
-define("PHPCHECKSTYLE_PASSING_REFERENCE", "Avoid passing parameters by reference");
+define("PHPCHECKSTYLE_CS_STMT_ON_NEW_LINE", "'%s' must be on the line after '}'");
 
-define("PHPCHECKSTYLE_CYCLOMATIC_COMPLEXITY", "The cyclomatic complexity (%s) of this method is too high");
+define("PHPCHECKSTYLE_END_FILE_INLINE_HTML", "inline HTML must not be included at the end of the file.");
 
-define("PHPCHECKSTYLE_TODO", "TODO %s");
+define("PHPCHECKSTYLE_END_FILE_CLOSE_TAG", "A php close tag must not be included at the end of the file.");
 
-define("PHPCHECKSTYLE_CONSTRUCTOR_NAMING", "The constructor naming should be %s");
+define("PHPCHECKSTYLE_SILENCED_ERROR", "Errors must not be silenced when calling a function");
 
-define("PHPCHECKSTYLE_USE_BOOLEAN_OPERATORS", "Use boolean operators (&&) instead of logical operators (AND)");
+define("PHPCHECKSTYLE_VARIABLE_INSIDE_STRING", "encapsed variables must not be used inside a string");
 
-define("PHPCHECKSTYLE_DOCBLOCK_RETURN", "The function returns a value but docblock @return is missing");
+define("PHPCHECKSTYLE_PASSING_REFERENCE", "parameters must not be passed by reference");
 
-define("PHPCHECKSTYLE_DOCBLOCK_PARAM", "The function parameters does not match the docblock @param");
+define("PHPCHECKSTYLE_CYCLOMATIC_COMPLEXITY", "The cyclomatic complexity of function '%s' (%s) must not be higher than %s.");
 
-define("PHPCHECKSTYLE_DOCBLOCK_THROW", "The function throws an exception but the docblock @throw is missing");
+define("PHPCHECKSTYLE_TODO", "TODO: %s.");
 
-define("PHPCHECKSTYLE_UNARY_OPERATOR", "Avoid using unary operators (++ or --) inside a control statement");
+define("PHPCHECKSTYLE_GOTO", "The control statement 'goto' must not be used.");
 
-define("PHPCHECKSTYLE_INSIDE_ASSIGNMENT", "Avoid using assigments (=) inside a control statement");
+define("PHPCHECKSTYLE_CONTINUE", "The control statement 'continue' must not be used.");
 
-define("PHPCHECKSTYLE_FUNCTION_LENGTH_THROW", "This function is too long (%s lines)");
+define("PHPCHECKSTYLE_CONSTRUCTOR_NAMING", "The constructor name must be %s.");
+
+define("PHPCHECKSTYLE_USE_BOOLEAN_OPERATORS", "Boolean operators (&&) must be used instead of logical operators (AND).");
+
+define("PHPCHECKSTYLE_DOCBLOCK_RETURN", "The function '%s' returns a value and must include @returns in its docblock.");
+
+define("PHPCHECKSTYLE_DOCBLOCK_PARAM", "The function '%s' 's parameters must match the those in its docblock @param.");
+
+define("PHPCHECKSTYLE_DOCBLOCK_THROW", "The function '%s' throws an exception, a value and must include @throws in its docblock.");
+
+define("PHPCHECKSTYLE_UNARY_OPERATOR", "Unary operators (++ or --) must not be used inside a control statement");
+
+define("PHPCHECKSTYLE_INSIDE_ASSIGNMENT", "Assigments (=) must not be used inside a control statement.");
+
+define("PHPCHECKSTYLE_FUNCTION_LENGTH_THROW", "The function '%s' 's length (%s) must not exceed %s lines.");
 
 define("PHPCHECKSTYLE_EMPTY_BLOCK", "Empty %s block");
 
 define("PHPCHECKSTYLE_EMPTY_STATEMENT", "Empty statement (;;)");
 
-define("PHPCHECKSTYLE_HEREDOC", "Heredoc syntax should be avoided");
+define("PHPCHECKSTYLE_HEREDOC", "Heredoc syntax must not be used.");
 
-define("PHPCHECKSTYLE_MAX_PARAMETERS", "This function has an excessive number of parameters (%s)");
+define("PHPCHECKSTYLE_MAX_PARAMETERS", "The function '%s' 's number of parameters (%s) must not exceed %s.");
 
-define("PHPCHECKSTYLE_NEED_BRACES", "This block of code should have braces");
+define("PHPCHECKSTYLE_NEED_BRACES", "The statement '%s' must contain its code within a {} block.");
 
-define("PHPCHECKSTYLE_SWITCH_DEFAULT", "Switch block need a default statement");
+define("PHPCHECKSTYLE_SWITCH_DEFAULT", "The switch statement must have a default case.");
 
-define("PHPCHECKSTYLE_SWITCH_DEFAULT_ORDER", "Switch default statement should be located after all cases");
+define("PHPCHECKSTYLE_SWITCH_DEFAULT_ORDER", "The default case of a switch statement must be located after all other cases.");
 
-define("PHPCHECKSTYLE_SWITCH_CASE_NEED_BREAK", "Case statement need a break");
+define("PHPCHECKSTYLE_SWITCH_CASE_NEED_BREAK", "The case statement must contain a break.");
 
-define("PHPCHECKSTYLE_UNUSED_PRIVATE_FUNCTION", "Unused private function : %s");
+define("PHPCHECKSTYLE_UNUSED_PRIVATE_FUNCTION", "Unused private function : '%s'.");
 
-define("PHPCHECKSTYLE_UNUSED_VARIABLE", "Variable %s is undeclared or not used");
+define("PHPCHECKSTYLE_UNUSED_VARIABLE", "Undeclared or unused variable : '%s'.");
 
-define("PHPCHECKSTYLE_UNUSED_FUNCTION_PARAMETER", "Function parameter %s doesn't seem to be used");
+define("PHPCHECKSTYLE_UNUSED_FUNCTION_PARAMETER", "The function '%s' 's parameter '%s' is not used.");
 
-define("PHPCHECKSTYLE_ONE_CLASS_PER_FILE", "Only one class declaration is allowed per file");
+define("PHPCHECKSTYLE_ONE_CLASS_PER_FILE", "File '%s' must not have multiple class declarations.");
 
-define("PHPCHECKSTYLE_FUNCTION_INSIDE_LOOP", "Consider moving the %s function outside the loop");
+define("PHPCHECKSTYLE_ONE_INTERFACE_PER_FILE", "File '%s' must not have multiple interface declarations.");
 
-define("PHPCHECKSTYLE_UNUSED_CODE", "Unused code after return or throw");
+define("PHPCHECKSTYLE_FUNCTION_INSIDE_LOOP", "'%s' functions must not be used inside a loop.");
 
-define("PHPCHECKSTYLE_DEPRECATED_FUNCTION", "%s is deprecated since PHP %s, use %s instead");
+define("PHPCHECKSTYLE_UNUSED_CODE", "function '%s' has unused code after the return.");
+
+define("PHPCHECKSTYLE_DEPRECATED_FUNCTION", "%s is deprecated since PHP %s. %s must be used instead");

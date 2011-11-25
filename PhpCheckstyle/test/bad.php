@@ -12,6 +12,9 @@ class BadTest {
 <? // The open tag should be <?php
 
 	define("constant", 100); // Incorrect constant naming
+	
+	define("__BADLY_FORMATttedConstant123%", "Testing regex '%s'.\n");
+	
 
 	$TOTO; // Incorrect variable naming
 

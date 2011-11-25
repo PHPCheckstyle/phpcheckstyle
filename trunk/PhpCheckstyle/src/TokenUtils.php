@@ -82,8 +82,11 @@ class TokenUtils {
 	 * @return the token found
 	 */
 	public function peekTokenAt($position) {
-
-		return $this->tokens[$position];
+		if ($position < $this->totalNumTokens) {
+			return $this->tokens[$position];
+		} else {
+			return "";
+		}
 	}
 
 	/**
@@ -136,7 +139,8 @@ class TokenUtils {
 		$lineOffset = 0;
 		$pos = $this->curTokenNumber; // defaut position for the search
 		if ($startPos != null) {
-			$pos = $startPos; // if defined, set the start position 
+			$pos = $startPos; // if defined, set the start position
+
 		}
 		while ($pos < $this->totalNumTokens) {
 			$ret = $this->tokens[$pos];

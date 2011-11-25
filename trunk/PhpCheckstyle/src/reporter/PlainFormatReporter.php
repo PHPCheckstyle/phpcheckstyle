@@ -26,13 +26,15 @@ require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporter.php";
  */
 class PlainFormatReporter extends Reporter {
 
+	private $ofile = "/style-report.txt"; //The output file name
+
 	/**
 	 * Constructor; calls parent's constructor
 	 *
-	 * @param $ofile the file name
+	 * @param $ofolder the folder name
 	 */
-	public function PlainFormatReporter($ofile = false) {
-		parent::__construct($ofile);
+	public function PlainFormatReporter($ofolder = false) {
+		parent::__construct($ofolder, $this->ofile);
 	}
 
 	/**
@@ -84,7 +86,7 @@ class PlainFormatReporter extends Reporter {
 	}
 
 	private function _ensureFileOpen() {
-		if ($this->fileHandle === false) {
+		if ($this->fileHandle == false) {
 			$this->fileHandle = fopen($this->outputFile, "w");
 		}
 		return $this->fileHandle;

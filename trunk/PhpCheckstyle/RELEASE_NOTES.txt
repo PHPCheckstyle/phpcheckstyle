@@ -1,6 +1,21 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.10.0
+-------------
+* Added support for interfaces
+* Improved checking of variables by scope
+* Rewrote the _checkLargeLine() function
+* Added rudimentary progress reporting, invoked with the parameter --progress
+* Edited Style errors for clarity
+* Included regex in the error report for appropriate types
+* Errors are now described in much greater detail and more consistent language
+* Removed 'old : ' and 'new : ' prefixes from constructor name hints
+* New output type - html console
+
+
+Thanks a lot to Justin Creasey and Adam King
+
 Version 0.9.8
 -------------
 * Issue 3:	Check for unreachable code

@@ -18,14 +18,21 @@ class HTMLFormatReporter extends Reporter {
 	private $fileErrors = 0; // Number of errors in the current file
 
 	private $previousFile = '';
+	private $writeMode = 'w'; // "write" - ensures a new file is created.
+	private $ofile = "/index.html"; //The output file name
 
 	/**
 	 * Constructor; calls parent's constructor
 	 *
-	 * @param $ofile the file name
+	 * @param $ofolder the folder name
 	 */
-	public function HTMLFormatReporter($ofile = false) {
-		parent::__construct($ofile);
+	public function HTMLFormatReporter($ofolder = false) {
+		parent::__construct($ofolder, $this->ofile);
+		// Creating a util object to allow copying.
+		global $util;
+		// copy the css and images
+		$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/css", $ofolder."/css");
+		$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/images", $ofolder."/images");
 	}
 
 	/**
@@ -39,13 +46,11 @@ class HTMLFormatReporter extends Reporter {
 	 * @see Reporter::stop
 	 */
 	public function stop() {
-		$fileHandle = fopen($this->outputFile, "w");
-
 		// Call a last time the currentlyProcessing function for the last file in memory
 		$this->currentlyProcessing('');
 
 		// Write the HTML header
-		fwrite($fileHandle, $this->_readTemplate("header"));
+		$this->writeFragment($this->_readTemplate("header"));
 
 		// Write the summary
 		$summaryTmpl = $this->_readTemplate("summary");
@@ -53,21 +58,34 @@ class HTMLFormatReporter extends Reporter {
 		$values['%%nb_files%%'] = $this->nbfiles;
 		$values['%%nb_files_error%%'] = $this->nbfilesError;
 		$values['%%nb_total_errors%%'] = $this->nbErrors;
-		fwrite($fileHandle, $this->_fillTemplate($summaryTmpl, $values));
+		$this->writeFragment($this->_fillTemplate($summaryTmpl, $values));
 
 		// Write the list of files
-		fwrite($fileHandle, $this->_readTemplate("files"));
-		fwrite($fileHandle, $this->files);
-		fwrite($fileHandle, $this->_readTemplate("files_foot"));
+		$this->writeFragment($this->_readTemplate("files"));
+		$this->writeFragment($this->files);
+		$this->writeFragment($this->_readTemplate("files_foot"));
 
 		// Write the detail of the checks
-		fwrite($fileHandle, $this->_readTemplate("detail"));
-		fwrite($fileHandle, $this->detail);
+		$this->writeFragment($this->_readTemplate("detail"));
+		$this->writeFragment($this->detail);
 
 		// Write the footer
-		fwrite($fileHandle, $this->_readTemplate("footer"));
+		$this->writeFragment($this->_readTemplate("footer"));
+	}
 
+	/**
+	 * Writes an HTML fragment to the output file.
+	 *
+	 * @param $fragment string The HTML fragment to write.
+	 */
+	protected function writeFragment($fragment) {
+		$fileHandle = fopen($this->outputFile, $this->writeMode);
+
+		fwrite($fileHandle, $fragment);
 		fclose($fileHandle);
+		
+		//appends to the file initially created with $writeMode = "w"
+		$this->writeMode = 'a'; 
 	}
 
 	/**
@@ -171,4 +189,3 @@ class HTMLFormatReporter extends Reporter {
 
 	}
 }
-

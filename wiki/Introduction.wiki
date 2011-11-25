@@ -16,6 +16,8 @@ This project was originally written by Hari Kodungallur. Other contributors are:
   * Joshua Kaiser
   * Charles Marion
   * Adrien Pessu
+  * Justin Creasey
+  * Adam King
 
 == Details ==
 

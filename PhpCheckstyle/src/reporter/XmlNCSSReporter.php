@@ -37,7 +37,7 @@ class XmlNCSSReporter {
 	private $packages = false;
 	private $objects = false;
 	private $outputFile;
-	private $lastPackageName = '';
+	private $lastPackageName = false;
 	private $lastPackageChild = false;
 	private $nbPackages = 0;
 	private $packageClasses = 0;
@@ -125,7 +125,7 @@ class XmlNCSSReporter {
 
 		// Identify the package name
 		$packageName = substr($fileName, 0, strrpos($fileName, '.'));
-		if ($this->lastPackageName == $packageName) {
+		if ($this->lastPackageName === $packageName) {
 
 			// Add the values
 			$this->packageClasses = $this->packageClasses + $classes;

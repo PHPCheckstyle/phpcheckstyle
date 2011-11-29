@@ -119,4 +119,8 @@ private function badlyNamedPrivateFunction(PARAMETER1, PARAMETER) { // should ha
 	// Call the private function
 	$this->_privateFunction();
 
+	do {
+		toto();
+	} while (true);
+	
 }

@@ -49,10 +49,15 @@
     <!--  ****************  -->
     
     <!-- Check Constant Naming -->
-    <test name="constantNaming" regexp="/^[A-Z_][A-Z_]*[A-Z_]$/" level="ERROR"/>
+    <test name="constantNaming" regexp="/^[A-Z][A-Z_]*[A-Z_]$/" level="ERROR"/>
     
     <!-- Check Variable Naming -->
-    <test name="variableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" />
+    <test name="variableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!--  default naming -->
+    <!-- 
+    <test name="topLevelVariableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!--  for top level variables -->
+    <test name="localVariableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!--  for local variables (inside a class) -->
+    <test name="memberVariableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!--  for member variables (inside a function) -->
+     -->
     
     <!-- Check Function Naming -->
     <test name="functionNaming" regexp="/^[a-z]/" level="ERROR"/>

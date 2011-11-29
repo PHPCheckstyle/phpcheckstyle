@@ -22,6 +22,11 @@ Constants should only have uppercase letters and underscores.
 Checks to see if the variable follows the naming convention.
 Variables should start with a lowercase or an underscores and should contain only letters.
 
+If you need to be more precise, you can differentiate between :
+  * topLevelVariableNaming : for top level variables
+  * localVariableNaming : for local variables (inside a class)
+  * memberVariableNaming : for member variables (inside a function)
+
 == functionNaming ==
 Checks to see if the function follows the naming convention.
 Function name has to start with lowercase (the pattern is customizable with a regexp).

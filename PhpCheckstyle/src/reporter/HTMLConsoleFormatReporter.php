@@ -10,7 +10,7 @@ class HTMLConsoleFormatReporter extends HTMLFormatReporter {
 	/**
 	 * Constructor; calls parent's constructor
 	 */
-	public function HTMLFormatReporter() {
+	public function HTMLConsoleFormatReporter() {
 		parent::__construct();
 	}
 

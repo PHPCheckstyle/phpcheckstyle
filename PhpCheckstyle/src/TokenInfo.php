@@ -6,6 +6,7 @@
  * This object is returned by the tokenizer when we search for a token.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class TokenInfo {
 

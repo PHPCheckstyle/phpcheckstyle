@@ -351,7 +351,7 @@ class TokenUtils {
 	public function checkNextValidTextToken($text) {
 		$ret = false;
 		$retInfo = $this->peekNextValidToken();
-		if ($retInfo!=null) {
+		if ($retInfo != null) {
 			$token = $retInfo->token;
 			if (is_string($token)) {
 				if ($token == $text) {

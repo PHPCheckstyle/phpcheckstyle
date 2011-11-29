@@ -35,15 +35,15 @@ class CheckStyleConfig {
 	 * @access public
 	 */
 	public function CheckStyleConfig() {
-	
-		 $_isAbsolutePath = preg_match("/^[a-zA-Z]{1}:\\.*/", CONFIG_FILE);
-		
+
+		$_isAbsolutePath = preg_match("/^[a-zA-Z]{1}:\\.*/", CONFIG_FILE);
+
 		if ($_isAbsolutePath) {
 			$this->file	= CONFIG_FILE;
 		} else {
 			$this->file = PHPCHECKSTYLE_HOME_DIR."/config/".CONFIG_FILE;
 		}
-		
+
 		$this->_xmlParser = xml_parser_create();
 		xml_set_object($this->_xmlParser, $this);
 		xml_set_element_handler($this->_xmlParser, "_startElement", "_endElement");
@@ -209,7 +209,7 @@ class CheckStyleConfig {
 	 */
 	private function _startElement($parser, $elem, $attrs) {
 		switch ($elem) {
-				
+
 			// Case of a configuration property
 			case 'CONFIG':
 				$this->_currentConfig = strtolower($attrs['NAME']);

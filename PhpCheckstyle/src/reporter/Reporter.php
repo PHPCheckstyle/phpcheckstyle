@@ -1,11 +1,11 @@
 <?php
 /*
  *  $Id: Reporter.php 26734 2005-07-15 01:34:26Z hkodungallur $
- *
- *  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
- *  Licensed under the Open Source License version 2.1
- *  (See http://www.spikesource.com/license.html)
- */
+*
+*  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
+*  Licensed under the Open Source License version 2.1
+*  (See http://www.spikesource.com/license.html)
+*/
 
 require_once PHPCHECKSTYLE_HOME_DIR."/src/util/Utility.php";
 
@@ -31,7 +31,7 @@ abstract class Reporter {
 	 * @param $ofolder the output folder
 	 * @param $ofile the output filename
 	 */
-	public function Reporter($ofolder = false, $ofile="error.txt") {
+	public function Reporter($ofolder = false, $ofile = "error.txt") {
 		// Creating a util object.
 		global $util;
 		//creating the folder if it does not already exist.
@@ -40,8 +40,8 @@ abstract class Reporter {
 		}
 		//setting the output file to default.
 		$this->outputFile = $ofolder.$ofile;
-		
-		if (!($this->outputFile) ) {
+
+		if (!($this->outputFile)) {
 			$this->outputFile = "php://output";
 		}
 	}

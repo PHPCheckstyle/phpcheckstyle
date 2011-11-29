@@ -1062,7 +1062,7 @@ class PHPCheckstyle {
 	 * @param String $msgName the message associated with the rule
 	 */
 	private function _checkScopedVariableNaming($variableText, $ruleName, $msgName) {
-		if ($this->_isActive($ruleName)) {
+		if ($this->_isActive($ruleName) || $this->_isActive('variableNaming')) {
 			$texttoTest = ltrim($variableText, "\"'"); // remove the quotes
 			$texttoTest = rtrim($texttoTest, "\"'");
 			if (strpos($texttoTest, "$") === 0) {
@@ -1072,14 +1072,24 @@ class PHPCheckstyle {
 			// If the variable is not listed as an exception
 			$exceptions = $this->_config->getTestExceptions($ruleName);
 			if (empty($exceptions) || !in_array($text, $exceptions)) {
-
-				$ret = preg_match($this->_config->getTestRegExp($ruleName), $texttoTest);
+				
+				if ($this->_isActive($ruleName)) {
+					// Scoped variable
+					$ret = preg_match($this->_config->getTestRegExp($ruleName), $texttoTest);
+				} else {
+					// Default case
+					$ret = preg_match($this->_config->getTestRegExp('variableNaming'), $texttoTest);
+				}
 				if (!$ret) {
-					$msg = sprintf($msgName, $variableText, $this->_config->getTestRegExp($ruleName));
+					if ($this->_isActive($ruleName)) {
+						$msg = sprintf($msgName, $variableText, $this->_config->getTestRegExp($ruleName));
+					} else {
+						$msg = sprintf(PHPCHECKSTYLE_VARIABLE_NAMING, $variableText, $this->_config->getTestRegExp('variableNaming'));
+					}
 					$this->_writeError($ruleName, $msg);
 				}
 			}
-		}
+		} 
 	}
 
 

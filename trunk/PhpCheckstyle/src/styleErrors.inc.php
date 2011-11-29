@@ -14,6 +14,7 @@
  */
 
 define("PHPCHECKSTYLE_INDENTATION_TAB", "Tab indentation must not be used.");
+
 define("PHPCHECKSTYLE_INDENTATION_WHITESPACE", "Whitespace indentation must not be used.");
 
 define("PHPCHECKSTYLE_INDENTATION_LEVEL", "The indentation level must be %s but was %s.");
@@ -38,7 +39,9 @@ define("PHPCHECKSTYLE_CS_STMT_ALIGNED_WITH_CURLY", "The block closure '}' must b
 
 define("PHPCHECKSTYLE_END_BLOCK_NEW_LINE", "The block closure '}' must be on a new line.");
 
-define("PHPCHECKSTYLE_CONSTANT_NAMING", "Constant '%s' must be ALL_CAPS_WITH_UNDERSCORES (%s).");
+define("PHPCHECKSTYLE_CONSTANT_NAMING", "Constant '%s' name should follow the pattern %s.");
+
+define("PHPCHECKSTYLE_VARIABLE_NAMING", "Variable '%s' name should follow the pattern %s.");
 
 define("PHPCHECKSTYLE_LOCAL_VARIABLE_NAMING", "Local variable '%s' name should follow the pattern %s.");
 

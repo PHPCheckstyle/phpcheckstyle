@@ -201,9 +201,9 @@
 	<!-- see http://www.aivosto.com/project/help/pm-complexity.html -->
  	<test name="cyclomaticComplexity">
         <!-- Level raising a warning -->
-        <property name="warningLevel" value="10"/>
+        <property name="warningLevel" value="20"/>
         <!-- Level raising an error -->
-        <property name="errorLevel" value="20"/>
+        <property name="errorLevel" value="50"/>
     </test>
     
     <!--  ****************  -->

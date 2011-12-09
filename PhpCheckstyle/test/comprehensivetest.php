@@ -1,12 +1,5 @@
 <?
-//short open tag -  should be <?php :: PHPCHECKSTYLE_WRONG_OPEN_TAG
 
-// constant naming :: PHPCHECKSTYLE_CONSTANT_NAMING
-define (_badly_named_constant, "THIS_IS_BADLY_NAMED");
-
-const bad_CONST = "goo";
-// top level var naming :: PHPCHECKSTYLE_TOPLEVEL_VARIABLE_NAMING
-$x = 12;
 
 // no whitespace around operators (before and after) :: PHPCHECKSTYLE_NO_SPACE_BEFORE_TOKEN
 // PHPCHECKSTYLE_NO_SPACE_AFTER_TOKEN
@@ -16,15 +9,13 @@ $_missingWhitespaceAroundOperators=5;
 
 
 
-// protected function naming :: PHPCHECKSTYLE_PROTECTED_FUNCNAME_NAMING
 
-// function naming :: PHPCHECKSTYLE_FUNCNAME_NAMING
 
 // arguments with default values at end of params :: PHPCHECKSTYLE_FUNC_DEFAULTVALUE_ORDER
 
 // file name does not match the class name :: PHPCHECKSTYLE_TYPE_FILE_NAME_MISMATCH
 
-// class naming :: PHPCHECKSTYLE_CLASSNAME_NAMING
+
 
 /**
  * A badly named class, but everything else is accounted for.
@@ -57,9 +48,7 @@ class badlynamedclass
 //not enough indentation :: PHPCHECKSTYLE_INDENTATION_LEVEL_MORE
 
 
-// local var naming :: PHPCHECKSTYLE_LOCAL_VARIABLE_NAMING
 
-// member var naming :: PHPCHECKSTYLE_MEMBER_VARIABLE_NAMING
 
 
 // whitespace around parentheses (before and after) :: PHPCHECKSTYLE_SPACE_BEFORE_TOKEN, PHPCHECKSTYLE_SPACE_AFTER_TOKEN

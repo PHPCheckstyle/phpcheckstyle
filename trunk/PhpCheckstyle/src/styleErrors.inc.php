@@ -47,7 +47,7 @@ define("PHPCHECKSTYLE_LOCAL_VARIABLE_NAMING", "Local variable '%s' name should f
 
 define("PHPCHECKSTYLE_MEMBER_VARIABLE_NAMING", "Member variable '%s' name should follow the pattern %s.");
 
-define("PHPCHECKSTYLE_TOPLEVEL_VARIABLE_NAMING", "Top level variable '%s'name should follow the pattern %s.");
+define("PHPCHECKSTYLE_TOPLEVEL_VARIABLE_NAMING", "Top level variable '%s' name should follow the pattern %s.");
 
 define("PHPCHECKSTYLE_FUNCNAME_SPACE_AFTER", "Whitespace must not be between the function '%s' and the opening parenthesis '{'.");
 

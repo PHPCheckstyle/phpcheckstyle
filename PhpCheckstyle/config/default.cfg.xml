@@ -74,7 +74,13 @@
     </test>
     
     <!-- Check Class Naming -->
-    <test name="classNaming" regexp="/^[A-Z]/" level="ERROR"/>
+    <test name="classNaming" regexp="/^[a-z_][a-zA-Z0-9]*/" level="ERROR"/>
+    
+    <!-- Check Interface Naming -->
+    <test name="interfaceNaming" regexp="/^[a-z_][a-zA-Z0-9]*/" level="ERROR"/>
+    
+    <!-- File Naming -->
+     <test name="fileNaming" regexp="/^^[a-z][a-zA-Z0-9]*/" level="ERROR"/>
     
     
 	<!--  ****************  -->
@@ -204,9 +210,9 @@
 	<!-- see http://www.aivosto.com/project/help/pm-complexity.html -->
  	<test name="cyclomaticComplexity">
         <!-- Level raising a warning -->
-        <property name="warningLevel" value="20"/>
+        <property name="warningLevel" value="10"/>
         <!-- Level raising an error -->
-        <property name="errorLevel" value="50"/>
+        <property name="errorLevel" value="20"/>
     </test>
     
     <!--  ****************  -->

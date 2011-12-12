@@ -123,9 +123,6 @@
     	<property name="number" value="4"/> <!-- number of spaces if type = spaces -->
     </test>
     
-    <!-- Test to make sure that every control structure is included within a {} block, even if it is syntactically optional. -->
-    <test name="controlStructNeedCurly"/>
-    
     <!-- Check the position of the open curly brace in a control structure (if) -->
     <!-- sl = same line -->
     <!-- nl = new line -->    
@@ -216,11 +213,9 @@
     </test>
     
     <!--  ****************  -->
-    <!--      Other         -->
+    <!--      Prohibited    -->
     <!--  ****************  --> 
-        
-    <!-- All arguments with default values should be at the end -->
-    <test name="defaultValuesOrder"/>
+
                     
     <!-- Check for prohibited functions -->
     <!-- @see http://www.php.net/manual/en/indexes.php -->
@@ -265,8 +260,15 @@
     	<!-- <item value="T_INLINE_HTML"/> -->
     	<!-- <item value="T_ECHO"/>  -->
     	
-    	
     </test>
+    
+        
+    <!--  ****************  -->
+    <!--      Other         -->
+    <!--  ****************  --> 
+            
+    <!-- All arguments with default values should be at the end -->
+    <test name="defaultValuesOrder"/>
     
      <!-- Check for silenced errors before function calls (@function) -->
     <test name="checkSilencedError">

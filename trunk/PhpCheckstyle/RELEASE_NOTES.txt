@@ -12,7 +12,8 @@ Version 0.10.0
 * Errors are now described in much greater detail and more consistent language
 * Removed 'old : ' and 'new : ' prefixes from constructor name hints
 * New output type - html console
-
+* Removed "controlStructNeedCurly" rule, duplicate with "needBraces" rule
+* Completed the test cases
 
 Thanks a lot to Justin Creasey and Adam King
 

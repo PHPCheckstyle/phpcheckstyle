@@ -23,7 +23,7 @@ $X = 1;
  * 
  * @SuppressWarnings checkUnusedVariables
  */
-class badlynamedclass {
+class Badlynamedclass {
 	
 	//5 : member level var naming :: PHPCHECKSTYLE_MEMBER_VARIABLE_NAMING 
 	$Y = 1;

@@ -3,9 +3,9 @@
  * This file is an exemple of PHP file containing bad indentation.
  * 4 whitespaces are expected for each level of indentation.
  * 
- * This file should generate 6 warnings of indentation with the default config.
+ * This file should generate 6 warnings with the default config.
  */
- class BadTest {
+ class indentation {
     $a = $a; // 4 spaces and a token
 	$b = $b; // 1 tab and a token
    $c = $c; // 3 spaces and a token

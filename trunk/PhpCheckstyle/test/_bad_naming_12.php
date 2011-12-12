@@ -2,7 +2,7 @@
 
 /**
  * This file is an exemple of PHP file containing bad naming.
- * This test file should generate 6 warnings of naming with the default config.
+ * This test file should generate 6 warnings with the default config.
  */
 
 
@@ -31,7 +31,7 @@ class badlynamedclass {
 	/**
 	 * 6 :constructor Naming :: Should be old style
 	 */
-	function __construct(){		
+	function __construct() {		
 	}
 	
 

@@ -247,6 +247,11 @@ With inner assignments it is difficult to see all places where a variable is set
 With the exception of for iterators, all assignments should occur in their own toplevel statement to increase readability.  
 * A list of exceptions can be defined for this test.
 
+== oneClassPerFile ==
+Check that there is only one class declaration per PHP file.
+
+= Unused =
+
 == checkUnusedPrivateFunctions ==
 Detect unused private functions (detecting unused public ones is more difficult).
 
@@ -269,8 +274,7 @@ function foo {
 }
 }}}
 
-== oneClassPerFile ==
-Check that there is only one class declaration per PHP file.
+
 
 
 = Optimisation =

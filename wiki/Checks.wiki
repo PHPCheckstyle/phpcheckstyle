@@ -184,12 +184,7 @@ See [http://www.aivosto.com/project/help/pm-complexity.html Cyclomatic Complexit
 * Proprety warningLevel (default = 10).
 * Proprety errorLevel(default = 20).
 
-
-= Other =
-
-
-== defaultValuesOrder == 
-Tests that all the arguments of a function with default values are placed at the end of the list of arguments.
+= Prohibited =
 
 == checkProhibitedFunctions ==
 Checks for prohibited functions. List the functions that are forbidden in a project for safety reasons (like for exemple "exec").
@@ -198,6 +193,13 @@ See the list of PHP functions [http://www.php.net/manual/en/indexes.php here]
 == checkProhibitedTokens ==
 Checks for prohibited tokens. List the PHP tokens that are forbidden.
 See the list of PHP tokens [http://www.php.net/manual/en/tokens.php here]
+
+
+= Other =
+
+
+== defaultValuesOrder == 
+Tests that all the arguments of a function with default values are placed at the end of the list of arguments.
 
 == checkSilencedError ==
 Checks for silenced function calls.

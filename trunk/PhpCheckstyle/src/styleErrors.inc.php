@@ -103,9 +103,9 @@ define("PHPCHECKSTYLE_USE_BOOLEAN_OPERATORS", "Boolean operators (&&) must be us
 
 define("PHPCHECKSTYLE_DOCBLOCK_RETURN", "The function '%s' returns a value and must include @returns in its docblock.");
 
-define("PHPCHECKSTYLE_DOCBLOCK_PARAM", "The function '%s' 's parameters must match the those in its docblock @param.");
+define("PHPCHECKSTYLE_DOCBLOCK_PARAM", "The function '%s' parameters must match the those in its docblock @param.");
 
-define("PHPCHECKSTYLE_DOCBLOCK_THROW", "The function '%s' throws an exception, a value and must include @throws in its docblock.");
+define("PHPCHECKSTYLE_DOCBLOCK_THROW", "The function '%s' throws an exception and must include @throws in its docblock.");
 
 define("PHPCHECKSTYLE_UNARY_OPERATOR", "Unary operators (++ or --) must not be used inside a control statement");
 

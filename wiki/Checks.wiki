@@ -1,4 +1,4 @@
-#summary PHPCheckstyle list of available checks
+#summary PHPCheckstyle list of available check rules
 
 The configuration file used by default is config/default.xml. 
 
@@ -44,6 +44,11 @@ Checks the naming of the constructor, the property "naming" can be set to "old" 
 == classNaming ==
 Checks to see if the class follows the naming convention (class name has to start with uppercase).
 
+== interfaceNaming ==
+Checks to see if the interface follows the naming convention.
+
+== fileNaming == 
+Checks to see if the PHP file name follows the naming convention.
 
 = PHP Tags =
 

@@ -619,22 +619,11 @@ class PHPCheckstyle {
 				break;
 
 			case ";":
-				// ";" -> end of statement
-				// we only need to make sure that we are not hitting ":"
-				// before "{" in the case of a control structure, in which
-				// case we have a control structure is not using the curly
-				// brackets
-				if ($this->_justAfterControlStmt) {
-					$this->_justAfterControlStmt = false;
-
-					if ($this->_isActive('controlStructNeedCurly')) {
-						$msg = sprintf(PHPCHECKSTYLE_CS_NO_OPEN_CURLY, $this->_currentStatement);
-						$this->_writeError('controlStructNeedCurly', $msg);
-					}
-				}
 
 				// ";" should never be preceded by a whitespace
 				$this->_checkNoWhiteSpaceBefore($text);
+
+				// ";" should never be preceded by ;
 				$this->_checkEmptyStatement();
 
 				break;
@@ -1072,7 +1061,7 @@ class PHPCheckstyle {
 			// If the variable is not listed as an exception
 			$exceptions = $this->_config->getTestExceptions($ruleName);
 			if (empty($exceptions) || !in_array($text, $exceptions)) {
-				
+
 				if ($this->_isActive($ruleName)) {
 					// Scoped variable
 					$ret = preg_match($this->_config->getTestRegExp($ruleName), $texttoTest);
@@ -1089,7 +1078,7 @@ class PHPCheckstyle {
 					$this->_writeError($ruleName, $msg);
 				}
 			}
-		} 
+		}
 	}
 
 
@@ -1862,7 +1851,7 @@ class PHPCheckstyle {
 	private function _checkEmptyStatement() {
 
 		// If the next valid token is ; then the statement is empty.
-		if ($this->_isActive('checkEmptyStatement') && $this->_currentStatement) {
+		if ($this->_isActive('checkEmptyStatement')) {
 
 			if ($this->tokenizer->checkNextValidTextToken(";")) {
 				$this->_writeError('checkEmptyStatement', PHPCHECKSTYLE_EMPTY_STATEMENT);
@@ -2053,9 +2042,9 @@ class PHPCheckstyle {
 
 	/**
 	 * Check for the presence of a white space before and after the text.
-	 *
-	 * @param String $text The text of the token to test
-	 */
+	*
+	* @param String $text The text of the token to test
+	*/
 	private function _checkSurroundingWhiteSpace($text) {
 
 		$this->_checkWhiteSpaceBefore($text);

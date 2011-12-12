@@ -139,7 +139,7 @@ define("PHPCHECKSTYLE_ONE_CLASS_PER_FILE", "File '%s' must not have multiple cla
 
 define("PHPCHECKSTYLE_ONE_INTERFACE_PER_FILE", "File '%s' must not have multiple interface declarations.");
 
-define("PHPCHECKSTYLE_FUNCTION_INSIDE_LOOP", "'%s' functions must not be used inside a loop.");
+define("PHPCHECKSTYLE_FUNCTION_INSIDE_LOOP", "'%s' function must not be used inside a loop.");
 
 define("PHPCHECKSTYLE_UNUSED_CODE", "function '%s' has unused code after the return.");
 

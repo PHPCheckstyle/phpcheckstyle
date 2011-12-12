@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is an exemple of PHP file containing bad comments.
-  * This file should generate 5 warnings of indentation with the default config.
+  * This file should generate 5 warnings with the default config.
  */
 
 

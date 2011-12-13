@@ -1972,7 +1972,19 @@ class PHPCheckstyle {
 			$nextTokenInfo = $this->tokenizer->peekNextValidToken($pos);
 
 			// if the next token is an equal, we suppose that this is an affectation
-			$isAffectation = $this->tokenizer->checkProvidedText($nextTokenInfo->token, "=");
+			$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
+			$isAffectation = ($nextTokenText == "="
+			|| $nextTokenText == "+="
+			|| $nextTokenText == "*="
+			|| $nextTokenText == "/="
+			|| $nextTokenText == "-="
+			|| $nextTokenText == "%="
+			|| $nextTokenText == "&="
+			|| $nextTokenText == "|="
+			|| $nextTokenText == "^="
+			|| $nextTokenText == "<<="
+			|| $nextTokenText == ">>="
+			|| $nextTokenText == ".=");
 
 			// Check if the variable has already been met
 			if (empty($this->_variables[$text]) && !in_array($text, $this->_systemVariables)) {
@@ -2042,9 +2054,9 @@ class PHPCheckstyle {
 
 	/**
 	 * Check for the presence of a white space before and after the text.
-	*
-	* @param String $text The text of the token to test
-	*/
+	 *
+	 * @param String $text The text of the token to test
+	 */
 	private function _checkSurroundingWhiteSpace($text) {
 
 		$this->_checkWhiteSpaceBefore($text);

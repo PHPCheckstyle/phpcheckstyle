@@ -58,13 +58,13 @@
     <test name="memberVariableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!--  for member variables (inside a function) -->
     
     <!-- Check Function Naming -->
-    <test name="functionNaming" regexp="/^[a-z]/" level="ERROR"/>
+    <test name="functionNaming" regexp="/^[a-z][a-zA-Z0-9]*$/" level="ERROR"/>
     
     <!-- Check Protected Naming -->
-    <test name="protectedFunctionNaming" regexp="/^[a-z]/" level="ERROR"/>
+    <test name="protectedFunctionNaming" regexp="/^[a-z][a-zA-Z0-9]*$/" level="ERROR"/>
         
     <!-- Check Private Function Naming -->
-    <test name="privateFunctionNaming" regexp="/^_[a-z]/" level="ERROR"/>
+    <test name="privateFunctionNaming" regexp="/^_[a-z][a-zA-Z0-9]*$/" level="ERROR"/>
         
     <!-- Checks the constuctor naming -->
     <!-- old = old style (constructor = name of the class) -->
@@ -74,13 +74,13 @@
     </test>
     
     <!-- Check Class Naming -->
-    <test name="classNaming" regexp="/^[a-z_][a-zA-Z0-9]*/" level="ERROR"/>
+    <test name="classNaming" regexp="/^[A-Z][a-zA-Z0-9]*$/" level="ERROR"/>
     
     <!-- Check Interface Naming -->
-    <test name="interfaceNaming" regexp="/^[a-z_][a-zA-Z0-9]*/" level="ERROR"/>
+    <test name="interfaceNaming" regexp="/^[A-Z][a-zA-Z0-9]*$/" level="ERROR"/>
     
     <!-- File Naming -->
-     <test name="fileNaming" regexp="/^^[a-z][a-zA-Z0-9]*/" level="ERROR"/>
+     <test name="fileNaming" regexp="/^[a-zA-Z][a-zA-Z0-9]*$/" level="ERROR"/>
     
     
 	<!--  ****************  -->

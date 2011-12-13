@@ -4,7 +4,7 @@
 
 # 1 - C style comment : noShellComments :: PHPCHECKSTYLE_NO_SHELL_COMMENTS
 
-class comments {  // 2 - Class docBlocks
+class Comments {  // 2 - Class docBlocks
 	
 	// 3 - docBlocks : No docblock :: PHPCHECKSTYLE_MISSING_DOCBLOCK
 	function testComment($a) { // 4 - docBlocks : testParam ::  PHPCHECKSTYLE_DOCBLOCK_PARAM

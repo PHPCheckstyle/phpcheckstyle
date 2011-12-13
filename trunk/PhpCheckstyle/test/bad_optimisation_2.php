@@ -4,7 +4,7 @@
  * This file should generate 2 warnings with the default config.
  */
 
-class optimisation {
+class Optimisation {
 
 	/**
 	 * Unoptimized function.

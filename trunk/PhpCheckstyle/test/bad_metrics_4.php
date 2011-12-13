@@ -2,7 +2,7 @@
 /**
  * This file is an exemple of PHP file generating warnings about the metrics.
  */
-class metrics {
+class Metrics {
 
 	/**
 	 * Metrics about a function.

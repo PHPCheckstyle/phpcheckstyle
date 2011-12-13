@@ -5,7 +5,7 @@
  * 
  * This file should generate 6 warnings with the default config.
  */
- class indentation {
+ class Indentation {
     $a = $a; // 4 spaces and a token
 	$b = $b; // 1 tab and a token
    $c = $c; // 3 spaces and a token

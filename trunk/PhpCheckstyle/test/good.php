@@ -33,22 +33,16 @@ function totoTwo(PARAMETER1, PARAMETER11) {
 	$a = -12; // Should not ask for a space between - and 12
 
 	echo " toto ".$a;
+	
+	$a = array($a, 
+	$b
+	);
 
 
 	switch ($text) {
 		case "a":
 			switch ($text) {
-				case "a":
-					switch ($text) {
-						case "a":
-							break;
-						case "b":
-							break;
-						case "c":
-							break;
-						default:
-							break;
-					}
+				case "a":					
 					break;
 				case "b":
 					break;

@@ -4,7 +4,7 @@
  * This file should generate 4 warnings with the default config.
  */
 
-class unused {
+class Unused {
 	
 	// 1 - checkUnusedPrivateFunctions (never called inside the class)
 	/**

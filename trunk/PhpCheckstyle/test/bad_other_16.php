@@ -4,7 +4,7 @@
  * This file should generate 2 warnings with the default config.
  */
 
-class other {
+class Other {
 
 	/**
 	 * Prohibited functions.
@@ -98,6 +98,6 @@ EOT;
 /**
  * Other class inside the same file
  */
-class other2 { // 16 - oneClassPerFile
+class Other2 { // 16 - oneClassPerFile
 
 }

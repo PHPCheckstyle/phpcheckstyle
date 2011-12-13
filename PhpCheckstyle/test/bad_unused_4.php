@@ -17,7 +17,7 @@ class unused {
 	private function _testUnused($a, $b) { // 2- checkUnusedFunctionParameters ($b is never used)
 		
 		$c = $a + 1;
-		$c = $a; // 3 - checkUnusedVariables ($c is declared twice but never used)
+		$c .= $a; // 3 - checkUnusedVariables ($c is declared twice but never used)
 		
 		return $a;  
 		

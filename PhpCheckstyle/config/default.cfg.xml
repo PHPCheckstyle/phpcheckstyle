@@ -80,7 +80,7 @@
     <test name="interfaceNaming" regexp="/^[A-Z][a-zA-Z0-9]*$/" level="ERROR"/>
     
     <!-- File Naming -->
-     <test name="fileNaming" regexp="/^[a-zA-Z][a-zA-Z0-9]*$/" level="ERROR"/>
+     <test name="fileNaming" regexp="/^[a-zA-Z][a-zA-Z0-9._]*$/" level="ERROR"/>
     
     
 	<!--  ****************  -->

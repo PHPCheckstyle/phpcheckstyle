@@ -1013,10 +1013,7 @@ class PHPCheckstyle {
 	private function _checkConstantNaming($text) {
 		if ($this->_isActive('constantNaming')) {
 			$text = ltrim($text, "\"'");  // just in case, remove the quotes
-			$text = rtrim($text, "\"'");
-				
-			echo "Constant detected : ".$text.PHP_EOL;
-				
+			$text = rtrim($text, "\"'");				
 			$ret = preg_match($this->_config->getTestRegExp('constantNaming'), $text);
 			if (!$ret) {
 				$msg = sprintf(PHPCHECKSTYLE_CONSTANT_NAMING, $text, $this->_config->getTestRegExp('constantNaming'));
@@ -1173,6 +1170,9 @@ class PHPCheckstyle {
 	private function _checkFileNaming() {
 		if ($this->_isActive('fileNaming')) {
 			$fileBaseName = basename($this->_currentFilename);
+			
+			echo "File : ".$fileBaseName.PHP_EOL;
+			
 			$ret = preg_match($this->_config->getTestRegExp('fileNaming'), $fileBaseName);
 			if (!$ret) {
 				$msg = sprintf(PHPCHECKSTYLE_FILENAME_NAMING, $fileBaseName, $this->_config->getTestRegExp('fileNaming'));

@@ -8,7 +8,7 @@
 
 
 // 1 : constant naming :: PHPCHECKSTYLE_CONSTANT_NAMING
-define(_badly_named_constant, "THIS_IS_BADLY_NAMED");
+define(_badly_named_constant, "A_CONSTANT_VALUE");
 
 // 2 : constant naming :: PHPCHECKSTYLE_CONSTANT_NAMING
 const bad_CONST = "goo";

@@ -49,7 +49,7 @@
     <!--  ****************  -->
     
     <!-- Check Constant Naming -->
-    <test name="constantNaming" regexp="/^[A-Z][A-Z_]*[A-Z_]$/" level="ERROR"/>
+    <test name="constantNaming" regexp="/^[A-Z][A-Z0-9_]*$/" level="ERROR"/>
     
     <!-- Check Variable Naming -->
     <test name="variableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!--  default naming -->

@@ -328,6 +328,8 @@ class PHPCheckstyle {
 		$this->_inClassStatement = false;
 		$this->_inInterfaceStatement = false;
 
+		$this->__constantDef = false;
+
 		$this->_ncssFileClasses = 0;
 		$this->_ncssFileInterfaces = 0;
 		$this->_ncssFileFunctions = 0;
@@ -879,8 +881,15 @@ class PHPCheckstyle {
 				//   that T_STRING followed by "(" is a function call
 				//   Actually, I am not sure how good an assumption this is.
 			case T_STRING:
-				// Check whether this is a function call
+
+				// If the word "define" have been used right before the string
+				if ($this->_constantDef == true) {
+					$this->_checkConstantNaming($this->token[1]);
+				}
+
+				// Check whether this is a function call (and if "define", set the flag)
 				$this->_processFunctionCall($text);
+				
 				break;
 
 				// found constant definition
@@ -894,9 +903,6 @@ class PHPCheckstyle {
 				break;
 
 			case T_CONSTANT_ENCAPSED_STRING:
-				// TODO: This needs to be fixed/reworked to accomodate the difference with define();
-				//$this->_checkConstantNaming($text);
-
 				// Manage new lines inside string
 				$subToken = strtok($text, PHP_EOL);
 				while ($subToken !== false) {
@@ -1005,17 +1011,19 @@ class PHPCheckstyle {
 	 *        remove them from the string before testing
 	 */
 	private function _checkConstantNaming($text) {
-		if ($this->_constantDef && $this->_isActive('constantNaming')) {
-			$text = ltrim($text, "\"'");
+		if ($this->_isActive('constantNaming')) {
+			$text = ltrim($text, "\"'");  // just in case, remove the quotes
 			$text = rtrim($text, "\"'");
+				
+			echo "Constant detected : ".$text.PHP_EOL;
+				
 			$ret = preg_match($this->_config->getTestRegExp('constantNaming'), $text);
 			if (!$ret) {
 				$msg = sprintf(PHPCHECKSTYLE_CONSTANT_NAMING, $text, $this->_config->getTestRegExp('constantNaming'));
 				$this->_writeError('constantNaming', $msg);
 			}
-
-			$this->_constantDef = false;
 		}
+		$this->_constantDef = false;
 	}
 
 	/**

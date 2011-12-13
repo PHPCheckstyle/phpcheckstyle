@@ -1149,7 +1149,7 @@ class PHPCheckstyle {
 	 * @param String $text the name of the interface.
 	 */
 	private function _checkInterfaceNaming($text) {
-		
+
 		if ($this->_isActive('interfaceNaming')) {
 			$ret = preg_match($this->_config->getTestRegExp('interfaceNaming'), $text);
 			if (!$ret) {
@@ -2096,8 +2096,13 @@ class PHPCheckstyle {
 			$exceptions = $this->_config->getTestExceptions('noSpaceBeforeToken');
 			if (empty($exceptions) || !in_array($text, $exceptions)) {
 				if ($this->tokenizer->checkProvidedToken($this->prvsToken, T_WHITESPACE)) {
-					$msg = sprintf(PHPCHECKSTYLE_NO_SPACE_BEFORE_TOKEN, $text);
-					$this->_writeError('noSpaceBeforeToken', $msg);
+
+					// To avoid false positives when using a space indentation system, check that we are on the same line as the previous valid token
+					$prevValid = $this->tokenizer->peekPrvsValidToken();
+					if ($prevValid->lineOffset == 0) {
+						$msg = sprintf(PHPCHECKSTYLE_NO_SPACE_BEFORE_TOKEN, $text);
+						$this->_writeError('noSpaceBeforeToken', $msg);
+					}
 				}
 			}
 		}

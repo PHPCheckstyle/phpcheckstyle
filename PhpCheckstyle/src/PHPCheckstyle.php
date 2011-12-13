@@ -812,8 +812,8 @@ class PHPCheckstyle {
 				$this->_processControlStatement($text);
 				break;
 			case T_WHITESPACE:
+			case T_TAB :
 				{
-					// T_WHITESPACE can be a tab or a whitespace
 					if ($this->_isLineStart) {
 						// If the whitespace is at the start of the line, we check for indentation
 						$this->_checkIndentation($text);
@@ -1149,6 +1149,7 @@ class PHPCheckstyle {
 	 * @param String $text the name of the interface.
 	 */
 	private function _checkInterfaceNaming($text) {
+		
 		if ($this->_isActive('interfaceNaming')) {
 			$ret = preg_match($this->_config->getTestRegExp('interfaceNaming'), $text);
 			if (!$ret) {
@@ -2094,7 +2095,6 @@ class PHPCheckstyle {
 
 			$exceptions = $this->_config->getTestExceptions('noSpaceBeforeToken');
 			if (empty($exceptions) || !in_array($text, $exceptions)) {
-
 				if ($this->tokenizer->checkProvidedToken($this->prvsToken, T_WHITESPACE)) {
 					$msg = sprintf(PHPCHECKSTYLE_NO_SPACE_BEFORE_TOKEN, $text);
 					$this->_writeError('noSpaceBeforeToken', $msg);
@@ -2483,6 +2483,7 @@ class PHPCheckstyle {
 				T_PROTECTED,
 				T_PUBLIC,
 				T_WHITESPACE,
+				T_TAB,
 				T_COMMENT,
 				T_ML_COMMENT,
 				T_NEW_LINE);

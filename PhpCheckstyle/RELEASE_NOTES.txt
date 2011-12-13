@@ -14,6 +14,7 @@ Version 0.10.0
 * New output type - html console
 * Removed "controlStructNeedCurly" rule, duplicate with "needBraces" rule
 * Completed the test cases
+* The tokenizer now returns T_TAB separately from T_WHITESPACE
 
 Thanks a lot to Justin Creasey and Adam King
 

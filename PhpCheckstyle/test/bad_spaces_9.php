@@ -4,7 +4,7 @@
   * This file should generate 9 warnings with the default config.
  */
 
-class unused {
+class Space {
 	
 	/**
 	 * Test spacing

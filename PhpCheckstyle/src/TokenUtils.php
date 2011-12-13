@@ -1,24 +1,19 @@
 <?php
-/*
- *  $Id: TokenUtils.php 28215 2005-07-28 02:53:05Z hkodungallur $
-*
-*  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
-*  Licensed under the Open Source License version 2.1
-*  (See http://www.spikesource.com/license.html)
-*
-*  Lexical Analysis.
-*/
-
 if (!defined("T_ML_COMMENT")) {
 	define("T_ML_COMMENT", T_COMMENT);
 }
 
 define('T_NEW_LINE', -1);
+define('T_TAB', -2);
 
 /**
+ * Lexical Analysis.
+ * 
  * Class that stores the tokens for a particular class and provide
  * utility functions like getting the next/previous token,
  * checking whether the token is of particular type etc.
+ * 
+ * Based on the internal PHP tokenizer but separate the NEW_LINE and the TAB tokens.
  *
  * @see http://www.php.net/manual/en/tokens.php
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
@@ -147,7 +142,7 @@ class TokenUtils {
 			$pos++;
 			if (is_array($ret)) {
 				list($k, $v) = $ret;
-				if ($k == T_WHITESPACE || $k == T_COMMENT || $k == T_ML_COMMENT || $k == T_DOC_COMMENT) {
+				if ($k == T_WHITESPACE || $k == T_TAB || $k == T_COMMENT || $k == T_ML_COMMENT || $k == T_DOC_COMMENT) {
 					continue;
 				} else if ($k == T_NEW_LINE) {
 					$lineOffset++; // increment the line number when a new line is found
@@ -189,7 +184,7 @@ class TokenUtils {
 			$tmpTokenNumber--;
 			if (is_array($ret)) {
 				list($k, $v) = $ret;
-				if ($k == T_WHITESPACE || $k == T_COMMENT || $k == T_ML_COMMENT || $k == T_DOC_COMMENT) {
+				if ($k == T_WHITESPACE || $k == T_TAB || $k == T_COMMENT || $k == T_ML_COMMENT || $k == T_DOC_COMMENT) {
 					continue;
 				} else if ($k == T_NEW_LINE) {
 					$lineOffset--; // decrement the line number when a new line is found
@@ -451,6 +446,9 @@ class TokenUtils {
 				if ($data == "\r\n" || $data == "\n") {
 					// This is a new line token
 					$newTokens[] = array(T_NEW_LINE, $data);
+				} else if ($data == "\t") {
+					// This is a new line token
+					$newTokens[] = array(T_TAB, $data);
 				} else {
 					// Add the token under the original token name
 					$newTokens[] = is_array($token) ? array($tokenName, $data) : $data;

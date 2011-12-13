@@ -34,8 +34,9 @@ function totoTwo(PARAMETER1, PARAMETER11) {
 
 	echo " toto ".$a;
 	
-	$a = array($a, 
-	$b
+	$a = array(	$a, 
+				$b,
+				$c   // this used to generate a false positive for noSpaceBeforeToken rule
 	);
 
 

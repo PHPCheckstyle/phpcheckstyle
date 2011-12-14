@@ -158,7 +158,6 @@
          PEAR standard stipulates this to distinguish it from function calls. 
     -->
    <test name="spaceAfterControlStmt"/>
-   <!-- <test name="noSpaceAfterControlStmt"/> -->
    
     <!-- Check that there is no space after a function name in a function call -->
     <test name="noSpaceAfterFunctionName" level="INFO"></test>

@@ -903,6 +903,12 @@ class PHPCheckstyle {
 				break;
 
 			case T_CONSTANT_ENCAPSED_STRING:
+				
+				// If the word "define" have been used right before the constant encapsed string
+				if ($this->_constantDef == true) {
+					$this->_checkConstantNaming($this->token[1]);
+				}
+				
 				// Manage new lines inside string
 				$subToken = strtok($text, PHP_EOL);
 				while ($subToken !== false) {

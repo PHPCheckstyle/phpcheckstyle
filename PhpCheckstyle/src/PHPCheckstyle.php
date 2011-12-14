@@ -1270,15 +1270,6 @@ class PHPCheckstyle {
 			}
 		}
 
-		if ($this->_isActive('noSpaceAfterControlStmt')) {
-			if (!$this->tokenizer->checkNextTextToken('(')) {
-				if ($csText != 'else' && $csText != 'try') {
-					$msg = sprintf(PHPCHECKSTYLE_NO_SPACE_AFTER_TOKEN, $csText);
-					$this->_writeError('noSpaceAfterControlStmt', $msg);
-				}
-			}
-		}
-
 		// for some control structures like "else" and "do",
 		// there is no statments they will be followed directly by "{"
 		if ($csText == "else" || $csText == "do" || $csText == "try") {

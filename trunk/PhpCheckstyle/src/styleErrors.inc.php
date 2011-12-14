@@ -23,13 +23,13 @@ define("PHPCHECKSTYLE_INDENTATION_LEVEL_MORE", "The indentation level must be at
 
 define("PHPCHECKSTYLE_WRONG_OPEN_TAG", "The php open tag must be '<?php'.");
 
-define("PHPCHECKSTYLE_NO_SPACE_BEFORE_TOKEN", "Whitespace must not preceed '%s' .");
+define("PHPCHECKSTYLE_NO_SPACE_BEFORE_TOKEN", "Whitespace must not preceed '%s'.");
 
-define("PHPCHECKSTYLE_NO_SPACE_AFTER_TOKEN", "Whitespace must not follow '%s' .");
+define("PHPCHECKSTYLE_NO_SPACE_AFTER_TOKEN", "Whitespace must not follow '%s'.");
 
-define("PHPCHECKSTYLE_SPACE_BEFORE_TOKEN", "Whitespace must preceed '%s' .");
+define("PHPCHECKSTYLE_SPACE_BEFORE_TOKEN", "Whitespace must preceed '%s'.");
 
-define("PHPCHECKSTYLE_SPACE_AFTER_TOKEN", "Whitespace must follow '%s' .");
+define("PHPCHECKSTYLE_SPACE_AFTER_TOKEN", "Whitespace must follow '%s'.");
 
 define("PHPCHECKSTYLE_LEFT_CURLY_POS", "The block opening '{' must be on %s");
 

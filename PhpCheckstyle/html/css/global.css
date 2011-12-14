@@ -35,11 +35,34 @@ h2 {
 	text-align: center;
 }
 
-.dataTable {
+.summaryDiv {
+	text-align: center;	
+}
+
+.filesDiv {
+	text-align: center;	
+}
+
+.detailDiv {
+	align: center;	
+}
+
+.table {
 	border: 1px solid #CCCCCC;
 	border-spacing: 0px;
 	background-color: #F1F1F1;
 	border-collapse: collapse;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.summaryTable {
+}
+
+.filesTable {
+}
+
+.detailTable {
 }
 
 .tableHead {
@@ -58,17 +81,36 @@ h2 {
 	
 }
 
-.tableCellBold {
-	border: 1px solid #CCCCCC;
-	padding: 2px;
-	font-weight:bold;
+.filePathCell {
 	
 }
 
-.emphasis {
+.fileErrorsCell {
+	
+}
+
+.summaryLeftCell {
+	
+}
+
+.summaryRightCell {
 	color: #990000;
 	font-weight: bold;
 }
+
+.detailLineCell {
+	font-weight: bold;
+	text-align: center;
+}
+
+.detailMessageCell {
+}
+
+.detailLevelCell {
+	text-align: center;
+	width: 8em;
+}
+
 
 .footer {
 	

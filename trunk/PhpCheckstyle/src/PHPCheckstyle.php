@@ -1171,8 +1171,6 @@ class PHPCheckstyle {
 		if ($this->_isActive('fileNaming')) {
 			$fileBaseName = basename($this->_currentFilename);
 			
-			echo "File : ".$fileBaseName.PHP_EOL;
-			
 			$ret = preg_match($this->_config->getTestRegExp('fileNaming'), $fileBaseName);
 			if (!$ret) {
 				$msg = sprintf(PHPCHECKSTYLE_FILENAME_NAMING, $fileBaseName, $this->_config->getTestRegExp('fileNaming'));

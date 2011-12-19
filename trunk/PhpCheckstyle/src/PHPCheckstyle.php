@@ -16,6 +16,7 @@ require_once PHPCHECKSTYLE_HOME_DIR."/src/styleErrors.inc.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/errorLevels.inc.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/TokenUtils.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/TokenInfo.php";
+require_once PHPCHECKSTYLE_HOME_DIR."/src/StatementItem.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporters.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/PlainFormatReporter.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/XmlFormatReporter.php";
@@ -73,10 +74,6 @@ class PHPCheckstyle {
 	private $_usedFunctions = array(); // The list of functions that are used in the class
 	private $_variables = array(); // The variables used
 	private $_inSwitch = false; // We are inside a switch statement
-	private $_switchLevel = 0;
-	private $_switchHasDefault = false; // The switch has a default statement
-	private $_caseHasBreak = false; // The case has a break
-	private $_caseStartLine = 0;
 	private $_nbFunctionParameters = 0; // Count the number of parameters of the current function
 	private $_justAfterFuncStmt = false; // We are just after a control statement (last } )
 	private $_justAfterControlStmt = false; // We are just after a function statement (last } )
@@ -99,8 +96,7 @@ class PHPCheckstyle {
 	private $_docblocNbReturns = 0; // Number of @return in the docblock of a function
 	private $_docblocNbThrows = 0; // Number of @throw in the docblock of a function
 
-	private $_levelOfNesting = 0;
-	private $_branchingStack = array();
+	private $_branchingStack = array();  // Array of StatementItem - The stack of currently started statements.
 	private $_cyclomaticComplexity = 0;
 
 	private $_fileSuppressWarnings = array(); // List of warnings to ignore for this file
@@ -304,6 +300,7 @@ class PHPCheckstyle {
 		$this->_fcLeftParenthesis = 0;
 		$this->inDoWhile = false;
 
+		$this->_branchingStack = array();
 		$this->_inControlStatement = false;
 		$this->_inArrayStatement = false;
 		$this->_inFunctionStatement = false;
@@ -313,9 +310,6 @@ class PHPCheckstyle {
 		$this->_variables = array();
 		$this->_privateFunctionsStartLines = array();
 		$this->_inSwitch = false;
-		$this->_switchLevel = 0;
-		$this->_caseHasBreak = false;
-		$this->_caseStartLine = 0;
 		$this->_inFuncCall = false;
 		$this->_nbFunctionParameters = 0;
 		$this->_justAfterFuncStmt = false;
@@ -530,7 +524,9 @@ class PHPCheckstyle {
 	private function _processString($text) {
 
 		if (DEBUG) {
-			echo $this->_levelOfNesting." Line  : ".$this->lineNumber." String : ".$text.PHP_EOL;
+			echo count($this->_branchingStack);
+			echo " Line  : ".$this->lineNumber;
+			echo " : ".$text.PHP_EOL;
 			$this->_dumpStack();
 		}
 
@@ -547,38 +543,37 @@ class PHPCheckstyle {
 
 				// Check we have a white space before a curly opening
 				$this->_checkWhiteSpaceBefore($text);
-				$stackitem = "";
+				$stackitem = new StatementItem();
+				$stackitem->line = $this->lineNumber;
 
 				// if _justAfterFuncStmt is set, the "{" is the beginning of a function definition block
 				if ($this->_justAfterFuncStmt) {
 					$this->_processFunctionStart();
-					$stackitem = "function";
-				}
-
-				// if _justAfterControlStmt is set, the "{" is the beginning of a control structure block
-				if ($this->_justAfterControlStmt) {
+					$stackitem->type = "FUNCTION";
+					$stackitem->name = $this->_currentFunctionName;
+				} else if ($this->_justAfterControlStmt) {
+					// if _justAfterControlStmt is set, the "{" is the beginning of a control structure block
 					$this->_processControlStructureStart();
-					$stackitem = $this->_currentStatement;
-				}
-
-				// if _inClassStatement is set then we are just after a class declaration
-				if ($this->_inClassStatement) {
+					$stackitem->type = strtoupper($this->_currentStatement);
+				}  else if ($this->_inClassStatement) {
+					// if _inClassStatement is set then we are just after a class declaration
 					$this->_inClassStatement = false;
 					$this->_processClassStart();
-					$stackitem = "class";
-				}
-
-				// if _inInterfaceStatement is set then we are just after a Interface declaration
-				if ($this->_inInterfaceStatement) {
+					$stackitem->type = "CLASS";
+					$stackitem->name = $this->_currentClassname;
+				}  else if ($this->_inInterfaceStatement) {
+					// if _inInterfaceStatement is set then we are just after a Interface declaration
 					$this->_inInterfaceStatement = false;
 					$this->_processInterfaceStart();
-					$stackitem = "interface";
+					$stackitem->type = "INTERFACE";
+					$stackitem->name = $this->_currentInterfacename;
+				} else {
+					$stackitem->type = "{";
 				}
 
 				// Check if the block is not empty
 				$this->_checkEmptyBlock();
 
-				$this->_levelOfNesting++;
 				array_push($this->_branchingStack, $stackitem);
 
 				break;
@@ -595,28 +590,29 @@ class PHPCheckstyle {
 					}
 				}
 
-				$this->_levelOfNesting--;
-				array_pop($this->_branchingStack);
+				
 
 				// Test for the end of a switch bloc
-				if ($this->_inSwitch && $this->_levelOfNesting == $this->_switchLevel) {
+				if ($this->_getCurrentStackItem()->type == "SWITCH") {
 					$this->_processSwitchStop();
 				}
 
 				// Test for the end of a function
-				if ($this->_levelOfNesting == $this->_functionLevel && $this->_inFunction) {
+				if (count($this->_branchingStack) == $this->_functionLevel && $this->_inFunction) {
 					$this->_processFunctionStop();
 				}
 
 				// Test for the end of a class
-				if ($this->_levelOfNesting == $this->_classLevel && $this->_inClass) {
+				if (count($this->_branchingStack) == $this->_classLevel && $this->_inClass) {
 					$this->_processClassStop();
 				}
 
 				// Test for the end of an interface
-				if ($this->_levelOfNesting == $this->_interfaceLevel && $this->_inInterface) {
+				if (count($this->_branchingStack) == $this->_interfaceLevel && $this->_inInterface) {
 					$this->_processInterfaceStop();
 				}
+				
+				array_pop($this->_branchingStack);
 
 				break;
 
@@ -744,7 +740,7 @@ class PHPCheckstyle {
 
 		// Debug
 		if (DEBUG) {
-			echo $this->_levelOfNesting;
+			echo count($this->_branchingStack);
 			echo " Line  : ".$this->lineNumber;
 			echo " Token ".$this->tokenizer->getTokenName($tok);
 			echo " : ".$text.PHP_EOL;
@@ -889,7 +885,7 @@ class PHPCheckstyle {
 
 				// Check whether this is a function call (and if "define", set the flag)
 				$this->_processFunctionCall($text);
-				
+
 				break;
 
 				// found constant definition
@@ -903,12 +899,12 @@ class PHPCheckstyle {
 				break;
 
 			case T_CONSTANT_ENCAPSED_STRING:
-				
+
 				// If the word "define" have been used right before the constant encapsed string
 				if ($this->_constantDef == true) {
 					$this->_checkConstantNaming($this->token[1]);
 				}
-				
+
 				// Manage new lines inside string
 				$subToken = strtok($text, PHP_EOL);
 				while ($subToken !== false) {
@@ -927,11 +923,9 @@ class PHPCheckstyle {
 				}
 				break;
 			case T_CURLY_OPEN: // for protected variables within strings "{$var}"
-				$this->_levelOfNesting++;
 				array_push($this->_branchingStack, 'curly_open');
 				break;
 			case T_DOLLAR_OPEN_CURLY_BRACES: // for extended format "${var}"
-				$this->_levelOfNesting++;
 				array_push($this->_branchingStack, 'dollar_curly_open');
 				break;
 			case T_NEW_LINE:
@@ -1019,7 +1013,7 @@ class PHPCheckstyle {
 	private function _checkConstantNaming($text) {
 		if ($this->_isActive('constantNaming')) {
 			$text = ltrim($text, "\"'");  // just in case, remove the quotes
-			$text = rtrim($text, "\"'");				
+			$text = rtrim($text, "\"'");
 			$ret = preg_match($this->_config->getTestRegExp('constantNaming'), $text);
 			if (!$ret) {
 				$msg = sprintf(PHPCHECKSTYLE_CONSTANT_NAMING, $text, $this->_config->getTestRegExp('constantNaming'));
@@ -1176,7 +1170,7 @@ class PHPCheckstyle {
 	private function _checkFileNaming() {
 		if ($this->_isActive('fileNaming')) {
 			$fileBaseName = basename($this->_currentFilename);
-			
+
 			$ret = preg_match($this->_config->getTestRegExp('fileNaming'), $fileBaseName);
 			if (!$ret) {
 				$msg = sprintf(PHPCHECKSTYLE_FILENAME_NAMING, $fileBaseName, $this->_config->getTestRegExp('fileNaming'));
@@ -1345,7 +1339,7 @@ class PHPCheckstyle {
 	 */
 	private function _processInterfaceStart() {
 		$this->_inInterface = true;
-		$this->_interfaceLevel = $this->_levelOfNesting;
+		$this->_interfaceLevel = count($this->_branchingStack);
 
 		// Check the position of the open curly after the interface declaration
 		if ($this->_isActive('interfaceOpenCurly')) {
@@ -1382,7 +1376,7 @@ class PHPCheckstyle {
 	 */
 	private function _processClassStart() {
 		$this->_inClass = true;
-		$this->_classLevel = $this->_levelOfNesting;
+		$this->_classLevel = count($this->_branchingStack);
 
 		// Check the position of the open curly after the class declaration
 		if ($this->_isActive('classOpenCurly')) {
@@ -1423,12 +1417,10 @@ class PHPCheckstyle {
 
 		$this->_inFunction = true;
 		$this->_cyclomaticComplexity = 1;
-		$this->_functionLevel = $this->_levelOfNesting;
+		$this->_functionLevel = count($this->_branchingStack);
 		$this->_justAfterFuncStmt = false;
 
 		$this->_functionStartLine = $this->lineNumber;
-
-		//echo "Warnings Suppressed : ".print_r($this->_functionSuppressWarnings,true).PHP_EOL;
 
 		// Check the position of the open curly after the function declaration
 		if ($this->_isActive('funcDefinitionOpenCurly')) {
@@ -1668,9 +1660,6 @@ class PHPCheckstyle {
 	 */
 	private function _processSwitchStart() {
 		$this->_inSwitch = true;
-		$this->_switchLevel = $this->_levelOfNesting;
-		$this->_switchHasDefault = false;
-		$this->_caseHasBreak = true;
 		$this->_switchStartLine = $this->lineNumber;
 	}
 
@@ -1679,10 +1668,21 @@ class PHPCheckstyle {
 	 */
 	private function _processSwitchStop() {
 		$this->_inSwitch = false;
+		$this->_checkSwitchNeedDefault();
+	}
 
-		if ($this->_isActive('switchNeedDefault') && !$this->_switchHasDefault) {
-			// Direct call to reporter to include a custom line number.
-			$this->_reporter->writeError($this->_switchStartLine, 'switchNeedDefault', PHPCHECKSTYLE_SWITCH_DEFAULT, $this->_config->getTestLevel('switchNeedDefault'));
+	/**
+	 * Check if the default case of a switch statement is present.
+	 *
+	 * This function is launched at the end of switch/case.
+	 */
+	private function _checkSwitchNeedDefault() {
+		
+		if ($this->_isActive('switchNeedDefault')) {
+			if (!$this->_getCurrentStackItem()->switchHasDefault) {
+				// Direct call to reporter to include a custom line number.
+				$this->_reporter->writeError($this->_switchStartLine, 'switchNeedDefault', PHPCHECKSTYLE_SWITCH_DEFAULT, $this->_config->getTestLevel('switchNeedDefault'));
+			}
 		}
 	}
 
@@ -1692,39 +1692,55 @@ class PHPCheckstyle {
 	private function _processSwitchCase() {
 
 		// Test if the previous case had a break
-		if ($this->_isActive('switchCaseNeedBreak') && !$this->_caseHasBreak) {
-			// Direct call to reporter to include a custom line number.
-			$this->_reporter->writeError($this->_caseStartLine, 'switchCaseNeedBreak', PHPCHECKSTYLE_SWITCH_CASE_NEED_BREAK, $this->_config->getTestLevel('switchCaseNeedBreak'));
-		}
+		$this->_checkSwitchCaseNeedBreak();
 
 		// If the case arrives after the default
-		if ($this->_isActive('switchDefaultOrder') && $this->_switchHasDefault) {
-			$this->_writeError('switchDefaultOrder', PHPCHECKSTYLE_SWITCH_DEFAULT_ORDER);
-		}
+		$this->_checkSwitchDefaultOrder();
 
-		// For this break
-		$this->_caseHasBreak = false;
-		$this->_caseStartLine = $this->lineNumber;
+		// For this case
+		$this->_getCurrentStackItem()->caseHasBreak = false;
+		$this->_getCurrentStackItem()->caseStartLine = $this->lineNumber;
+	}
+
+	/**
+	 * Check if the switch/case statement default case appear at the end.
+	 *
+	 * This function is launched at the start of each case.
+	 */
+	private function _checkSwitchDefaultOrder() {
+		if ($this->_isActive('switchDefaultOrder')) {
+			if ($this->_getCurrentStackItem()->switchHasDefault) { 
+				// The default flag is already set, it means that a previous case case a default
+				$this->_writeError('switchDefaultOrder', PHPCHECKSTYLE_SWITCH_DEFAULT_ORDER);
+			}
+		}
+	}
+
+	/**
+	 * Check if the case statement of a swtich/case a a break instruction.
+	 *
+	 * This function is launched at the start of each case.
+	 */
+	private function _checkSwitchCaseNeedBreak() {
+		// Test if the previous case had a break
+		if ($this->_isActive('switchCaseNeedBreak') && !$this->_getCurrentStackItem()->caseHasBreak) {
+			// Direct call to reporter to include a custom line number.
+			$this->_reporter->writeError($this->_getCurrentStackItem()->caseStartLine, 'switchCaseNeedBreak', PHPCHECKSTYLE_SWITCH_CASE_NEED_BREAK, $this->_config->getTestLevel('switchCaseNeedBreak'));
+		}
 	}
 
 	/**
 	 * Process a default statement.
 	 */
 	private function _processSwitchDefault() {
-		$this->_switchHasDefault = true;
-
-		// Test if the previous case had a break
-		if ($this->_isActive('switchCaseNeedBreak') && !$this->_caseHasBreak) {
-			// Direct call to reporter to include a custom line number.
-			$this->_reporter->writeError($this->_caseStartLine, 'switchCaseNeedBreak', PHPCHECKSTYLE_SWITCH_CASE_NEED_BREAK, $this->_config->getTestLevel('switchCaseNeedBreak'));
-		}
+		$this->_getCurrentStackItem()->switchHasDefault = true;
 	}
 
 	/**
 	 * Process a break statement.
 	 */
 	private function _processSwitchBreak() {
-		$this->_caseHasBreak = true;
+		$this->_getCurrentStackItem()->caseHasBreak = true;
 	}
 
 	/**
@@ -1878,7 +1894,7 @@ class PHPCheckstyle {
 			$uncalledFunctions = array_diff($this->_privateFunctions, $this->_usedFunctions);
 
 			foreach ($uncalledFunctions as $uncalledFunction) {
-					
+
 				$msg = sprintf(PHPCHECKSTYLE_UNUSED_PRIVATE_FUNCTION, $uncalledFunction);
 				// Direct call to reporter to include a custom line number.
 				$this->_reporter->writeError($this->_privateFunctionsStartLines[$uncalledFunction], 'checkUnusedPrivateFunctions', $msg, $this->_config->getTestLevel('checkUnusedPrivateFunctions'));
@@ -2194,10 +2210,10 @@ class PHPCheckstyle {
 			do {
 				$currentTokenString = $this->tokenizer->extractTokenText($currentToken);
 				$lineString .= $currentTokenString;
-					
+
 				$currentTokenIndex += 1;
 				$currentToken = $this->tokenizer->peekTokenAt($currentTokenIndex);
-					
+
 				$isNewLine = $this->tokenizer->checkProvidedToken($currentToken, T_NEW_LINE);
 				$isNull = $this->tokenizer->peekTokenAt($currentTokenIndex) == null;
 			} while (!($isNull || $isNewLine));
@@ -2263,15 +2279,15 @@ class PHPCheckstyle {
 			return;
 		}
 
-		//doesn't check empty line and where we are in a control statement
-		if ($this->_inControlStatement || $this->_inFuncCall || !isset($this->lineNumber) || !isset($this->_levelOfNesting) || $this->tokenizer->checkNextToken(T_NEW_LINE) || $this->tokenizer->checkNextValidTextToken(")")) {
+		// don't check empty lines and when we are in a control statement
+		if ($this->_inControlStatement || $this->_inFuncCall || !isset($this->lineNumber) || $this->tokenizer->checkNextToken(T_NEW_LINE) || $this->tokenizer->checkNextValidTextToken(")")) {
 			return;
 		}
 
 		$previousToken = $this->tokenizer->peekPrvsToken();
 		// only check a line once
 		if (!isset($this->indentationLevel['previousLine']) || $this->lineNumber != $this->indentationLevel['previousLine']) {
-			$nesting = $this->_levelOfNesting;
+			$nesting = count($this->_branchingStack);
 			if ($this->tokenizer->checkNextValidTextToken("{")) {
 				$nesting++;
 			}
@@ -2571,11 +2587,23 @@ class PHPCheckstyle {
 	 */
 	private function _dumpStack() {
 		foreach ($this->_branchingStack as $item) {
-			echo $item."->";
+			echo $item->type;
+			if ($item->type == "FUNCTION" || $item->type == "INTERFACE" || $item->type == "CLASS") {
+				echo "(".$item->name.")";
+			}
+			echo " -> ";
 		}
 		echo PHP_EOL;
 	}
 
+	/**
+	 * Return the top stack item.
+	 *
+	 * @return StatementItem
+	 */
+	private function _getCurrentStackItem() {
+		return end($this->_branchingStack);
+	}
 	/**
 	 * Check for silenced call to functons.
 	 *

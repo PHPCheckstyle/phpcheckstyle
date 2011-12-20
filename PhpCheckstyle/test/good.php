@@ -114,6 +114,7 @@ private function badlyNamedPrivateFunction(PARAMETER1, PARAMETER) { // should ha
 	// Call the private function
 	$this->_privateFunction();
 
+	// This used to generate a false positive for "needBraces" rule with the while statement
 	do {
 		toto();
 	} while (true);

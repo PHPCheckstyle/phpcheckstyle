@@ -552,8 +552,8 @@ class PHPCheckstyle {
 					$stackitem->type = "FUNCTION";
 					$stackitem->name = $this->_currentFunctionName;
 				} else if ($this->_justAfterControlStmt) {
-					// if _justAfterControlStmt is set, the "{" is the beginning of a control structure block
-					$this->_processControlStructureStart();
+					// if _justAfterControlStmt is set, the "{" is the beginning of a control stratement block
+					$this->_processControlStatementStart();
 					$stackitem->type = strtoupper($this->_currentStatement);
 				}  else if ($this->_inClassStatement) {
 					// if _inClassStatement is set then we are just after a class declaration
@@ -704,6 +704,9 @@ class PHPCheckstyle {
 				}
 
 				$this->_checkNoWhiteSpaceBefore($text);
+				
+				$this->_getCurrentStackItem()->afterDoStatement = false;
+				
 				break;
 
 			case "&":
@@ -1271,7 +1274,7 @@ class PHPCheckstyle {
 		}
 
 		// for some control structures like "else" and "do",
-		// there is no statments they will be followed directly by "{"
+		// there is no statements they will be followed directly by "{"
 		if ($csText == "else" || $csText == "do" || $csText == "try") {
 			if ($this->tokenizer->checkNextValidTextToken("{")) {
 				$this->_inControlStatement = false;
@@ -1301,12 +1304,21 @@ class PHPCheckstyle {
 				$this->_writeError('controlStructElse', $msg);
 			}
 		}
+		
+		// To avoid a false positive when treating the while statement of a do/while
+		// We keep track that we have met a do statement 
+		if ($csText == "do") {
+			// Note : The current stack item is not yet the control statement itself, it's the parent
+			$this->_getCurrentStackItem()->afterDoStatement = true;
+		}
 	}
 
 	/**
-	 * Process the start of a control structure (do/while/...).
+	 * Process the start of a control structure (if/do/while/for/...).
+	 * 
+	 * Launched when we meet the { just after the statement declaration.
 	 */
-	private function _processControlStructureStart() {
+	private function _processControlStatementStart() {
 
 		// check for curly braces
 		if ($this->_isActive('controlStructOpenCurly')) {
@@ -2338,7 +2350,7 @@ class PHPCheckstyle {
 		if ($this->_isActive('needBraces')) {
 
 			$stmt = strtolower($this->_currentStatement);
-			if ($stmt == "if" || $stmt == "else" || $stmt == "elseif" || $stmt == "do" || $stmt == "while" || $stmt == "for" || $stmt == "foreach") {
+			if ($stmt == "if" || $stmt == "else" || $stmt == "elseif" || $stmt == "do" || ($stmt == "while" && !$this->_getCurrentStackItem()->afterDoStatement) || $stmt == "for" || $stmt == "foreach") {
 				if (!$this->tokenizer->checkNextValidTextToken("{")) {
 					$msg = sprintf(PHPCHECKSTYLE_NEED_BRACES, $stmt);
 					$this->_writeError('needBraces', $msg);

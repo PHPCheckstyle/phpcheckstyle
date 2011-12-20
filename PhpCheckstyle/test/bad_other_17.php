@@ -46,7 +46,9 @@ class Other {
 		heredoc
 EOT;
 
-		if ($a) echo $a; // 11 - needBraces
+		if ($a) echo $a; // 11 - needBraces with "if"
+		
+		while ($a == true) echo $a; // 12 - needBraces with "while"
 	}
 
 
@@ -64,11 +66,11 @@ EOT;
 				break;
 			case "c":
 				break;
-				// 12 - switchNeedDefault
+				// 13 - switchNeedDefault
 		}
 
 		switch ($a) {
-			default: // 13 - switchDefaultOrder
+			default: // 14 - switchDefaultOrder
 				break;
 			case "c":
 				break;
@@ -85,9 +87,9 @@ EOT;
 	 */
 	function unary($a) {
 		if ($a++) {
-			// 14 - checkUnaryOperator
+			// 15 - checkUnaryOperator
 			while ($a = "1") {
-				// 15 - checkInnerAssignment
+				// 16 - checkInnerAssignment
 				echo $a;
 			}
 		}
@@ -98,6 +100,6 @@ EOT;
 /**
  * Other class inside the same file
  */
-class Other2 { // 16 - oneClassPerFile
+class Other2 { // 17 - oneClassPerFile
 
 }

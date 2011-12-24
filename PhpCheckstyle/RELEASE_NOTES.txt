@@ -1,6 +1,11 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.10.1
+-------------
+* Fixed Rule encapsedVariablesInsideString : False positive when using heredoc
+* Rule needBraces : False positive for do/while
+
 Version 0.10.0
 -------------
 * Added support for interfaces

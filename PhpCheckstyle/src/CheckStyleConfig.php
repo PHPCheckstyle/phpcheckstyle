@@ -39,7 +39,7 @@ class CheckStyleConfig {
 		$_isAbsolutePath = preg_match("/^[a-zA-Z]{1}:\\.*/", CONFIG_FILE);
 
 		if ($_isAbsolutePath) {
-			$this->file	= CONFIG_FILE;
+			$this->file = CONFIG_FILE;
 		} else {
 			$this->file = PHPCHECKSTYLE_HOME_DIR."/config/".CONFIG_FILE;
 		}

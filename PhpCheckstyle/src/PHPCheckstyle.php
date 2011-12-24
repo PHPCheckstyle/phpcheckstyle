@@ -705,8 +705,6 @@ class PHPCheckstyle {
 
 				$this->_checkNoWhiteSpaceBefore($text);
 
-				$this->_getCurrentStackItem()->afterDoStatement = false;
-
 				break;
 
 			case "&":
@@ -2352,13 +2350,13 @@ class PHPCheckstyle {
 				return;
 			}
 
-			// control switch statement indentation
+			// Control switch statement indentation
 			if ($this->_inSwitch) {
 				if (!$this->tokenizer->checkNextToken(T_CASE) && !$this->tokenizer->checkNextToken(T_DEFAULT)) {
 					$expectedIndentation = $expectedIndentation + $indentationNumber;
 				}
 
-				// TODO don't check brackets in a switch
+				// Don't check brackets in a switch
 				if ($this->tokenizer->checkNextValidTextToken("{") || $this->tokenizer->checkNextValidTextToken("}")) {
 					return;
 				}
@@ -2392,6 +2390,9 @@ class PHPCheckstyle {
 					$msg = sprintf(PHPCHECKSTYLE_NEED_BRACES, $stmt);
 					$this->_writeError('needBraces', $msg);
 				}
+			}
+			if ($stmt == "while") {
+				$this->_getCurrentStackItem()->afterDoStatement = false;
 			}
 
 		}

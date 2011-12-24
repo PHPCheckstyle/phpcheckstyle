@@ -590,7 +590,7 @@ class PHPCheckstyle {
 					}
 				}
 
-				
+
 
 				// Test for the end of a switch bloc
 				if ($this->_getCurrentStackItem()->type == "SWITCH") {
@@ -611,7 +611,7 @@ class PHPCheckstyle {
 				if (count($this->_branchingStack) == $this->_interfaceLevel && $this->_inInterface) {
 					$this->_processInterfaceStop();
 				}
-				
+
 				array_pop($this->_branchingStack);
 
 				break;
@@ -704,9 +704,9 @@ class PHPCheckstyle {
 				}
 
 				$this->_checkNoWhiteSpaceBefore($text);
-				
+
 				$this->_getCurrentStackItem()->afterDoStatement = false;
-				
+
 				break;
 
 			case "&":
@@ -919,11 +919,10 @@ class PHPCheckstyle {
 
 				break;
 
-				// Constant part of string with variables
+
 			case T_ENCAPSED_AND_WHITESPACE:
-				if ($this->_isActive('encapsedVariablesInsideString')) {
-					$this->_writeError('encapsedVariablesInsideString', PHPCHECKSTYLE_VARIABLE_INSIDE_STRING);
-				}
+				// Constant part of string with variables
+				$this->_checkEncapsedVariablesInsideString();
 				break;
 			case T_CURLY_OPEN: // for protected variables within strings "{$var}"
 				array_push($this->_branchingStack, 'curly_open');
@@ -965,7 +964,10 @@ class PHPCheckstyle {
 				$this->_checkNoWhiteSpaceAfter($text);
 				break;
 			case T_START_HEREDOC:
-				$this->_checkHeredoc();
+				$this->_processStartHeredoc();
+				break;
+			case T_END_HEREDOC:
+				$this->_processEndHeredoc();
 				break;
 			case T_VARIABLE:
 				$this->_processVariable($text);
@@ -1304,9 +1306,9 @@ class PHPCheckstyle {
 				$this->_writeError('controlStructElse', $msg);
 			}
 		}
-		
+
 		// To avoid a false positive when treating the while statement of a do/while
-		// We keep track that we have met a do statement 
+		// We keep track that we have met a do statement
 		if ($csText == "do") {
 			// Note : The current stack item is not yet the control statement itself, it's the parent
 			$this->_getCurrentStackItem()->afterDoStatement = true;
@@ -1315,7 +1317,7 @@ class PHPCheckstyle {
 
 	/**
 	 * Process the start of a control structure (if/do/while/for/...).
-	 * 
+	 *
 	 * Launched when we meet the { just after the statement declaration.
 	 */
 	private function _processControlStatementStart() {
@@ -1689,7 +1691,7 @@ class PHPCheckstyle {
 	 * This function is launched at the end of switch/case.
 	 */
 	private function _checkSwitchNeedDefault() {
-		
+
 		if ($this->_isActive('switchNeedDefault')) {
 			if (!$this->_getCurrentStackItem()->switchHasDefault) {
 				// Direct call to reporter to include a custom line number.
@@ -1721,7 +1723,7 @@ class PHPCheckstyle {
 	 */
 	private function _checkSwitchDefaultOrder() {
 		if ($this->_isActive('switchDefaultOrder')) {
-			if ($this->_getCurrentStackItem()->switchHasDefault) { 
+			if ($this->_getCurrentStackItem()->switchHasDefault) {
 				// The default flag is already set, it means that a previous case case a default
 				$this->_writeError('switchDefaultOrder', PHPCHECKSTYLE_SWITCH_DEFAULT_ORDER);
 			}
@@ -1853,6 +1855,17 @@ class PHPCheckstyle {
 				$msg = sprintf(PHPCHECKSTYLE_EMPTY_BLOCK, $this->_currentStatement);
 				$this->_writeError('checkEmptyBlock', $msg);
 			}
+		}
+	}
+
+	/**
+	 * Check for encapsed variables inside string.
+	 *
+	 * This function is launched when the current token is T_ENCAPSED_AND_WHITESPACE.
+	 */
+	private function _checkEncapsedVariablesInsideString() {
+		if ($this->_isActive('encapsedVariablesInsideString') && !$this->_getCurrentStackItem()->inHeredoc) {
+			$this->_writeError('encapsedVariablesInsideString', PHPCHECKSTYLE_VARIABLE_INSIDE_STRING);
 		}
 	}
 
@@ -2074,9 +2087,32 @@ class PHPCheckstyle {
 
 
 	/**
-	 * Check for heredoc syntax.
+	 * Process the start of a heredoc block.
 	 *
-	 * This function is launched when the current token is T_START_HEREDOC
+	 * This function is launched when the current token is T_START_HEREDOC.
+	 */
+	private function _processStartHeredoc() {
+
+		$this->_getCurrentStackItem()->inHeredoc = true;
+
+		// Rule the "checkHeredoc" rule
+		$this->_checkHeredoc();
+	}
+
+	/**
+	 * Process the end of a heredoc block.
+	 *
+	 * This function is launched when the current token is T_END_HEREDOC.
+	 */
+	private function _processEndHeredoc() {
+
+		$this->_getCurrentStackItem()->inHeredoc = false;
+
+	}
+
+
+	/**
+	 * Check for presence of heredoc.
 	 */
 	private function _checkHeredoc() {
 		if ($this->_isActive('checkHeredoc')) {

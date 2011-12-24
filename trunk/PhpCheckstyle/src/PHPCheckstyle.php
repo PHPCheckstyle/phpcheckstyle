@@ -598,17 +598,17 @@ class PHPCheckstyle {
 				}
 
 				// Test for the end of a function
-				if (count($this->_branchingStack) == $this->_functionLevel && $this->_inFunction) {
+				if ($this->_getCurrentStackItem()->type == "FUNCTION") {
 					$this->_processFunctionStop();
 				}
 
 				// Test for the end of a class
-				if (count($this->_branchingStack) == $this->_classLevel && $this->_inClass) {
+				if ($this->_getCurrentStackItem()->type == "CLASS") {
 					$this->_processClassStop();
 				}
 
 				// Test for the end of an interface
-				if (count($this->_branchingStack) == $this->_interfaceLevel && $this->_inInterface) {
+				if ($this->_getCurrentStackItem()->type == "INTERFACE") {
 					$this->_processInterfaceStop();
 				}
 
@@ -1114,6 +1114,7 @@ class PHPCheckstyle {
 	 * @param String $text the name of the function.
 	 */
 	private function _checkPrivateFunctionNaming($text) {
+
 		if ($this->_isActive('privateFunctionNaming')) {
 			$ret = preg_match($this->_config->getTestRegExp('privateFunctionNaming'), $text);
 			if (!$ret) {

@@ -1235,7 +1235,7 @@ class PHPCheckstyle {
 			// Detect space after function name
 			if ($this->_isActive('noSpaceAfterFunctionName')) {
 				if (!$this->tokenizer->checkNextTextToken("(")) {
-					$msg = sprintf(PHPCHECKSTYLE_SPACE_AFTER_TOKEN, $text);
+					$msg = sprintf(PHPCHECKSTYLE_NO_SPACE_AFTER_TOKEN, $text);
 					$this->_writeError('noSpaceAfterFunctionName', $msg);
 				}
 			}

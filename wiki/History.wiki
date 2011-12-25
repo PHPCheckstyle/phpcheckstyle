@@ -1,6 +1,27 @@
 #summary Project History
 #labels Featured
 
+== Version 0.10.1 ==
+  * Fixed Rule encapsedVariablesInsideString : False positive when using heredoc
+  * Rule needBraces : False positive for do/while
+
+== Version 0.10.0 ==
+  * Added support for interfaces
+  * Improved checking of variables by scope
+  * Rewrote the checkLargeLine() function
+  * Added rudimentary progress reporting, invoked with the parameter --progress
+  * Edited Style errors for clarity
+  * Included regex in the error report for appropriate types
+  * Errors are now described in much greater detail and more consistent language
+  * Removed 'old : ' and 'new : ' prefixes from constructor name hints
+  * New output type - html console
+  * Removed "controlStructNeedCurly" rule, duplicate with "needBraces" rule
+  * Completed the test cases
+  * The tokenizer now returns T_TAB separately from T_WHITESPACE
+
+_Thanks a lot to Justin Creasey and Adam King_
+
+
 == Version 0.9.8 == 
   * Issue 3: Check for unreachable code
 

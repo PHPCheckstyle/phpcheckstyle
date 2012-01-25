@@ -30,9 +30,6 @@ class HTMLFormatReporter extends Reporter {
 		parent::__construct($ofolder, $this->ofile);
 		// Creating a util object to allow copying.
 		global $util;
-		// copy the css and images
-		$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/css", $ofolder."/css");
-		$util->copyr(PHPCHECKSTYLE_HOME_DIR."/html/images", $ofolder."/images");
 	}
 
 	/**

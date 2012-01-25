@@ -60,6 +60,8 @@ class PHPCheckstyle {
 	// and stops at the closing of the parenthesis or the new line if no parenthesis is used
 	private $_inControlStatement = false;
 
+	private $_inString = false;
+	private $_stringStartCharacter;
 	private $_inArrayStatement = false; // We are in a array statement
 	private $_inClassStatement = false; // Wa are in a class statement (declaration)
 	private $_inInterfaceStatement = false; // Wa are in an interface statement (declaration)
@@ -535,6 +537,9 @@ class PHPCheckstyle {
 
 		switch ($text) {
 
+
+
+
 			case "{":
 
 				// "{" signifies beginning of a block. We need to look for
@@ -545,6 +550,8 @@ class PHPCheckstyle {
 				$this->_checkWhiteSpaceBefore($text);
 				$stackitem = new StatementItem();
 				$stackitem->line = $this->lineNumber;
+
+				//FIXME: [Justin] Move this into a constructor
 
 				// if _justAfterFuncStmt is set, the "{" is the beginning of a function definition block
 				if ($this->_justAfterFuncStmt) {
@@ -582,7 +589,7 @@ class PHPCheckstyle {
 				// "}" signifies the end of a block
 				// currently tests whether this token resides on a new line.
 				// This test is desactivated when in a view
-				if ($this->_isActive('controlCloseCurly') && !($this->_isView)) {
+				if ($this->_isActive('controlCloseCurly') && !($this->_isView) && (!$this->_inString)) {
 					$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
 					if ($previousTokenInfo->lineOffset == 0) {
 						// the last token was on the same line
@@ -590,28 +597,35 @@ class PHPCheckstyle {
 					}
 				}
 
+				$_currentStackItem = $this->_getCurrentStackItem();
 
+				// FIXME: Add more robust handling of lines like:
+				// $_fbTrackingCode = "FB|{$_ref}|{$_source}|{$_fbSource}|{$_notifType}|{$_fbBookmarkPos}";
 
-				// Test for the end of a switch bloc
-				if ($this->_getCurrentStackItem()->type == "SWITCH") {
-					$this->_processSwitchStop();
+				// Workaround code
+				if (!Is_String($_currentStackItem)) {
+
+					// Test for the end of a switch bloc
+					if ($this->_getCurrentStackItem()->type == "SWITCH") {
+						$this->_processSwitchStop();
+					}
+
+					// Test for the end of a function
+					if ($this->_getCurrentStackItem()->type == "FUNCTION") {
+						$this->_processFunctionStop();
+					}
+
+					// Test for the end of a class
+					if ($this->_getCurrentStackItem()->type == "CLASS") {
+						$this->_processClassStop();
+					}
+
+					// Test for the end of an interface
+					if ($this->_getCurrentStackItem()->type == "INTERFACE") {
+						$this->_processInterfaceStop();
+					}
+
 				}
-
-				// Test for the end of a function
-				if ($this->_getCurrentStackItem()->type == "FUNCTION") {
-					$this->_processFunctionStop();
-				}
-
-				// Test for the end of a class
-				if ($this->_getCurrentStackItem()->type == "CLASS") {
-					$this->_processClassStop();
-				}
-
-				// Test for the end of an interface
-				if ($this->_getCurrentStackItem()->type == "INTERFACE") {
-					$this->_processInterfaceStop();
-				}
-
 				array_pop($this->_branchingStack);
 
 				break;
@@ -721,6 +735,15 @@ class PHPCheckstyle {
 			case "]":
 				$this->_inArrayStatement = false;
 				break;
+
+			case "'":
+				$this->_trackStringOpenOrClose("'");
+				break;
+
+			case '"':
+				$this->_trackStringOpenOrClose('"');
+				break;
+
 			default:
 				break;
 		}
@@ -2749,7 +2772,7 @@ class PHPCheckstyle {
 	 * @param $tokenToCheck 	the token to check.
 	 * @param $tokenList 		an array of token types, e.g. T_NEW_LINE, T_DOC_COMMENT, etc.
 	 *
-	 * @returns true if the token is found, false if it is not.
+	 * @return true if the token is found, false if it is not.
 	 */
 	private function _tokenIsInList($tokenToCheck, $tokenList) {
 		foreach ($tokenList as $tokenInList) {
@@ -2759,4 +2782,23 @@ class PHPCheckstyle {
 		}
 		return false;
 	}
+
+	/**
+	 * Handles the tracking of string starts and ends to avoid checking of braces inside strings.
+	 *
+	 * @param String $stringTocheck
+	 * 								The string to check for quotes
+	 */
+	private function _trackStringOpenOrClose($stringTocheck) {
+		if (!$this->_inString) {
+			$this->_inString = true;
+			$this->_stringStartCharacter = $stringTocheck;
+		}
+		else if ($this->_stringStartCharacter == $stringTocheck) {
+			$this->_inString = false;
+			$this->_stringStartCharacter = null;
+		}
+	}
+
+
 }

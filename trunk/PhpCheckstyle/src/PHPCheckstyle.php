@@ -546,8 +546,10 @@ class PHPCheckstyle {
 				// its position when it is a beginning of a control structure
 				// or a function or class definition.
 
-				// Check we have a white space before a curly opening
-				$this->_checkWhiteSpaceBefore($text);
+				// Check we have a white space before a curly opening in case of a "same line" indentation
+				if ($this->_config->getTestProperty('funcDefinitionOpenCurly', 'position') == "sl") {
+					$this->_checkWhiteSpaceBefore($text);
+				}
 				$stackitem = new StatementItem();
 				$stackitem->line = $this->lineNumber;
 

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ====================================================================== 
+
+     Project: PHPCheckStyle
+
+	 Author				: Justin
+     Date of Creation	: 31 jan 2012 2:24:30 pm   
+     Build.XML Version	: 1.0
+     
+     
+     Ant Build script for PHPCheckstyle - A Static Analysis tool for PHP.
+
+
+	 Available Options: (Run with Ant -f deploy.xml)
+	 ``````````````````
+	 package			: Packages PHPcheckstyle in a zip file for release.
+
+     ====================================================================== -->
+
+
+<project name="PHPCheckStyle" default="package">
+	<description>
+            Static Analysis tool for PHP.
+    </description>
+
+	<!-- ================================= 
+          target: init      
+          	Initializes variables.        
+         ================================= -->
+	<target name="-init">
+		<property name="build.dir" value="build" />
+		<property name="dist.dir" value="${build.dir}/dist" />
+
+		<property name="phpcheckstyle.version.major" value="0" />
+		<property name="phpcheckstyle.version.minor" value="10.1" />
+		<property name="phpcheckstyle.version" value="${phpcheckstyle.version.major}.${phpcheckstyle.version.minor}" />
+
+		<property name="phpcheckstyle.name" value="PHPCheckStyle-${phpcheckstyle.version}.zip"/>
+		
+	</target>
+
+	<!-- ================================= 
+          target: clean
+          	Deletes the output folder.              
+         ================================= -->
+	<target name="-clean" depends="-init">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<!-- ================================= 
+          target: prepare
+          	creates a new build folder.              
+         ================================= -->
+	<target name="-prepare" depends="-clean">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<!-- ================================= 
+          target: package
+          Packages PHPcheckstyle in a zip file for release.        
+         ================================= -->
+	<target name="package" depends="-prepare">
+		<zip destfile="${dist.dir}/${phpcheckstyle.name}" basedir="${basedir}">
+			<exclude name="Deploy.xml"/>
+			<exclude name="/build/"/>
+		</zip>
+	</target>
+
+</project>

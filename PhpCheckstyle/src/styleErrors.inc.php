@@ -141,6 +141,6 @@ define("PHPCHECKSTYLE_ONE_INTERFACE_PER_FILE", "File '%s' must not have multiple
 
 define("PHPCHECKSTYLE_FUNCTION_INSIDE_LOOP", "'%s' function must not be used inside a loop.");
 
-define("PHPCHECKSTYLE_UNUSED_CODE", "function '%s' has unused code after the return.");
+define("PHPCHECKSTYLE_UNUSED_CODE", "function '%s' has unused code after %s.");
 
 define("PHPCHECKSTYLE_DEPRECATED_FUNCTION", "%s is deprecated since PHP %s. %s must be used instead");

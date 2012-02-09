@@ -8,11 +8,11 @@ define('T_TAB', -2);
 
 /**
  * Lexical Analysis.
- * 
+ *
  * Class that stores the tokens for a particular class and provide
  * utility functions like getting the next/previous token,
  * checking whether the token is of particular type etc.
- * 
+ *
  * Based on the internal PHP tokenizer but separate the NEW_LINE and the TAB tokens.
  *
  * @see http://www.php.net/manual/en/tokens.php
@@ -305,10 +305,11 @@ class TokenUtils {
 	 */
 	public function findNextStringPosition($text) {
 
-		$pos = $this->getCurrentPosition() + 1;
+		$pos = $this->getCurrentPosition();
+		$pos += 1; // Start from the token following the current position
 
 		while  ($pos < $this->totalNumTokens) {
-			$token = $this->tokens[$pos];
+			$token = $this->tokens[$pos - 1];
 
 			if ($text == $this->extractTokenText($token)) {
 				return $pos;

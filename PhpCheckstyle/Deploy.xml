@@ -64,6 +64,10 @@
 		<zip destfile="${dist.dir}/${phpcheckstyle.name}" basedir="${basedir}">
 			<exclude name="Deploy.xml"/>
 			<exclude name="/build/"/>
+			<exclude name="/checkstyle_result/"/>
+			<exclude name=".models"/>
+			<exclude name=".project"/>
+			<exclude name="checkstyle_resultncss.xml"/>
 		</zip>
 	</target>
 

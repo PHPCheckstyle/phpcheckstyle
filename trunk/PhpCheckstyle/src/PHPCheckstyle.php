@@ -2456,9 +2456,10 @@ class PHPCheckstyle {
 		}
 
 		// Manage new lines inside commments
-		$subToken = strtok($text, PHP_EOL);
-		while ($subToken !== false) {
-
+		$subTokens = preg_split('#(\r\n|\n|\r)#', $text, -1);
+		
+		foreach ($subTokens as $subToken) {
+	
 			if ($tok == T_DOC_COMMENT) {
 				$this->_ncssTotalLinesPhpdoc++;
 				$this->_ncssFileLinesPhpdoc++;
@@ -2477,9 +2478,8 @@ class PHPCheckstyle {
 
 			// Increment the lines number (one comment is only one token)
 			$this->lineNumber++;
-			$subToken = strtok(PHP_EOL);
 		}
-		$this->lineNumber--; // One end of line is already counted
+		$this->lineNumber--;  // One end of line is already counted
 
 		// Check if the comment starts with '#'
 		if ($this->_isActive('noShellComments')) {

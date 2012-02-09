@@ -43,7 +43,7 @@ class TokenUtils {
 	public function tokenize($filename) {
 		$contents = "";
 		if (filesize($filename)) {
-			$fp = fopen($filename, "r");
+			$fp = fopen($filename, "rb");
 			$contents = fread($fp, filesize($filename));
 			fclose($fp);
 		}
@@ -441,10 +441,11 @@ class TokenUtils {
 			}
 
 			// Split the data up by newlines
-			$splitData = preg_split('#(\r\n|\n)#', $tokenData, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+			$splitData = preg_split('#(\r\n|\n|\r)#', $tokenData, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
 			foreach ($splitData as $data) {
-				if ($data == "\r\n" || $data == "\n") {
+
+				if ($data == "\r\n" || $data == "\n" || $data == "\r") {
 					// This is a new line token
 					$newTokens[] = array(T_NEW_LINE, $data);
 				} else if ($data == "\t") {

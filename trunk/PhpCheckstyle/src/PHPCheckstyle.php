@@ -2457,9 +2457,9 @@ class PHPCheckstyle {
 
 		// Manage new lines inside commments
 		$subTokens = preg_split('#(\r\n|\n|\r)#', $text, -1);
-		
+
 		foreach ($subTokens as $subToken) {
-	
+
 			if ($tok == T_DOC_COMMENT) {
 				$this->_ncssTotalLinesPhpdoc++;
 				$this->_ncssFileLinesPhpdoc++;
@@ -2686,7 +2686,14 @@ class PHPCheckstyle {
 	 * @return StatementItem
 	 */
 	private function _getCurrentStackItem() {
-		return end($this->_branchingStack);
+		$topItem = end($this->_branchingStack);
+		if ($topItem != null) {
+			return $topItem;
+		} else {
+			// In case of a empty stack, we are at the root of a PHP file (with no class or function).
+			// We return the default values
+			return new StatementItem(); 
+		}
 	}
 	/**
 	 * Check for silenced call to functons.

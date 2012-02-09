@@ -1975,8 +1975,10 @@ class PHPCheckstyle {
 	 * Check for unused code.
 	 *
 	 * Dead code after a return or a throw TOKEN.
+	 *
+	 * @param String $endToken The anme of the end token (RETURN or THROW)
 	 */
-	private function _checkUnusedCode() {
+	private function _checkUnusedCode($endToken) {
 		if ($this->_isActive('checkUnusedCode')) {
 
 			// The check is done only when we are at the root level of a function
@@ -1994,7 +1996,7 @@ class PHPCheckstyle {
 
 				// If the end of bloc if not right after the return statement, we have dead code
 				if ($posClose > $nextValidToken->position) {
-					$msg = sprintf(PHPCHECKSTYLE_UNUSED_CODE, $this->_getCurrentStackItem()->name);
+					$msg = sprintf(PHPCHECKSTYLE_UNUSED_CODE, $this->_getCurrentStackItem()->name, $endToken);
 					$this->_writeError('checkUnusedCode', $msg);
 				}
 			}
@@ -2099,7 +2101,7 @@ class PHPCheckstyle {
 		$this->_functionReturns = true;
 
 		// Search for unused code after the return
-		$this->_checkUnusedCode();
+		$this->_checkUnusedCode('RETURN');
 	}
 
 	/**
@@ -2113,7 +2115,7 @@ class PHPCheckstyle {
 		$this->_functionThrows = true;
 
 		// Search for unused code after the throw of an exception
-		$this->_checkUnusedCode();
+		$this->_checkUnusedCode('THROW');
 	}
 
 

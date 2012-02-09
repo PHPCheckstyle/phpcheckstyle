@@ -527,6 +527,7 @@ class PHPCheckstyle {
 
 		if (DEBUG) {
 			echo count($this->_branchingStack);
+			echo "-".$this->tokenizer->getCurrentPosition();
 			echo " Line  : ".$this->lineNumber;
 			echo " : ".$text.PHP_EOL;
 			$this->_dumpStack();
@@ -767,6 +768,7 @@ class PHPCheckstyle {
 		// Debug
 		if (DEBUG) {
 			echo count($this->_branchingStack);
+			echo "-".$this->tokenizer->getCurrentPosition();
 			echo " Line  : ".$this->lineNumber;
 			echo " Token ".$this->tokenizer->getTokenName($tok);
 			echo " : ".$text.PHP_EOL;
@@ -1977,19 +1979,24 @@ class PHPCheckstyle {
 	private function _checkUnusedCode() {
 		if ($this->_isActive('checkUnusedCode')) {
 
-			// Find the end of the return statement
-			$pos = $this->tokenizer->findNextStringPosition(';');
+			// The check is done only when we are at the root level of a function
+			if ($this->_getCurrentStackItem()->type == 'FUNCTION') {
 
-			// Find the next valid token after the return statement
-			$nextValidToken = $this->tokenizer->peekNextValidToken($pos);
-			$nextValidToken = $this->tokenizer->peekNextValidToken($nextValidToken->position);
+				// Find the end of the return statement
+				$pos = $this->tokenizer->findNextStringPosition(';');
 
-			// Find the end of the function or bloc of code
-			$posClose = $this->tokenizer->findNextStringPosition('}');
+				// Find the next valid token after the return statement
+				$nextValidToken = $this->tokenizer->peekNextValidToken($pos);
+				$nextValidToken = $this->tokenizer->peekNextValidToken($nextValidToken->position);
+					
+				// Find the end of the function or bloc of code
+				$posClose = $this->tokenizer->findNextStringPosition('}');
 
-			// If the end of bloc if not right after the return statement, we have dead code
-			if ($posClose > $nextValidToken->position) {
-				$this->_writeError('checkUnusedCode', PHPCHECKSTYLE_UNUSED_CODE);
+				// If the end of bloc if not right after the return statement, we have dead code
+				if ($posClose > $nextValidToken->position) {
+					$msg = sprintf(PHPCHECKSTYLE_UNUSED_CODE, $this->_getCurrentStackItem()->name);
+					$this->_writeError('checkUnusedCode', $msg);
+				}
 			}
 		}
 	}

@@ -299,16 +299,16 @@ class XmlNCSSReporter {
 		//
 		$averages = $this->document->createElement("averages");
 
-		$avgNcss = $this->document->createElement('ncss', $ncss / $nbFiles);
+		$avgNcss = $this->document->createElement('ncss', ($nbFiles == 0) ? 0 : ($ncss / $nbFiles));
 		$averages->appendChild($avgNcss);
 
-		$avgNcss = $this->document->createElement('functions', $functions / $nbFiles);
+		$avgNcss = $this->document->createElement('functions', ($nbFiles == 0) ? 0 : ($functions / $nbFiles));
 		$averages->appendChild($avgNcss);
 
-		$avgNcss = $this->document->createElement('classes', $classes / $nbFiles);
+		$avgNcss = $this->document->createElement('classes', ($nbFiles == 0) ? 0 : ($classes / $nbFiles));
 		$averages->appendChild($avgNcss);
 
-		$avgNcss = $this->document->createElement('javadoc', $javadocs / $nbFiles);
+		$avgNcss = $this->document->createElement('javadoc', ($nbFiles == 0) ? 0 : ($javadocs / $nbFiles));
 		$averages->appendChild($avgNcss);
 
 		$this->objects->appendChild($averages);

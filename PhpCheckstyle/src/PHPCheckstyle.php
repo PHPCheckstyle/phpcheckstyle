@@ -526,11 +526,11 @@ class PHPCheckstyle {
 	private function _processString($text) {
 
 		if (DEBUG) {
+			$this->_dumpStack();
 			echo count($this->_branchingStack);
 			echo "-".$this->tokenizer->getCurrentPosition();
 			echo " Line  : ".$this->lineNumber;
 			echo " : ".$text.PHP_EOL;
-			$this->_dumpStack();
 		}
 
 		// by defaut any token means we are not at the start of the line
@@ -630,6 +630,12 @@ class PHPCheckstyle {
 
 				}
 				array_pop($this->_branchingStack);
+
+				// Particular case of a ELSE IF {}
+				// We unstack both the IF and the ELSE
+				if ($_currentStackItem->type == "IF" && $this->_getCurrentStackItem()->type == "ELSE" && $this->_getCurrentStackItem()->noCurly == true) {
+					array_pop($this->_branchingStack);
+				}
 
 				break;
 
@@ -772,12 +778,12 @@ class PHPCheckstyle {
 
 		// Debug
 		if (DEBUG) {
+			$this->_dumpStack();
 			echo count($this->_branchingStack);
 			echo "-".$this->tokenizer->getCurrentPosition();
 			echo " Line  : ".$this->lineNumber;
 			echo " Token ".$this->tokenizer->getTokenName($tok);
 			echo " : ".$text.PHP_EOL;
-			$this->_dumpStack();
 		}
 
 		// Check if the token is in the list of prohibited tokens
@@ -1322,8 +1328,8 @@ class PHPCheckstyle {
 				// new control statement "if" will start
 				$this->_inControlStatement = false;
 			}
-				
-			// ELSE just after a IF with no curly : We close the if statement
+
+			// ELSE just after a IF with no curly : We close the IF statement
 			if ($this->_getCurrentStackItem()->type == "IF" && $this->_getCurrentStackItem()->noCurly == true) {
 				array_pop($this->_branchingStack);
 			}
@@ -1351,10 +1357,10 @@ class PHPCheckstyle {
 		} else {
 			$startPos = $this->tokenizer->getCurrentPosition();
 		}
-		
+
 		// Now we expect the '{' token
 		if (!$this->tokenizer->checkNextValidTextToken('{', $startPos + 1)) {
-			
+
 			// If not the case, we store the control statement in the stack
 			$stackitem = new StatementItem();
 			$stackitem->line = $this->lineNumber;
@@ -2026,7 +2032,7 @@ class PHPCheckstyle {
 				$posClose = $this->tokenizer->findNextStringPosition('}');
 
 				// If the end of bloc if not right after the return statement, we have dead code
-				if ($posClose > $nextValidToken->position) {
+				if ($nextValidToken != null && $posClose > $nextValidToken->position) {
 					$msg = sprintf(PHPCHECKSTYLE_UNUSED_CODE, $this->_getCurrentStackItem()->name, $endToken);
 					$this->_writeError('checkUnusedCode', $msg);
 				}

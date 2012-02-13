@@ -132,7 +132,7 @@ class TokenUtils {
 	public function peekNextValidToken($startPos = null, $stopOnNewLine = false) {
 		$ret = false;
 		$lineOffset = 0;
-		$pos = $this->curTokenNumber; // defaut position for the search
+		$pos = $this->getCurrentPosition(); // defaut position for the search
 		if ($startPos != null) {
 			$pos = $startPos; // if defined, set the start position
 
@@ -298,14 +298,19 @@ class TokenUtils {
 	}
 
 	/**
-	 * Find the next position of the string after the current position.
+	 * Find the next position of the string.
 	 *
 	 * @param String $text the text we're looking for
+	 * @param Integer $apos the position to start from (by defaut will use current position)
 	 * @return Integer the position, -1 if not found
 	 */
-	public function findNextStringPosition($text) {
+	public function findNextStringPosition($text, $apos = null) {
 
-		$pos = $this->getCurrentPosition();
+		if ($apos == null) {
+			$pos = $this->getCurrentPosition();
+		} else {
+			$pos = $apos;
+		}
 		$pos += 1; // Start from the token following the current position
 
 		while  ($pos < $this->totalNumTokens) {
@@ -342,11 +347,12 @@ class TokenUtils {
 	 * Check if the next valid token (ignoring whitespaces) correspond to the text.
 	 *
 	 * @param String $text the text we're looking for
+	 * @param Integer $startPos the start position
 	 * @return true if the token is found
 	 */
-	public function checkNextValidTextToken($text) {
+	public function checkNextValidTextToken($text, $startPos = null) {
 		$ret = false;
-		$retInfo = $this->peekNextValidToken();
+		$retInfo = $this->peekNextValidToken($startPos);
 		if ($retInfo != null) {
 			$token = $retInfo->token;
 			if (is_string($token)) {
@@ -363,11 +369,12 @@ class TokenUtils {
 	 *
 	 * @param Integer $value the value of the token we're looking for
 	 * @param String $text the text we're looking for
+	 * @param Integer $startPos the start position
 	 * @return true if the token is found
 	 */
-	public function checkNextValidToken($value, $text = false) {
+	public function checkNextValidToken($value, $text = false, $startPos = null) {
 		$ret = false;
-		$retInfo = $this->peekNextValidToken();
+		$retInfo = $this->peekNextValidToken($startPos);
 		$token = $retInfo->token;
 		if (is_array($token)) {
 			list($k, $v) = $token;
@@ -474,5 +481,40 @@ class TokenUtils {
 
 		return token_name($token);
 	}
+
+	/**
+	 * Find the position of the closing parenthesis corresponding to the current position opening parenthesis.
+	 *
+	 * @param Integer $startPos
+	 * @return Integer $closing position
+	 */
+	public function findClosingParenthesisPosition($startPos) {
+
+		// Find the opening parenthesis after current position
+		$pos = $this->findNextStringPosition('(', $startPos);
+		$parenthesisCount = 1;
+		
+		$pos += 1; // Skip the opening  parenthesis
+		
+		while ($parenthesisCount > 0 && $pos < $this->totalNumTokens) {
+			// Look for the next token
+			$token = $this->peekTokenAt($pos);
+			
+			// Increment or decrement the parenthesis count
+			if ($this->extractTokenText($token) == "(") {
+				$parenthesisCount += 1;
+			} else if ($this->extractTokenText($token) == ")") {
+				$parenthesisCount -= 1;
+			}
+			
+			// Increment the position
+			$pos += 1;
+		}
+
+		return $pos;
+	}
+
+
+
 
 }

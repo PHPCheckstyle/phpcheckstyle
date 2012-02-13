@@ -641,6 +641,11 @@ class PHPCheckstyle {
 				// ";" should never be preceded by ;
 				$this->_checkEmptyStatement();
 
+				// If we are in a statement not surrounded by curly braces, we unstack the last line.
+				if ($this->_getCurrentStackItem()->noCurly == true) {
+					array_pop($this->_branchingStack);
+				}
+
 				break;
 
 			case "-":
@@ -1313,9 +1318,14 @@ class PHPCheckstyle {
 		// "else if" is different
 		if ($csText == "else") {
 			if ($this->tokenizer->checkNextValidToken(T_IF)) {
-				// control statement for "else" is done with... new control
-				// statement "if" is starting
+				// control statement for "else" is done
+				// new control statement "if" will start
 				$this->_inControlStatement = false;
+			}
+				
+			// ELSE just after a IF with no curly : We close the if statement
+			if ($this->_getCurrentStackItem()->type == "IF" && $this->_getCurrentStackItem()->noCurly == true) {
+				array_pop($this->_branchingStack);
 			}
 		}
 
@@ -1331,6 +1341,27 @@ class PHPCheckstyle {
 				$msg = sprintf(PHPCHECKSTYLE_CS_STMT_ON_NEW_LINE, $csText);
 				$this->_writeError('controlStructElse', $msg);
 			}
+		}
+
+		// By default we consider that the statement block will start after the next '{'
+		// In case there is no curly opening we need to consider the next line as being the statement
+		if ($this->tokenizer->checkNextValidTextToken('(')) {
+			// in case the statement type is IF, FOR, FOREACH, CATCH, WHILE we skip the conditional
+			$startPos = $this->tokenizer->findClosingParenthesisPosition($this->tokenizer->getCurrentPosition());
+		} else {
+			$startPos = $this->tokenizer->getCurrentPosition();
+		}
+		
+		// Now we expect the '{' token
+		if (!$this->tokenizer->checkNextValidTextToken('{', $startPos + 1)) {
+			
+			// If not the case, we store the control statement in the stack
+			$stackitem = new StatementItem();
+			$stackitem->line = $this->lineNumber;
+			$stackitem->type = strtoupper($csText);
+			$stackitem->name = $csText;
+			$stackitem->noCurly = true;
+			array_push($this->_branchingStack, $stackitem);
 		}
 
 		// To avoid a false positive when treating the while statement of a do/while
@@ -1370,7 +1401,7 @@ class PHPCheckstyle {
 			}
 		}
 
-		// WARN: used for a very simple (and wrong!) do/while processing
+		// End the control statement
 		$this->_justAfterControlStmt = false;
 	}
 
@@ -2692,7 +2723,7 @@ class PHPCheckstyle {
 		} else {
 			// In case of a empty stack, we are at the root of a PHP file (with no class or function).
 			// We return the default values
-			return new StatementItem(); 
+			return new StatementItem();
 		}
 	}
 	/**

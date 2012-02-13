@@ -12,11 +12,26 @@
  */
 class StatementItem {
 
-	var	$type = null;  // The statement type (CLASS, FUNCTION, ...)
+	// The statement type.
+	// CLASS
+	// FUNCTION
+	// INTERFACE
+	// IF
+	// ELSE
+	// ELSEIF
+	// FOR
+	// FOREACH
+	// TRY 
+	// CATCH
+	// DO
+	// WHILE
+	var	$type = null; 
 
-	var $name = null; // The statement name
+	// The statement name
+	var $name = null; 
 
-	var $line; // The begin line of the statement in the file
+	// The begin line of the statement in the file
+	var $line; 
 	
 	
 	// For SWITCH / CASE statements
@@ -28,5 +43,8 @@ class StatementItem {
 	var $afterDoStatement = false;  // indicate that we have met a DO statement (which will be described in another StatementItem, but it will be closed when we meet the WHILE).
 
 	// For heredoc blocks
-	var $inHeredoc = false; // used to desactivate the encapsedVariable rule inside a heredoc block 
+	var $inHeredoc = false; // used to desactivate the encapsedVariable rule inside a heredoc block
+
+	// Flag indicating the the statement block is not sourrounded by {}
+	var $noCurly = false;
 }

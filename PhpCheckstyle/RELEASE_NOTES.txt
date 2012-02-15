@@ -1,5 +1,13 @@
                          PHPCheckstyle Release Notes
                          ===========================
+Version 0.10.2
+-------------
+* issue 27 : Unused code is wrongly detected
+* issue 26 : Empty lines in comments will corrupt line numbering
+* issue 25 : Error: Notice: Trying to get property of non-object
+* issue 23 : Wrong indentation level for curly braces on new line
+* Embedding of CSS inside HTML Header
+* Fix for null pointer exceptions when run against newer code
 
 Version 0.10.1
 -------------

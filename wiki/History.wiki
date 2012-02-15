@@ -120,7 +120,7 @@ _Thanks a lot to Justin Creasey and Adam King_
   * Added new test (Use boolean operators instead of logical operators)
                         
 == Version 0.8.1 ==
-  * Corrected a bug with NEW_LINE caracter inside a constant string
+  * Corrected a bug with NEW_LINE character inside a constant string
 
                         
 == Version 0.8 ==
@@ -130,14 +130,12 @@ This function returns the new line caracters as a token. This solve some problem
   * Added new tests (Extract TODOs, Avoid passing references) 
   * Some refactoring
            
-           
 == Version 0.7.1 ==
   * Added new tests (Cyclomatic Complexity, ...)
 
-
 == Version 0.7 ==
   * All tests are now configurable 
-  * Included siome propositions from the forum 
+  * Included some propositions from the forum 
   * Added the possibility to define a severity level for each test rule 
   * Ignoring the .svn repositories 
   * Changed the XML outpout in order to be compatible with the checkstyle format (http://checkstyle.sourceforge.net/)

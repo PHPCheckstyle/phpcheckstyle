@@ -12,6 +12,7 @@ Intended audience for this tool is PHP developers.
 This project was originally written by Hari Kodungallur. Other contributors are:
   * Ashwin Kumar
   * Benoit Pesty
+  * Sylvain Galopin
   * Nimish Pachapurkar
   * Joshua Kaiser
   * Charles Marion

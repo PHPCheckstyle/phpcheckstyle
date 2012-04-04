@@ -633,7 +633,7 @@ class PHPCheckstyle {
 
 				// Particular case of a ELSE IF {}
 				// We unstack both the IF and the ELSE
-				if ($_currentStackItem->type == "IF" && $this->_getCurrentStackItem()->type == "ELSE" && $this->_getCurrentStackItem()->noCurly == true) {
+				if ($this->_getCurrentStackItem()->type == "IF" && $this->_getCurrentStackItem()->type == "ELSE" && $this->_getCurrentStackItem()->noCurly == true) {
 					array_pop($this->_branchingStack);
 				}
 

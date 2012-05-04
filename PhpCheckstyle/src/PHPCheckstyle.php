@@ -84,7 +84,7 @@ class PHPCheckstyle {
 	private $_functionReturns = false; // Does the function return a value ?
 	private $_functionThrows = false; // Does the function throw an exception ?
 	private $_functionLevel = 0; // Level of Nesting of the function
-	private $_functionVisibility = 'PUBLIC'; // PUBLIC, PRIVATE or PROTECTED
+	private $_functionVisibility = 'PUBLIC'; // PUBLIC, PRIVATE or PROTECTED or ANONYMOUS
 	private $_classLevel = 0; // Level of Nesting of the class
 	private $_interfaceLevel = 0; // Level of Nesting of the interface
 	private $_constantDef = false;
@@ -118,18 +118,18 @@ class PHPCheckstyle {
 	private $_specialFunctions = array();
 
 	private $_prohibitedFunctions = array('echo', 'system', "print_r", 'dl',
-		'exec', 'passthru', 'shell_exec',
-		'copy', 'delete', 'unlink',
-		'fwrite');
+			'exec', 'passthru', 'shell_exec',
+			'copy', 'delete', 'unlink',
+			'fwrite');
 
 	private $_prohibitedTokens = array('T_BAD_CHARACTER', 'T_DECLARE',
-		'T_ECHO', 'T_ENDDECLARE', 'T_ENDFOR',
-		'T_ENDFOREACH', 'T_ENDIF',
-		'T_ENDSWITCH', 'T_ENDWHILE',
-		'T_END_HEREDOC', 'T_EXIT',
-		'T_HALT_COMPILER', 'T_INLINE_HTML',
-		'T_OLD_FUNCTION',
-		'T_OPEN_TAG_WITH_ECHO', 'T_PRINT');
+			'T_ECHO', 'T_ENDDECLARE', 'T_ENDFOR',
+			'T_ENDFOREACH', 'T_ENDIF',
+			'T_ENDSWITCH', 'T_ENDWHILE',
+			'T_END_HEREDOC', 'T_EXIT',
+			'T_HALT_COMPILER', 'T_INLINE_HTML',
+			'T_OLD_FUNCTION',
+			'T_OPEN_TAG_WITH_ECHO', 'T_PRINT');
 
 	private $_deprecatedFunctions = array();
 
@@ -273,14 +273,14 @@ class PHPCheckstyle {
 		// Write the count of lines for the complete project
 		if ($this->_lineCountReporter != null) {
 			$this->_lineCountReporter->writeTotalCount(count($files),
-			$this->_ncssTotalClasses,
-			$this->_ncssTotalInterfaces,
-			$this->_ncssTotalFunctions,
-			$this->_ncssTotalLinesOfCode,
-			$this->_ncssTotalPhpdoc,
-			$this->_ncssTotalLinesPhpdoc,
-			$this->_ncssTotalSingleComment,
-			$this->_ncssTotalMultiComment);
+					$this->_ncssTotalClasses,
+					$this->_ncssTotalInterfaces,
+					$this->_ncssTotalFunctions,
+					$this->_ncssTotalLinesOfCode,
+					$this->_ncssTotalPhpdoc,
+					$this->_ncssTotalLinesPhpdoc,
+					$this->_ncssTotalSingleComment,
+					$this->_ncssTotalMultiComment);
 		}
 
 		// Stop counting the lines
@@ -561,6 +561,7 @@ class PHPCheckstyle {
 					$this->_processFunctionStart();
 					$stackitem->type = "FUNCTION";
 					$stackitem->name = $this->_currentFunctionName;
+					$stackitem->visibility = $this->_functionVisibility;
 				} else if ($this->_justAfterControlStmt) {
 					// if _justAfterControlStmt is set, the "{" is the beginning of a control stratement block
 					$this->_processControlStatementStart();
@@ -660,7 +661,7 @@ class PHPCheckstyle {
 				}
 				// We allow some '-' signs to skip the the space afterwards for negative numbers
 				if (!($this->tokenizer->checkNextToken(T_LNUMBER) || // float number
-				$this->tokenizer->checkNextToken(T_DNUMBER))) {
+						$this->tokenizer->checkNextToken(T_DNUMBER))) {
 					// integer
 					$this->_checkWhiteSpaceAfter($text);
 				}
@@ -864,21 +865,18 @@ class PHPCheckstyle {
 				// beginning of a function definition
 				// check also for existance of docblock
 			case T_FUNCTION:
-				$this->_checkDocExists(T_FUNCTION);
 				$this->_processFunctionStatement();
 				break;
 
 				// beginning of a class
 				// check also for the existence of a docblock
 			case T_CLASS:
-				$this->_checkDocExists(T_CLASS);
 				$this->_processClassStatement();
 				break;
 
 				// beginning of an interface
 				// check also for the existence of a docblock
 			case T_INTERFACE:
-				$this->_checkDocExists(T_INTERFACE);
 				$this->_processInterfaceStatement();
 				break;
 
@@ -1522,13 +1520,11 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Process the end of a function declaration.
+	 * Check the cyclomatic complexity of a function.
+	 *
+	 *  Called by _processFunctionStop()
 	 */
-	private function _processFunctionStop() {
-
-		$this->_inFunction = false; // We are out of the function
-
-		// Check cyclomaticComplexity
+	private function _checkCyclomaticComplexity() {
 		if ($this->_isActive('cyclomaticComplexity')) {
 
 			$warningLevel = $this->_config->getTestProperty('cyclomaticComplexity', 'warningLevel');
@@ -1542,46 +1538,62 @@ class PHPCheckstyle {
 				$this->_reporter->writeError($this->_functionStartLine, 'cyclomaticComplexity', $msg, 'ERROR');
 			}
 		}
+	}
 
-		//
-		// Check that the declared parameters in the docblock match the content of the function
-		//
-		// If the function is not private and we check the doc
-		$isPrivateExcluded = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
-		if (!($isPrivateExcluded && $this->_functionVisibility == 'PRIVATE')) {
+	/**
+	 * Check that the declared parameters in the docblock match the content of the function.
+	 *
+	 *  Called by _processFunctionStop()
+	 */
+	private function _checkDocBlockParameters() {
 
-			// Check the docblock @return
-			if ($this->_isActive('docBlocks') && ($this->_config->getTestProperty('docBlocks', 'testReturn') != 'false')) {
+		// For anonymous functions, we don't check the docblock
+		if ($this->_isActive('docBlocks') && $this->_getCurrentStackItem()->visibility != 'ANONYMOUS') {
 
-				if ($this->_functionReturns && ($this->_docblocNbReturns == 0)) {
-					$msg = sprintf(PHPCHECKSTYLE_DOCBLOCK_RETURN, $this->_currentFunctionName);
-					$this->_writeError('docBlocks', $msg);
+			// If the function is not private and we check the doc
+			$isPrivateExcluded = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
+			if (!($isPrivateExcluded && $this->_functionVisibility == 'PRIVATE')) {
+
+				// Check the docblock @return
+				if ( ($this->_config->getTestProperty('docBlocks', 'testReturn') != 'false')) {
+
+					if ($this->_functionReturns && ($this->_docblocNbReturns == 0)) {
+						$msg = sprintf(PHPCHECKSTYLE_DOCBLOCK_RETURN, $this->_currentFunctionName);
+						$this->_writeError('docBlocks', $msg);
+					}
 				}
-			}
 
-			// Check the docblock @param
-			if ($this->_isActive('docBlocks') && ($this->_config->getTestProperty('docBlocks', 'testParam') != 'false')) {
-				if ($this->_nbFunctionParameters != $this->_docblocNbParams) {
-					$msg = sprintf(PHPCHECKSTYLE_DOCBLOCK_PARAM, $this->_currentFunctionName);
-					$this->_writeError('docBlocks', $msg);
+				// Check the docblock @param
+				if (($this->_config->getTestProperty('docBlocks', 'testParam') != 'false')) {
+					if ($this->_nbFunctionParameters != $this->_docblocNbParams) {
+						$msg = sprintf(PHPCHECKSTYLE_DOCBLOCK_PARAM, $this->_currentFunctionName);
+						$this->_writeError('docBlocks', $msg);
+					}
 				}
-			}
 
-			// Check the docblock @throw
-			if ($this->_isActive('docBlocks') && ($this->_config->getTestProperty('docBlocks', 'testThrow') != 'false')) {
-					
-
-				if ($this->_functionThrows && ($this->_docblocNbThrows == 0)) {
-					$msg = sprintf(PHPCHECKSTYLE_DOCBLOCK_THROW, $this->_currentFunctionName);
-					$this->_writeError('docBlocks', $msg);
+				// Check the docblock @throw
+				if ( ($this->_config->getTestProperty('docBlocks', 'testThrow') != 'false')) {
+						
+					if ($this->_functionThrows && ($this->_docblocNbThrows == 0)) {
+						$msg = sprintf(PHPCHECKSTYLE_DOCBLOCK_THROW, $this->_currentFunctionName);
+						$this->_writeError('docBlocks', $msg);
+					}
 				}
 			}
 		}
 
+		// Reset the count of elements in the current function docblock
 		$this->_docblocNbParams = 0;
 		$this->_docblocNbReturns = 0;
 		$this->_docblocNbThrows = 0;
+	}
 
+	/**
+	 *  Check the length of the function.
+	 *
+	 *  Called by _processFunctionStop()
+	 */
+	private function _checkFunctionLenght() {
 		// Check the length of the function
 		if ($this->_isActive('functionLength')) {
 
@@ -1593,11 +1605,29 @@ class PHPCheckstyle {
 				$this->_writeError('docBlocks', $msg);
 			}
 		}
+	}
+
+	/**
+	 * Process the end of a function declaration.
+	 */
+	private function _processFunctionStop() {
+
+		$this->_inFunction = false; // We are out of the function
+
+		// Check the cyclomatic complexity
+		$this->_checkCyclomaticComplexity();
+
+		// Check the docblock content
+		$this->_checkDocBlockParameters();
+
+		// Check function lenght
+		$this->_checkFunctionLenght();
 
 		// Check unused function parameters
 		$this->_checkUnusedFunctionParameters();
 
-		$this->_functionSuppressWarnings = array(); // Reset the warnings suppressed
+		// Reset the warnings suppressed by annotation
+		$this->_functionSuppressWarnings = array();
 
 	}
 
@@ -1605,6 +1635,7 @@ class PHPCheckstyle {
 	 * Process a function declaration statement (the parameters).
 	 */
 	private function _processFunctionStatement() {
+
 
 		// Increment the number of functions
 		$this->_ncssTotalFunctions++;
@@ -1622,6 +1653,9 @@ class PHPCheckstyle {
 		$this->_inClassStatement = false;
 		$this->_inInterfaceStatement = false;
 
+
+
+
 		// Detect the function visibility
 		$this->_functionVisibility = 'PUBLIC';
 		if ($this->tokenizer->checkPreviousValidToken(T_PRIVATE)) {
@@ -1630,12 +1664,28 @@ class PHPCheckstyle {
 			$this->_functionVisibility = 'PROTECTED';
 		}
 
-		// Skip until T_STRING representing the function name
-		while (!$this->tokenizer->checkProvidedToken($this->token, T_STRING)) {
+		// Detect the function name
+		$nameDetected = $this->tokenizer->checkProvidedToken($this->token, T_STRING);
+		$curlyOpeningDetected = $this->tokenizer->checkNextTextToken('(');
+		while (!$nameDetected && !$curlyOpeningDetected) {
 			$this->_moveToken();
+			$nameDetected = $this->tokenizer->checkProvidedToken($this->token, T_STRING);
+			$curlyOpeningDetected = $this->tokenizer->checkNextTextToken('(');
 		}
+
 		// Tracking the function's name.
-		$functionName = $this->token[1];
+		if ($nameDetected) {
+			$functionName = $this->token[1];
+
+			// Check the PHPDoc presence
+			$this->_checkDocExists(T_FUNCTION);
+		} else {
+			// We have an anonymous function or closure.
+			$functionName = 'anonymous';
+			$this->_functionVisibility = 'ANONYMOUS';
+
+			// We don't check the PHPDoc for anonymous functions
+		}
 		$this->_currentFunctionName = $functionName;
 
 		// If the function is private we add it to the list of function to use (and store the line number)
@@ -1681,6 +1731,7 @@ class PHPCheckstyle {
 		// List the arguments of the currently analyzed function.
 		// Check the order of the parameters of the function.
 		// The parameters having a default value should be in last position.
+		// TODO : refactoring : extract in a method
 		$foundDefaultValues = false;
 		$functionTokenPosition = $this->tokenizer->getCurrentPosition();
 		while (true) {
@@ -1730,6 +1781,7 @@ class PHPCheckstyle {
 				$this->_writeError('functionMaxParameters', $msg);
 			}
 		}
+
 	}
 
 	/**
@@ -1825,6 +1877,10 @@ class PHPCheckstyle {
 	 */
 	private function _processInterfaceStatement() {
 
+		// Check PHPDoc Presence
+		$this->_checkDocExists(T_INTERFACE);
+
+
 		$this->_ncssTotalInterfaces++;
 		$this->_ncssFileInterfaces++;
 
@@ -1866,6 +1922,9 @@ class PHPCheckstyle {
 	 * Process a class declaration statement.
 	 */
 	private function _processClassStatement() {
+
+		// Check PHPDoc presence
+		$this->_checkDocExists(T_CLASS);
 
 		$this->_ncssTotalClasses++;
 		$this->_ncssFileClasses++;
@@ -2089,17 +2148,17 @@ class PHPCheckstyle {
 			// if the next token is an equal, we suppose that this is an affectation
 			$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
 			$isAffectation = ($nextTokenText == "="
-			|| $nextTokenText == "+="
-			|| $nextTokenText == "*="
-			|| $nextTokenText == "/="
-			|| $nextTokenText == "-="
-			|| $nextTokenText == "%="
-			|| $nextTokenText == "&="
-			|| $nextTokenText == "|="
-			|| $nextTokenText == "^="
-			|| $nextTokenText == "<<="
-			|| $nextTokenText == ">>="
-			|| $nextTokenText == ".=");
+					|| $nextTokenText == "+="
+					|| $nextTokenText == "*="
+					|| $nextTokenText == "/="
+					|| $nextTokenText == "-="
+					|| $nextTokenText == "%="
+					|| $nextTokenText == "&="
+					|| $nextTokenText == "|="
+					|| $nextTokenText == "^="
+					|| $nextTokenText == "<<="
+					|| $nextTokenText == ">>="
+					|| $nextTokenText == ".=");
 
 			// Check if the variable has already been met
 			if (empty($this->_variables[$text]) && !in_array($text, $this->_systemVariables)) {
@@ -2624,14 +2683,14 @@ class PHPCheckstyle {
 
 			if (is_array($docToken)) {
 				$tokenToIgnoreList = array(T_STATIC,
-				T_ABSTRACT,
-				T_PROTECTED,
-				T_PUBLIC,
-				T_WHITESPACE,
-				T_TAB,
-				T_COMMENT,
-				T_ML_COMMENT,
-				T_NEW_LINE);
+						T_ABSTRACT,
+						T_PROTECTED,
+						T_PUBLIC,
+						T_WHITESPACE,
+						T_TAB,
+						T_COMMENT,
+						T_ML_COMMENT,
+						T_NEW_LINE);
 				// if the token is in the list above.
 				if ($this->_tokenIsInList($docToken, $tokenToIgnoreList)) {
 					// All these tokens are ignored

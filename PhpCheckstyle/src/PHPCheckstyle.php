@@ -1573,7 +1573,7 @@ class PHPCheckstyle {
 
 				// Check the docblock @throw
 				if ( ($this->_config->getTestProperty('docBlocks', 'testThrow') != 'false')) {
-						
+
 					if ($this->_functionThrows && ($this->_docblocNbThrows == 0)) {
 						$msg = sprintf(PHPCHECKSTYLE_DOCBLOCK_THROW, $this->_currentFunctionName);
 						$this->_writeError('docBlocks', $msg);
@@ -2529,6 +2529,39 @@ class PHPCheckstyle {
 	}
 
 	/**
+	 * Process a TODO comment.
+	 *
+	 * @param String $text the text containing the TODO.
+	 */
+	private function _processTODO($text) {
+		if ($this->_isActive('showTODOs')) {
+				
+			$s = stripos($text, 'TODO');
+			if ($s !== FALSE) {
+								
+				$todoMsg = substr($text, $s + 4);
+
+				// Take the first line only
+				$lines = preg_split( '/\r\n|\r|\n/', $todoMsg );
+				$todoMsg = $lines[0];
+
+				// Remove a ':' from the start
+				$colonPos = stripos($todoMsg, ':');
+				if ($s !== FALSE) {
+					$todoMsg = substr($todoMsg, $colonPos + 1);
+				}
+				
+				// Trim
+				$todoMsg = trim($todoMsg);
+
+				$msg = sprintf(PHPCHECKSTYLE_TODO, $todoMsg);
+				$this->_writeError('showTODOs', $msg);
+			}
+		}
+
+	}
+
+	/**
 	 * Process a comment.
 	 *
 	 * @param Integer $tok the token
@@ -2586,14 +2619,7 @@ class PHPCheckstyle {
 		}
 
 		// Check if the comment contains a TODO
-		if ($this->_isActive('showTODOs')) {
-			$s = stripos($text, 'TODO');
-			if ($s != FALSE) {
-				$msg = sprintf(PHPCHECKSTYLE_TODO, substr($text, stripos($text, 'TODO') + 4));
-				$this->_writeError('showTODOs', $msg);
-			}
-		}
-
+		$this->_processTODO($text);
 	}
 
 	/**

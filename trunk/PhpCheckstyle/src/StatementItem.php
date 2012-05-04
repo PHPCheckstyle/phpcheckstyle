@@ -33,6 +33,9 @@ class StatementItem {
 	// The begin line of the statement in the file
 	var $line; 
 	
+	// For FUNCTION statements
+	var $visibility;
+	
 	
 	// For SWITCH / CASE statements
 	var $switchHasDefault = false;  // indicate that the switch instruction has a case "default" set.

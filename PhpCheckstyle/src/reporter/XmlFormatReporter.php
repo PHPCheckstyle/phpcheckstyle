@@ -13,16 +13,16 @@ require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporter.php";
  * Writes the errors into an xml file
  * Format:
  * ================================
- * <phpcheckstyle>
+ * <checkstyle>
  *    <file name="file1">
- *        <error line="M" message="error message"/>
+ *        <error line="M" column="1" severity="error" message="error message"/>
  *    </file>
  *    <file name="file2">
  *        <error line="X" message="error message"/>
  *        <error line="Y" message="error message"/>
  *    </file>
  *    <file name="file3"/>
- * </phpcheckstyle>
+ * </checkstyle>
  * ================================
  *
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
@@ -87,6 +87,7 @@ class XmlFormatReporter extends Reporter {
 	public function writeError($line, $check, $message, $level = WARNING) {
 		$e = $this->document->createElement("error");
 		$e->setAttribute("line", $line);
+		$e->setAttribute("column", "1");
 		$e->setAttribute("severity", $level);
 		$e->setAttribute("message", $message);
 		$this->currentElement->appendChild($e);
@@ -95,6 +96,7 @@ class XmlFormatReporter extends Reporter {
 	private function _initXml() {
 		$this->document = new DomDocument("1.0");
 		$this->root = $this->document->createElement('checkstyle');
+		$this->root->setAttribute("version", "1.0.0");
 		$this->document->appendChild($this->root);
 	}
 

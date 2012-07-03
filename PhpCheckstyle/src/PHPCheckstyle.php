@@ -1555,7 +1555,7 @@ class PHPCheckstyle {
 			if (!($isPrivateExcluded && $this->_functionVisibility == 'PRIVATE')) {
 
 				// Check the docblock @return
-				if ( ($this->_config->getTestProperty('docBlocks', 'testReturn') != 'false')) {
+				if (($this->_config->getTestProperty('docBlocks', 'testReturn') != 'false')) {
 
 					if ($this->_functionReturns && ($this->_docblocNbReturns == 0)) {
 						$msg = sprintf(PHPCHECKSTYLE_DOCBLOCK_RETURN, $this->_currentFunctionName);
@@ -1572,7 +1572,7 @@ class PHPCheckstyle {
 				}
 
 				// Check the docblock @throw
-				if ( ($this->_config->getTestProperty('docBlocks', 'testThrow') != 'false')) {
+				if (($this->_config->getTestProperty('docBlocks', 'testThrow') != 'false')) {
 
 					if ($this->_functionThrows && ($this->_docblocNbThrows == 0)) {
 						$msg = sprintf(PHPCHECKSTYLE_DOCBLOCK_THROW, $this->_currentFunctionName);
@@ -2542,7 +2542,7 @@ class PHPCheckstyle {
 				$todoMsg = substr($text, $s + 4);
 
 				// Take the first line only
-				$lines = preg_split( '/\r\n|\r|\n/', $todoMsg );
+				$lines = preg_split('/\r\n|\r|\n/', $todoMsg);
 				$todoMsg = $lines[0];
 
 				// Remove a ':' from the start
@@ -2933,8 +2933,7 @@ class PHPCheckstyle {
 		if (!$this->_inString) {
 			$this->_inString = true;
 			$this->_stringStartCharacter = $stringTocheck;
-		}
-		else if ($this->_stringStartCharacter == $stringTocheck) {
+		} else if ($this->_stringStartCharacter == $stringTocheck) {
 			$this->_inString = false;
 			$this->_stringStartCharacter = null;
 		}

@@ -894,12 +894,15 @@ class PHPCheckstyle {
 			case T_SR_EQUAL:
 			case T_BOOLEAN_OR:
 			case T_BOOLEAN_AND:
-			case T_IS_EQUAL:
-			case T_IS_NOT_EQUAL:
 			case T_IS_IDENTICAL:
 			case T_IS_NOT_IDENTICAL:
 			case T_IS_SMALLER_OR_EQUAL:
 			case T_IS_GREATER_OR_EQUAL:
+				$this->_checkSurroundingWhiteSpace($text);
+				break;
+			case T_IS_EQUAL:
+			case T_IS_NOT_EQUAL:
+				$this->_checkStrictCompare($text);
 				$this->_checkSurroundingWhiteSpace($text);
 				break;
 			case T_LOGICAL_AND:
@@ -1988,6 +1991,29 @@ class PHPCheckstyle {
 	private function _checkEncapsedVariablesInsideString() {
 		if ($this->_isActive('encapsedVariablesInsideString') && !$this->_getCurrentStackItem()->inHeredoc) {
 			$this->_writeError('encapsedVariablesInsideString', PHPCHECKSTYLE_VARIABLE_INSIDE_STRING);
+		}
+	}
+	
+	/**
+	 * Check for potential bugs when using comparison operator.
+	 *
+	 * This function is launched when the current token is T_IS_EQUAL or T_IS_NOT_EQUAL.
+	 * 
+	 * TODO : Implement
+	 * 
+	 * @param String $text the comparison operator used
+	 */
+	private function _checkStrictCompare($text) {
+		if ($this->_isActive('strictCompare')) {
+			
+			// TODO : use the "_variables" array.
+			// Flag the variables that result from the liste fonctions (strpos)...
+			
+			// If one the 2 compared item is such a variable or directly a liste function
+			
+			// Then 
+			//$message = sprintf(PHPCHECKSTYLE_USE_STRICT_COMPARE, $text);
+			//$this->_writeError('strictCompare', $message);
 		}
 	}
 

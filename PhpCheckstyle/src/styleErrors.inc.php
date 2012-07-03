@@ -144,3 +144,5 @@ define("PHPCHECKSTYLE_FUNCTION_INSIDE_LOOP", "'%s' function must not be used ins
 define("PHPCHECKSTYLE_UNUSED_CODE", "function '%s' has unused code after %s.");
 
 define("PHPCHECKSTYLE_DEPRECATED_FUNCTION", "%s is deprecated since PHP %s. %s must be used instead");
+
+define("PHPCHECKSTYLE_USE_STRICT_COMPARE", "Please check is you should not use a strict comparison operator instead of %s");

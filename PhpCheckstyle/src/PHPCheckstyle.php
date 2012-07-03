@@ -17,6 +17,7 @@ require_once PHPCHECKSTYLE_HOME_DIR."/src/errorLevels.inc.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/TokenUtils.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/TokenInfo.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/StatementItem.php";
+require_once PHPCHECKSTYLE_HOME_DIR."/src/VariableInfo.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporters.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/PlainFormatReporter.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/XmlFormatReporter.php";
@@ -74,7 +75,7 @@ class PHPCheckstyle {
 	private $_privateFunctionsStartLines = array();
 	private $_functionParameters = array(); // The list of function parameters
 	private $_usedFunctions = array(); // The list of functions that are used in the class
-	private $_variables = array(); // The variables used
+	private $_variables = array(); // The variables used. Array of VariableInfo.
 	private $_inSwitch = false; // We are inside a switch statement
 	private $_nbFunctionParameters = 0; // Count the number of parameters of the current function
 	private $_justAfterFuncStmt = false; // We are just after a control statement (last } )
@@ -2007,9 +2008,9 @@ class PHPCheckstyle {
 		if ($this->_isActive('strictCompare')) {
 			
 			// TODO : use the "_variables" array.
-			// Flag the variables that result from the liste fonctions (strpos)...
+			// Flag the variables that result from the listed fonctions (strpos)...
 			
-			// If one the 2 compared item is such a variable or directly a liste function
+			// If one the 2 compared item is such a variable or directly a listed function
 			
 			// Then 
 			//$message = sprintf(PHPCHECKSTYLE_USE_STRICT_COMPARE, $text);
@@ -2084,10 +2085,11 @@ class PHPCheckstyle {
 
 		if ($this->_isActive('checkUnusedVariables')) {
 
-			foreach ($this->_variables as $variableName => $lineNumber) {
-				if (($lineNumber != "used") && !($this->_isClass || $this->_isView)) {
-					$msg = sprintf(PHPCHECKSTYLE_UNUSED_VARIABLE, $variableName);
-					$this->_reporter->writeError($lineNumber, 'checkUnusedVariables', $msg, $this->_config->getTestLevel('checkUnusedVariables'));
+			foreach ($this->_variables as $variable) {
+				
+				if ((!$variable->isUsed) && !($this->_isClass || $this->_isView)) {
+					$msg = sprintf(PHPCHECKSTYLE_UNUSED_VARIABLE, $variable->name);
+					$this->_reporter->writeError($variable->line, 'checkUnusedVariables', $msg, $this->_config->getTestLevel('checkUnusedVariables'));
 				}
 			}
 		}
@@ -2189,11 +2191,14 @@ class PHPCheckstyle {
 			// Check if the variable has already been met
 			if (empty($this->_variables[$text]) && !in_array($text, $this->_systemVariables)) {
 				// The variable is met for the first time
-				$this->_variables[$text] = $this->lineNumber; // We store the first declaration of the variable
+				$variable = new VariableInfo();
+				$variable->name = $text;
+				$variable->line = $this->lineNumber; // We store the first declaration of the variable
+				$this->_variables[$text] = $variable; 
 			} else if ($isAffectation) {
 				// The variable is reaffected another value, this doesn't count as a valid use.
 			} else {
-
+				
 				// Manage the case of $this->attribute
 				if ($text == '$this') {
 					if ($this->tokenizer->checkProvidedToken($nextTokenInfo->token, T_OBJECT_OPERATOR)) {
@@ -2207,7 +2212,11 @@ class PHPCheckstyle {
 				}
 
 				// The variable is met again, we suppose we have used it for something
-				$this->_variables[$text] = "used";
+				if (!empty($this->_variables[$text])) {
+					$variable = $this->_variables[$text];
+					$variable->isUsed = true;
+					$this->_variables[$text] = $variable;
+				}
 			}
 		}
 

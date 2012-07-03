@@ -2007,14 +2007,39 @@ class PHPCheckstyle {
 	private function _checkStrictCompare($text) {
 		if ($this->_isActive('strictCompare')) {
 			
-			// TODO : use the "_variables" array.
-			// Flag the variables that result from the listed fonctions (strpos)...
+			$isSearchResult = false;
 			
-			// If one the 2 compared item is such a variable or directly a listed function
+			// Get the next token
+			$nextTokenInfo = $this->tokenizer->peekNextValidToken($this->tokenizer->getCurrentPosition());
+			$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
+				
+			// Check if next token is a search function
+			$isSearchResult = in_array($nextTokenText, $this->_config->getTestItems('strictCompare'));
+
+			// Or a variable that is the result of a search function
+			if (!empty($this->_variables[$nextTokenText])) {
+				$variable = $this->_variables[$nextTokenText];
+				$isSearchResult = $isSearchResult || $variable->isSearchResult;
+			}
 			
-			// Then 
-			//$message = sprintf(PHPCHECKSTYLE_USE_STRICT_COMPARE, $text);
-			//$this->_writeError('strictCompare', $message);
+			// Get the token before
+			$previousTokenInfo = $this->tokenizer->peekPrvsValidToken($this->tokenizer->getCurrentPosition());
+			$previousTokenText = $this->tokenizer->extractTokenText($previousTokenInfo->token);
+			
+			// Check if previous token is a search function
+			$isSearchResult = $isSearchResult || in_array($previousTokenText, $this->_config->getTestItems('strictCompare'));
+			
+			// Or a variable that is the result of a search function
+			if (!empty($this->_variables[$previousTokenText])) {
+				$variable = $this->_variables[$previousTokenText];
+				$isSearchResult = $isSearchResult || $variable->isSearchResult;
+			}
+			
+			// If one the 2 compared item is such a variable or directly a listed function			
+			if ($isSearchResult) {
+				$message = sprintf(PHPCHECKSTYLE_USE_STRICT_COMPARE, $text);
+				$this->_writeError('strictCompare', $message);
+			}
 		}
 	}
 
@@ -2187,14 +2212,21 @@ class PHPCheckstyle {
 					|| $nextTokenText == "<<="
 					|| $nextTokenText == ">>="
 					|| $nextTokenText == ".=");
-
+			
+			// Check the following token
+			$nextTokenInfo = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
+			$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
+			$isSearchResult = in_array($nextTokenText, $this->_config->getTestItems('strictCompare'));
+		
 			// Check if the variable has already been met
 			if (empty($this->_variables[$text]) && !in_array($text, $this->_systemVariables)) {
 				// The variable is met for the first time
 				$variable = new VariableInfo();
 				$variable->name = $text;
 				$variable->line = $this->lineNumber; // We store the first declaration of the variable
+				$variable->isSearchResult = $isSearchResult;
 				$this->_variables[$text] = $variable; 
+								
 			} else if ($isAffectation) {
 				// The variable is reaffected another value, this doesn't count as a valid use.
 			} else {

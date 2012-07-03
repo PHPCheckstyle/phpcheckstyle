@@ -1,5 +1,11 @@
                          PHPCheckstyle Release Notes
                          ===========================
+                         
+Version 0.10.3
+-------------
+* Issue 35: New Rule : Use of "==" in strpos
+
+                         
 Version 0.10.2
 -------------
 * issue 27 : Unused code is wrongly detected

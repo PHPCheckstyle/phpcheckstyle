@@ -20,5 +20,5 @@ class VariableInfo {
 	var $isUsed = false;
 	
 	// Indicate if the variable result from a search function like strpos.
-	var $isSearchReasult = false;
+	var $isSearchResult = false;
 }

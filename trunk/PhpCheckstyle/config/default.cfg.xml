@@ -415,4 +415,20 @@
     	<deprecated old="$HTTP_SESSION_VARS" new="$_SESSION" version="5.3"/>
     </test>
     
+    <!--  *******************  -->
+    <!--      FindBugs         -->
+    <!--  *******************  --> 
+    
+    <!-- Use only strict comparison with these functions -->
+    <!-- see : http://me.veekun.com/blog/2012/04/09/php-a-fractal-of-bad-design/ -->
+    <test name="strictCompare">
+    	<item value="array_search"/>
+    	<item value="strpos"/>
+    	<item value="stripos"/>
+    	<item value="strrpos"/>
+    	<item value="strripos"/>
+    	<item value="strripos"/>
+    	<item value="mb_strpos"/>
+    </test>
+    
 </phpcheckstyle-configuration>

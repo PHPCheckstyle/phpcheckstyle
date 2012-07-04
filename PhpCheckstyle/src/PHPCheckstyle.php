@@ -2214,9 +2214,12 @@ class PHPCheckstyle {
 					|| $nextTokenText == ".=");
 			
 			// Check the following token
-			$nextTokenInfo = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
-			$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
-			$isSearchResult = in_array($nextTokenText, $this->_config->getTestItems('strictCompare'));
+			$isSearchResult = false;
+			if ($this->_isActive('strictCompare')) {
+				$nextTokenInfo = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
+				$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
+				$isSearchResult = in_array($nextTokenText, $this->_config->getTestItems('strictCompare'));
+			}
 		
 			// Check if the variable has already been met
 			if (empty($this->_variables[$text]) && !in_array($text, $this->_systemVariables)) {

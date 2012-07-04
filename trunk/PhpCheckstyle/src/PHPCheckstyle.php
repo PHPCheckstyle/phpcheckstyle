@@ -2216,9 +2216,9 @@ class PHPCheckstyle {
 			// Check the following token
 			$isSearchResult = false;
 			if ($this->_isActive('strictCompare')) {
-				$nextTokenInfo = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
-				$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
-				$isSearchResult = in_array($nextTokenText, $this->_config->getTestItems('strictCompare'));
+				$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
+				$nextTokenText2 = $this->tokenizer->extractTokenText($nextTokenInfo2->token);
+				$isSearchResult = in_array($nextTokenText2, $this->_config->getTestItems('strictCompare'));
 			}
 		
 			// Check if the variable has already been met
@@ -2229,16 +2229,18 @@ class PHPCheckstyle {
 				$variable->line = $this->lineNumber; // We store the first declaration of the variable
 				$variable->isSearchResult = $isSearchResult;
 				$this->_variables[$text] = $variable; 
-								
+				
 			} else if ($isAffectation) {
 				// The variable is reaffected another value, this doesn't count as a valid use.
 			} else {
 				
 				// Manage the case of $this->attribute
 				if ($text == '$this') {
+					
 					if ($this->tokenizer->checkProvidedToken($nextTokenInfo->token, T_OBJECT_OPERATOR)) {
 
 						$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
+						
 						// This does not look like a function call, it should be a class attribute.
 						// We eliminate the $this-> part
 						$text = '$'.$this->tokenizer->extractTokenText($nextTokenInfo2->token);
@@ -2252,6 +2254,7 @@ class PHPCheckstyle {
 					$variable->isUsed = true;
 					$this->_variables[$text] = $variable;
 				}
+				
 			}
 		}
 

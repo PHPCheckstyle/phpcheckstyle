@@ -1331,8 +1331,15 @@ class PHPCheckstyle {
 				$this->_inControlStatement = false;
 			}
 
-			// ELSE just after a IF with no curly : We close the IF statement
+			// ELSE just after a IF with no curly : we close the IF statement
 			if ($this->_getCurrentStackItem()->type == "IF" && $this->_getCurrentStackItem()->noCurly == true) {
+				array_pop($this->_branchingStack);
+			}
+		}
+		
+		if ($csText == "if") {
+			// IF just after a ELSE with no curly : we close the ELSE statement
+			if ($this->_getCurrentStackItem()->type == "ELSE" && $this->_getCurrentStackItem()->noCurly == true) {
 				array_pop($this->_branchingStack);
 			}
 		}
@@ -1720,7 +1727,7 @@ class PHPCheckstyle {
 
 			} else {
 
-				// Other funnction
+				// Other function
 				if ($this->_functionVisibility == 'PRIVATE') {
 					$this->_checkPrivateFunctionNaming($this->_currentFunctionName);
 				} else if ($this->_functionVisibility == 'PROTECTED') {
@@ -2641,7 +2648,7 @@ class PHPCheckstyle {
 	 * @param String $text the text of the comment
 	 */
 	private function _processComment($tok, $text) {
-
+		
 		// Count the lines of comment
 		if ($tok == T_COMMENT) {
 			$this->_ncssTotalSingleComment++;
@@ -2865,14 +2872,17 @@ class PHPCheckstyle {
 	 * Display the current branching stack.
 	 */
 	private function _dumpStack() {
+		$dump = "";
 		foreach ($this->_branchingStack as $item) {
-			echo $item->type;
+			$dump .= $item->type;
 			if ($item->type == "FUNCTION" || $item->type == "INTERFACE" || $item->type == "CLASS") {
-				echo "(".$item->name.")";
+				$dump .= "(".$item->name.")";
 			}
-			echo " -> ";
+			$dump .= " -> ";
 		}
-		echo PHP_EOL;
+		$dump .= PHP_EOL;
+		
+		echo $dump;
 	}
 
 	/**

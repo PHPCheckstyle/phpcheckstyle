@@ -4,6 +4,7 @@
 Version 0.10.3
 -------------
 * Issue 35: New Rule : Use of "==" in strpos
+* Bug correction: Not correctly counting the end of a stack item after a "ELSE IF"
 
                          
 Version 0.10.2

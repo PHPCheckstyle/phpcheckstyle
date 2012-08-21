@@ -1,6 +1,10 @@
 #summary Project History
 #labels Featured
 
+== Version 0.10.3 ==
+  * issue 25 : New Rule : Use of "==" in strpos
+  * Bug correction: Not correctly counting the end of a stack item after a "ELSE IF"
+
 == Version 0.10.2 ==
   * issue 27 : Unused code is wrongly detected
   * issue 26 : Empty lines in comments will corrupt line numbering

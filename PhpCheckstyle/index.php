@@ -11,7 +11,7 @@
 	<form name="myform" action="runFromWeb.php" method="POST">
 	
 	<p>File(s) to analyse
-	<input type="test" id="sourceDir" name="sourceDir" value="./test/"></input>
+	<input type="test" id="sourceDir" name="sourceDir" value="./test"></input>
 	</p>
 	
 	<p>Destination directory

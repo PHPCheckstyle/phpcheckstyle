@@ -264,6 +264,12 @@ class PHPCheckstyle {
 			if (is_array($file)) {
 				continue;
 			}
+			
+			if ($this->_displayProgress) {
+				echo "Processing File: ".$file."<br/>".PHP_EOL;
+			}
+			
+			
 			$this->_reporter->currentlyProcessing($file);
 			$this->_processFile($file);
 		}
@@ -971,10 +977,6 @@ class PHPCheckstyle {
 			case T_NEW_LINE:
 				$this->_countLinesOfCode();
 				$this->lineNumber++;
-
-				if ($this->_displayProgress) {
-					echo "File: ".$this->_currentFilename." | Line: ".$this->lineNumber."\n";
-				}
 				// Case of a control statement without parenthesis, it closes at the end of the line
 				if ($this->_inControlStatement && $this->_csLeftParenthesis == 0) {
 					$this->_inControlStatement = false;

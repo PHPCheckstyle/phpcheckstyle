@@ -1,5 +1,9 @@
                          PHPCheckstyle Release Notes
                          ===========================
+
+Version 0.10.4
+-------------
+* Issue 37: Web interface (currently very limited)
                          
 Version 0.10.3
 -------------

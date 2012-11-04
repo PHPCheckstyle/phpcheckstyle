@@ -20,6 +20,7 @@ class HTMLFormatReporter extends Reporter {
 	private $previousFile = '';
 	private $writeMode = 'w'; // "write" - ensures a new file is created.
 	private $ofile = "/index.html"; //The output file name
+	private $ofolder; //The output folder
 
 	/**
 	 * Constructor; calls parent's constructor
@@ -28,6 +29,7 @@ class HTMLFormatReporter extends Reporter {
 	 */
 	public function HTMLFormatReporter($ofolder = false) {
 		parent::__construct($ofolder, $this->ofile);
+		$this->ofolder = $ofolder;
 		// Creating a util object to allow copying.
 		global $util;
 	}
@@ -68,6 +70,9 @@ class HTMLFormatReporter extends Reporter {
 
 		// Write the footer
 		$this->writeFragment($this->_readTemplate("footer"));
+		
+		// Copy the CSS file
+		copy(PHPCHECKSTYLE_HOME_DIR."/html/css/global.css", $this->ofolder."/global.css");
 	}
 
 	/**

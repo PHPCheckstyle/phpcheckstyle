@@ -1,6 +1,13 @@
 #summary Project History
 #labels Featured
 
+== Version 0.10.53 ==
+  * Issue 39:	Error on closing tag for space-based indentation checks
+  * Issue 38:	False positive for : The function XXX must have a docblock comment
+
+== Version 0.10.43 ==
+  * Issue 37: Web interface (currently very limited)
+
 == Version 0.10.3 ==
   * issue 25 : New Rule : Use of "==" in strpos
   * Bug correction: Not correctly counting the end of a stack item after a "ELSE IF"

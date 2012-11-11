@@ -6,7 +6,7 @@
 	
 	<body>
 	
-	<h1>PHPCheckstyle</h1>
+	<h1><img src="./html/images/Logo_phpcheckstyle.png"/>&nbsp;PHPCheckstyle</h1>
 	
 	<form name="myform" action="runFromWeb.php" method="POST">
 	

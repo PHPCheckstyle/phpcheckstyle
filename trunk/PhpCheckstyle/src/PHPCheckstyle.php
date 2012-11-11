@@ -2546,9 +2546,15 @@ class PHPCheckstyle {
 		$previousToken = $this->tokenizer->peekPrvsToken();
 		// only check a line once
 		if (!isset($this->indentationLevel['previousLine']) || $this->lineNumber != $this->indentationLevel['previousLine']) {
+			
+			// Nesting level is the number of items in the branching stack
 			$nesting = count($this->_branchingStack);
+			
+			// But we must anticipate if the current line change the level
 			if ($this->tokenizer->checkNextValidTextToken("{")) {
 				$nesting++;
+			} else if ($this->tokenizer->checkNextValidTextToken("}")) {
+				$nesting--;
 			}
 
 			$expectedIndentation = $nesting * $indentationNumber;

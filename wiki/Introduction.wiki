@@ -19,6 +19,7 @@ This project was originally written by Hari Kodungallur. Other contributors are:
   * Adrien Pessu
   * Justin Creasey
   * Adam King
+  * Stéphane Roger 
 
 == Details ==
 

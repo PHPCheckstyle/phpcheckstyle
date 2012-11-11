@@ -2791,6 +2791,7 @@ class PHPCheckstyle {
 
 			if (is_array($docToken)) {
 				$tokenToIgnoreList = array(T_STATIC,
+						T_FINAL,
 						T_ABSTRACT,
 						T_PROTECTED,
 						T_PUBLIC,

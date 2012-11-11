@@ -1,18 +1,23 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.10.5
+--------------
+* Issue 39:	Error on closing tag for space-based indentation checks
+* Issue 38:	False positive for : The function XXX must have a docblock comment
+
 Version 0.10.4
--------------
+--------------
 * Issue 37: Web interface (currently very limited)
                          
 Version 0.10.3
--------------
+--------------
 * Issue 35: New Rule : Use of "==" in strpos
 * Bug correction: Not correctly counting the end of a stack item after a "ELSE IF"
 
                          
 Version 0.10.2
--------------
+--------------
 * issue 27 : Unused code is wrongly detected
 * issue 26 : Empty lines in comments will corrupt line numbering
 * issue 25 : Error: Notice: Trying to get property of non-object
@@ -21,12 +26,12 @@ Version 0.10.2
 * Fix for null pointer exceptions when run against newer code
 
 Version 0.10.1
--------------
+--------------
 * Fixed Rule encapsedVariablesInsideString : False positive when using heredoc
 * Rule needBraces : False positive for do/while
 
 Version 0.10.0
--------------
+--------------
 * Added support for interfaces
 * Improved checking of variables by scope
 * Rewrote the _checkLargeLine() function

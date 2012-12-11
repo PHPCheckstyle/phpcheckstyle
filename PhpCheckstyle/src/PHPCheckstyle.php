@@ -133,6 +133,7 @@ class PHPCheckstyle {
 			'T_OPEN_TAG_WITH_ECHO', 'T_PRINT');
 
 	private $_deprecatedFunctions = array();
+	private $_aliasedFunctions = array();
 
 	private $_systemVariables = array();
 
@@ -223,9 +224,11 @@ class PHPCheckstyle {
 		// Load the list of forbidden tokens
 		$this->_prohibitedTokens = $this->_config->getTestItems('checkProhibitedTokens');
 
-		// Load the list of deprecated function
+		// Load the list of deprecated functions
 		$this->_deprecatedFunctions = $this->_config->getTestDeprecations('checkDeprecation');
 
+		// Load the list of aliased functions
+		$this->_aliasedFunctions = $this->_config->getTestDeprecations('checkAliases');
 
 	}
 
@@ -1018,6 +1021,9 @@ class PHPCheckstyle {
 			case T_CONTINUE:
 				$this->_checkContinue();
 				break;
+			case T_EXIT:  // exit() of die()
+				$this->_checkAliases($text);
+				break;
 			default:
 				break;
 		}
@@ -1270,6 +1276,9 @@ class PHPCheckstyle {
 
 			// Detect deprecated functions
 			$this->_checkDeprecation($text);
+			
+			// Detect aliased functions
+			$this->_checkAliases($text);
 
 			// Detect an @ before the function call
 			$this->_checkSilenced($text);
@@ -2938,6 +2947,22 @@ class PHPCheckstyle {
 			if (array_key_exists($key, $this->_deprecatedFunctions)) {
 				$msg = sprintf(PHPCHECKSTYLE_DEPRECATED_FUNCTION, $this->_deprecatedFunctions[$key]['old'], $this->_deprecatedFunctions[$key]['version'], $this->_deprecatedFunctions[$key]['new']);
 				$this->_writeError('checkDeprecation', $msg);
+			}
+		}
+	}
+	
+	/**
+	 * Check for aliased functions.
+	 *
+	 * @param String $text The text of the token to test
+	 */
+	private function _checkAliases($text) {
+		if ($this->_isActive('checkAliases')) {
+		
+			$key = strtolower($text);
+			if (array_key_exists($key, $this->_aliasedFunctions)) {
+				$msg = sprintf(PHPCHECKSTYLE_ALIASED_FUNCTION, $this->_aliasedFunctions[$key]['old'], $this->_aliasedFunctions[$key]['new']);
+				$this->_writeError('checkAliases', $msg);
 			}
 		}
 	}

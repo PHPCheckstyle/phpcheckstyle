@@ -89,7 +89,7 @@ class CheckStyleConfig {
 	/**
 	 * Return a list of items associed with a test.
 	 *
-	 * @param $test name of the test
+	 * @param String $test name of the test
 	 * @return array the list of items for this test.
 	 */
 	public function getTestItems($test) {
@@ -100,7 +100,7 @@ class CheckStyleConfig {
 	/**
 	 * Return a list of items associed with a configuration.
 	 *
-	 * @param $config name of the config
+	 * @param String $config name of the config
 	 * @return array the list of items for this config.
 	 */
 	public function getConfigItems($config) {
@@ -110,7 +110,7 @@ class CheckStyleConfig {
 	/**
 	 * Return a list of exceptionfor a test.
 	 *
-	 * @param $test name of the test
+	 * @param String $test name of the test
 	 * @return array the list of exceptions for this test.
 	 */
 	public function getTestExceptions($test) {
@@ -121,8 +121,8 @@ class CheckStyleConfig {
 	/**
 	 * Return a true if the test exist, false otherwise.
 	 *
-	 * @param $test name of the test
-	 * @return boolean true if test exists.
+	 * @param String $test name of the test
+	 * @return Boolean true if test exists.
 	 */
 	public function getTest($test) {
 		$test = strtolower($test);
@@ -132,7 +132,7 @@ class CheckStyleConfig {
 	/**
 	 * Return the level of severity of a test.
 	 *
-	 * @param $test name of the test
+	 * @param String $test name of the test
 	 * @return the level of severity.
 	 */
 	public function getTestLevel($test) {
@@ -153,7 +153,7 @@ class CheckStyleConfig {
 	/**
 	 * Return the regular expression linked to the test.
 	 *
-	 * @param $test name of the test
+	 * @param String $test name of the test
 	 * @return the regular expression.
 	 */
 	public function getTestRegExp($test) {
@@ -169,7 +169,7 @@ class CheckStyleConfig {
 	/**
 	 * Return the list of deprecated method and their replacement.
 	 *
-	 * @param $test name of the test
+	 * @param String $test name of the test
 	 * @return the list of depecated values.
 	 */
 	public function getTestDeprecations($test) {
@@ -181,12 +181,28 @@ class CheckStyleConfig {
 
 		return $ret;
 	}
+	
+	/**
+	 * Return the list of aliases and their replacement.
+	 *
+	 * @param String $test name of the test
+	 * @return the list of depecated values.
+	 */
+	public function getTestAliases($test) {
+		$test = strtolower($test);
+		$ret = "";
+		if (array_key_exists($test, $this->_myConfig)) {
+			$ret = $this->_myConfig[$test];
+		}
+	
+		return $ret;
+	}
 
 	/**
 	 * Return the value of a property
 	 *
-	 * @param $test name of the test
-	 * @param $property name of the property
+	 * @param String $test name of the test
+	 * @param String $property name of the property
 	 * @return the value.
 	 */
 	public function getTestProperty($test, $property) {
@@ -203,9 +219,9 @@ class CheckStyleConfig {
 	 * SAX function indicating start of an element
 	 * Store the TEST and PROPERTY values in an array
 	 *
-	 * @param $parser the parser
-	 * @param $elem name of element
-	 * @param $attrs list of attributes of the element
+	 * @param Parser $parser the parser
+	 * @param Elem $elem name of element
+	 * @param Attributes $attrs list of attributes of the element
 	 */
 	private function _startElement($parser, $elem, $attrs) {
 		switch ($elem) {
@@ -272,6 +288,16 @@ class CheckStyleConfig {
 				}
 				break;
 
+				// Case of an alias function
+			case 'ALIAS':
+				if (isset($attrs['OLD'])) {
+					$this->_myConfig[$this->_currentTest][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
+				}
+				if (isset($attrs['NEW'])) {
+					$this->_myConfig[$this->_currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
+				}
+				break;
+
 			default:
 				break;
 		}
@@ -281,8 +307,8 @@ class CheckStyleConfig {
 	 * SAX function indicating end of element
 	 * Currenlty we dont need to do anything here
 	 *
-	 * @param $parser
-	 * @param $name
+	 * @param Parser $parser
+	 * @param String $name
 	 */
 	private function _endElement($parser, $name) {
 	}
@@ -291,8 +317,8 @@ class CheckStyleConfig {
 	 * SAX function for processing CDATA
 	 * Currenlty we dont need to do anything here
 	 *
-	 * @param $parser
-	 * @param $name
+	 * @param Parser $parser
+	 * @param String $name
 	 */
 	private function _gotCdata($parser, $name) {
 	}

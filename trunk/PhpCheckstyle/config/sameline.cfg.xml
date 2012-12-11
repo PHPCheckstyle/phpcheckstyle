@@ -401,4 +401,48 @@
     	<deprecated old="$HTTP_SESSION_VARS" new="$_SESSION" version="5.3"/>
     </test>
     
+    <!--  *******************  -->
+    <!--      FindBugs         -->
+    <!--  *******************  --> 
+    
+    <!-- Use only strict comparison with these functions -->
+    <!-- see : http://me.veekun.com/blog/2012/04/09/php-a-fractal-of-bad-design/ -->
+    <test name="strictCompare">
+    	<item value="array_search"/>
+    	<item value="strpos"/>
+    	<item value="stripos"/>
+    	<item value="strrpos"/>
+    	<item value="strripos"/>
+    	<item value="strripos"/>
+    	<item value="mb_strpos"/>
+    </test>
+    
+    <!--  *******************  -->
+    <!--      PHP Aliases      -->
+    <!--  *******************  --> 
+    
+    <!-- Replace deprecated methods -->
+    <test name="checkAliases">
+    	<alias old="chop" new="rtrim()"/>
+    	<alias old="close" new="closedir()"/>
+    	<alias old="die" new="exit()"/>
+    	<alias old="dir" new="getdir()"/>
+    	<alias old="doubleval" new="floatval()"/>
+    	<alias old="fputs" new="fwrite()"/>
+    	<alias old="ini_alter" new="ini_set()"/>
+    	<alias old="is_double" new="is_float()"/>
+    	<alias old="is_integer" new="is_int()"/>
+    	<alias old="is_long" new="is_int()"/>
+    	<alias old="is_real" new="is_float()"/>
+    	<alias old="is_writeable" new="is_writable()"/>
+    	<alias old="join" new="implode()"/>
+    	<alias old="key_exists" new="array_key_exists()"/>
+    	<alias old="magic_quotes_runtime" new="set_magic_quotes_runtime()"/>
+    	<alias old="pos" new="current()"/>
+    	<alias old="rewind" new="rewinddir()"/>
+    	<alias old="show_source" new="highlight_file()"/>
+    	<alias old="sizeof" new="count()"/>
+    	<alias old="strchr" new="strstr()"/>
+    </test>
+    
 </phpcheckstyle-configuration>

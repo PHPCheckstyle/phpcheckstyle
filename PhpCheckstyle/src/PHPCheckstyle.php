@@ -469,7 +469,7 @@ class PHPCheckstyle {
 	 * @access private
 	 */
 	private function _getAllPhpFiles($src, $excludes, $dir = '') {
-
+		
 		$files = array();
 		if (!is_dir($src)) {
 
@@ -514,7 +514,7 @@ class PHPCheckstyle {
 							$pathParts = pathinfo($file);
 							if (array_key_exists('extension', $pathParts)) {
 								if (in_array($pathParts['extension'], $this->validExtensions)) {
-									$files[] = $src."/".$file;
+									$files[] = realpath($src."/".$file);
 								}
 							}
 						}

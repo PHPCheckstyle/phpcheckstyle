@@ -1,6 +1,11 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.10.6
+--------------
+* Issue 40:	Propose replacement for PHP aliases
+* Now generates absolute file path in the reports (allow Jenkins to display the source code)
+
 Version 0.10.5
 --------------
 * Issue 39:	Error on closing tag for space-based indentation checks

@@ -6,11 +6,11 @@
  * @see : http://checkstyle.sourceforge.net/api/index.html
  */
 
-define("ERROR", "ERROR"); 
+define("ERROR", "error"); 
 
-define("IGNORE", "IGNORE"); 
+define("IGNORE", "ignore"); 
 
-define("INFO", "INFO"); 
+define("INFO", "info"); 
 
-define("WARNING", "WARNING"); 
+define("WARNING", "warning"); 
 

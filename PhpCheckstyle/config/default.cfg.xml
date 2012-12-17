@@ -49,7 +49,7 @@
     <!--  ****************  -->
     
     <!-- Check Constant Naming -->
-    <test name="constantNaming" regexp="/^[A-Z][A-Z0-9_]*$/" level="ERROR"/>
+    <test name="constantNaming" regexp="/^[A-Z][A-Z0-9_]*$/" level="error"/>
     
     <!-- Check Variable Naming -->
     <test name="variableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!--  default naming -->
@@ -58,13 +58,13 @@
     <test name="memberVariableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!--  for member variables (inside a function) -->
     
     <!-- Check Function Naming -->
-    <test name="functionNaming" regexp="/^[a-z][a-zA-Z0-9]*$/" level="ERROR"/>
+    <test name="functionNaming" regexp="/^[a-z][a-zA-Z0-9]*$/" level="error"/>
     
     <!-- Check Protected Naming -->
-    <test name="protectedFunctionNaming" regexp="/^[a-z][a-zA-Z0-9]*$/" level="ERROR"/>
+    <test name="protectedFunctionNaming" regexp="/^[a-z][a-zA-Z0-9]*$/" level="error"/>
         
     <!-- Check Private Function Naming -->
-    <test name="privateFunctionNaming" regexp="/^_[a-z][a-zA-Z0-9]*$/" level="ERROR"/>
+    <test name="privateFunctionNaming" regexp="/^_[a-z][a-zA-Z0-9]*$/" level="error"/>
         
     <!-- Checks the constuctor naming -->
     <!-- old = old style (constructor = name of the class) -->
@@ -74,13 +74,13 @@
     </test>
     
     <!-- Check Class Naming -->
-    <test name="classNaming" regexp="/^[A-Z][a-zA-Z0-9_]*$/" level="ERROR"/>
+    <test name="classNaming" regexp="/^[A-Z][a-zA-Z0-9_]*$/" level="error"/>
     
     <!-- Check Interface Naming -->
-    <test name="interfaceNaming" regexp="/^[A-Z][a-zA-Z0-9_]*$/" level="ERROR"/>
+    <test name="interfaceNaming" regexp="/^[A-Z][a-zA-Z0-9_]*$/" level="error"/>
     
     <!-- File Naming -->
-     <test name="fileNaming" regexp="/^[a-zA-Z][a-zA-Z0-9._]*$/" level="ERROR"/>
+     <test name="fileNaming" regexp="/^[a-zA-Z][a-zA-Z0-9._]*$/" level="error"/>
     
     
 	<!--  ****************  -->
@@ -95,7 +95,7 @@
     <test name="noFileCloseTag"/>
     
     <!-- Test if a file finish with some inner HTML (OK for some view but could provoque "header already sent" error) -->
-    <test name="noFileFinishHTML" level="ERROR" />
+    <test name="noFileFinishHTML" level="error" />
     
     
     <!--  ****************  -->
@@ -131,7 +131,7 @@
     </test>
     
     <!-- Check the position of the close curly brace  -->
-    <test name="controlCloseCurly" level="INFO">
+    <test name="controlCloseCurly" level="info">
     </test>
         
     <!-- Check the position of the open curly brace after a function -->
@@ -160,7 +160,7 @@
    <test name="spaceAfterControlStmt"/>
    
     <!-- Check that there is no space after a function name in a function call -->
-    <test name="noSpaceAfterFunctionName" level="INFO"></test>
+    <test name="noSpaceAfterFunctionName" level="info"></test>
 	 
     
     <!-- Check for the (required) presence of a white space after some tokens : "," "}" "-" -->
@@ -176,11 +176,11 @@
     
         
     <!-- Check that there is no space before before some tokens : "," ";" ")" "->" -->
-    <test name="noSpaceBeforeToken" level="INFO">
+    <test name="noSpaceBeforeToken" level="info">
     </test>
     
     <!-- Check that there is no space after some tokens : "!" "(" "->" -->
-    <test name="noSpaceAfterToken"  level="INFO">
+    <test name="noSpaceAfterToken"  level="info">
     </test>
     
     <!--  ****************  -->
@@ -188,12 +188,12 @@
     <!--  ****************  --> 
     
     <!-- Check that the lenght of the line doesn't pass the max value -->
-    <test name="lineLength" level="INFO">
+    <test name="lineLength" level="info">
         <property name="maxLineLength" value="160"/>
     </test>
     
     <!-- Checks that the lenght (in lines) of a function doesn't pass the max value -->
-    <test name="functionLength" level="INFO">
+    <test name="functionLength" level="info">
         <property name="maxLength" value="200"/>
     </test>
     

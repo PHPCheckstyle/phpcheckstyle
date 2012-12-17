@@ -3017,7 +3017,7 @@ class PHPCheckstyle {
 
 		$level = $this->_config->getTestLevel($check);
 		if ($level == null) {
-			$level = "WARNING";
+			$level = "warning";
 		}
 
 		$this->_reporter->writeError($lineNumber, $check, $message, $level);

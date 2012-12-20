@@ -2464,11 +2464,15 @@ class PHPCheckstyle {
 
 	/**
 	 * Check if the current line exceeds the maxLineLength allowed.
+	 * 
+	 * Launched at the start of a new line.
 	 */
 	private function _checkLargeLine() {
-
+		
+		$checkHTMLLines = $this->_config->getTestProperty('lineLength', 'checkHTMLLines');
+		
 		// If the current token is HTML we don't check the line size
-		if (!$this->tokenizer->checkProvidedToken($this->token, T_INLINE_HTML)) {
+		if ($checkHTMLLines == "true" || !$this->tokenizer->checkNextValidToken(T_INLINE_HTML)) {
 
 			$maxLength = $this->_config->getTestProperty('lineLength', 'maxLineLength');
 			$lineString = ""; // String assembled from tokens
@@ -2487,7 +2491,7 @@ class PHPCheckstyle {
 			} while (!($isNull || $isNewLine));
 
 			$lineLength = strlen($lineString);
-
+		
 			// Reporting the error if the line length exceeds the defined maximum.
 			if ($lineLength > $maxLength) {
 				// Does not report if the line is a multiline comment - i.e. has /* in it)

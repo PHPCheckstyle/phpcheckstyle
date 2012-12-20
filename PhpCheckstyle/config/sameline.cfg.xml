@@ -190,6 +190,7 @@
     <!-- Check that the lenght of the line doesn't pass the max value -->
     <test name="lineLength" level="info">
         <property name="maxLineLength" value="160"/>
+        <property name="checkHTMLLines" value="false"/>
     </test>
     
     <!-- Checks that the lenght (in lines) of a function doesn't pass the max value -->

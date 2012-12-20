@@ -857,6 +857,7 @@ class PHPCheckstyle {
 				$this->_processControlStatement($text);
 				break;
 			case T_CATCH:
+				$this->_processCatch();
 				$this->_processControlStatement($text);
 				break;
 			case T_WHITESPACE:
@@ -2304,7 +2305,19 @@ class PHPCheckstyle {
 		// Search for unused code after the throw of an exception
 		$this->_checkUnusedCode('THROW');
 	}
-
+	
+	/**
+	 * Process the catch token.
+	 *
+	 * This function is launched when the current token is T_CATCH
+	 */
+	private function _processCatch() {
+	
+		// We consider that all preview "Throws" are catched (this may be wrong)
+		$this->_functionThrows = false;
+	
+	}	
+	
 
 	/**
 	 * Process the start of a heredoc block.

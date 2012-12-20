@@ -2627,9 +2627,9 @@ class PHPCheckstyle {
 	 */
 	private function _checkNeedBraces() {
 		if ($this->_isActive('needBraces')) {
-
+		
 			$stmt = strtolower($this->_currentStatement);
-			if ($stmt == "if" || $stmt == "else" || $stmt == "elseif" || $stmt == "do" || ($stmt == "while" && !$this->_getCurrentStackItem()->afterDoStatement) || $stmt == "for" || $stmt == "foreach") {
+			if ($stmt == "if" || $stmt == "else" || $stmt == "elseif" || $stmt == "do" || ($stmt == "while" && !$this->_getParentStackItem()->afterDoStatement) || $stmt == "for" || $stmt == "foreach") {
 				if (!$this->tokenizer->checkNextValidTextToken("{")) {
 					$msg = sprintf(PHPCHECKSTYLE_NEED_BRACES, $stmt);
 					$this->_writeError('needBraces', $msg);
@@ -2935,6 +2935,23 @@ class PHPCheckstyle {
 			return new StatementItem();
 		}
 	}
+	
+	/**
+	 * Return the parent stack item.
+	 *
+	 * @return StatementItem
+	 */
+	private function _getParentStackItem() {
+		$count = count($this->_branchingStack);
+		if ($count > 1) {
+			return $this->_branchingStack[$count - 2];
+		} else {
+			// In case of a empty stack, we are at the root of a PHP file (with no class or function).
+			// We return the default values
+			return new StatementItem();
+		}
+	}
+	
 	/**
 	 * Check for silenced call to functons.
 	 *

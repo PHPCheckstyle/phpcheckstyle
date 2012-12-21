@@ -98,17 +98,14 @@ class GoodTest {
 	 * @throws Exception
 	 */
 	public function functionWithException() {
-		try {
-			// do something
-			throw $e;
-		} catch (Exception $e) {
-			echo $e;
-		}
-
+		
 		// Call the private function
 		$this->_privateFunction();
 
 		$this->test;
+		
+		// do something
+		throw new Exception('Exception');
 	}
 
 	/**

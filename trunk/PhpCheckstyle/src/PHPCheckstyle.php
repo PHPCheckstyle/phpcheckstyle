@@ -270,12 +270,12 @@ class PHPCheckstyle {
 			if (is_array($file)) {
 				continue;
 			}
-				
+
 			if ($this->_displayProgress) {
 				echo "Processing File: ".$file."<br/>".PHP_EOL;
 			}
-				
-				
+
+
 			$this->_reporter->currentlyProcessing($file);
 			$this->_processFile($file);
 		}
@@ -1293,7 +1293,7 @@ class PHPCheckstyle {
 
 			// Detect deprecated functions
 			$this->_checkDeprecation($text);
-				
+
 			// Detect aliased functions
 			$this->_checkAliases($text);
 
@@ -1396,7 +1396,7 @@ class PHPCheckstyle {
 		}
 
 		// Now we expect the '{' token
-		if (!$this->tokenizer->checkNextValidTextToken('{', $startPos + 1)) {
+		if (!$this->tokenizer->checkNextValidTextToken('{', $startPos)) {
 
 			// If not the case, we store the control statement in the stack
 			$stackitem = new StatementItem();
@@ -1572,9 +1572,9 @@ class PHPCheckstyle {
 
 			//Direct call to the reporter to allow different error levels for a single test.
 			if ($this->_cyclomaticComplexity > $warningLevel) {
-				$this->_reporter->writeError($this->_functionStartLine, 'cyclomaticComplexity', $msg, 'WARNING');
+				$this->_reporter->writeError($this->_functionStartLine, 'cyclomaticComplexity', $msg, WARNING);
 			} else if ($this->_cyclomaticComplexity > $errorLevel) {
-				$this->_reporter->writeError($this->_functionStartLine, 'cyclomaticComplexity', $msg, 'ERROR');
+				$this->_reporter->writeError($this->_functionStartLine, 'cyclomaticComplexity', $msg, ERROR);
 			}
 		}
 	}
@@ -1704,11 +1704,11 @@ class PHPCheckstyle {
 		}
 
 		// Detect the function name
-		$nameDetected = $this->tokenizer->checkToken($this->token, T_STRING);
+		$nameDetected = $this->tokenizer->checkToken($this->tokenizer->getToken(), T_STRING);
 		$curlyOpeningDetected = $this->tokenizer->checkNextTextToken('(');
 		while (!$nameDetected && !$curlyOpeningDetected) {
 			$this->tokenizer->getNextToken();
-			$nameDetected = $this->tokenizer->checkToken($this->token, T_STRING);
+			$nameDetected = $this->tokenizer->checkToken($this->tokenizer->getToken(), T_STRING);
 			$curlyOpeningDetected = $this->tokenizer->checkNextTextToken('(');
 		}
 
@@ -1990,7 +1990,7 @@ class PHPCheckstyle {
 		while (!$this->tokenizer->checkCurrentToken(T_STRING)) {
 			$this->tokenizer->getNextToken();
 		}
-		
+
 		$classname = $this->tokenizer->extractTokenText($this->tokenizer->getToken());
 		$this->_currentClassname = $classname;
 
@@ -2042,9 +2042,9 @@ class PHPCheckstyle {
 	 */
 	private function _checkStrictCompare($text) {
 		if ($this->_isActive('strictCompare')) {
-				
+
 			$isSearchResult = false;
-				
+
 			// Get the next token
 			$nextTokenInfo = $this->tokenizer->peekNextValidToken($this->tokenizer->getCurrentPosition());
 			$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
@@ -2057,20 +2057,20 @@ class PHPCheckstyle {
 				$variable = $this->_variables[$nextTokenText];
 				$isSearchResult = $isSearchResult || $variable->isSearchResult;
 			}
-				
+
 			// Get the token before
 			$previousTokenInfo = $this->tokenizer->peekPrvsValidToken($this->tokenizer->getCurrentPosition());
 			$previousTokenText = $this->tokenizer->extractTokenText($previousTokenInfo->token);
-				
+
 			// Check if previous token is a search function
 			$isSearchResult = $isSearchResult || in_array($previousTokenText, $this->_config->getTestItems('strictCompare'));
-				
+
 			// Or a variable that is the result of a search function
 			if (!empty($this->_variables[$previousTokenText])) {
 				$variable = $this->_variables[$previousTokenText];
 				$isSearchResult = $isSearchResult || $variable->isSearchResult;
 			}
-				
+
 			// If one the 2 compared item is such a variable or directly a listed function
 			if ($isSearchResult) {
 				$message = sprintf(PHPCHECKSTYLE_USE_STRICT_COMPARE, $text);
@@ -2145,7 +2145,7 @@ class PHPCheckstyle {
 	private function _checkUnusedVariables() {
 
 		if ($this->_isActive('checkUnusedVariables')) {
-
+			
 			foreach ($this->_variables as $variable) {
 
 				if ((!$variable->isUsed) && !($this->_isClass || $this->_isView)) {
@@ -2171,10 +2171,9 @@ class PHPCheckstyle {
 
 				// Find the end of the return statement
 				$pos = $this->tokenizer->findNextStringPosition(';');
-
+				
 				// Find the next valid token after the return statement
-				$nextValidToken = $this->tokenizer->peekNextValidToken($pos);
-				$nextValidToken = $this->tokenizer->peekNextValidToken($nextValidToken->position);
+				$nextValidToken = $this->tokenizer->peekNextValidToken($pos + 1);
 					
 				// Find the end of the function or bloc of code
 				$posClose = $this->tokenizer->findNextStringPosition('}');
@@ -2248,7 +2247,7 @@ class PHPCheckstyle {
 					|| $nextTokenText == "<<="
 					|| $nextTokenText == ">>="
 					|| $nextTokenText == ".=");
-				
+
 			// Check the following token
 			$isSearchResult = false;
 			if ($this->_isActive('strictCompare')) {
@@ -2272,7 +2271,7 @@ class PHPCheckstyle {
 
 				// Manage the case of $this->attribute
 				if ($text == '$this') {
-						
+
 					if ($this->tokenizer->checkToken($nextTokenInfo->token, T_OBJECT_OPERATOR)) {
 
 						$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
@@ -2498,7 +2497,7 @@ class PHPCheckstyle {
 
 			$maxLength = $this->_config->getTestProperty('lineLength', 'maxLineLength');
 			$lineString = ""; // String assembled from tokens
-			$currentTokenIndex = $this->tokenizer->getCurrentPosition() - 1;
+			$currentTokenIndex = $this->tokenizer->getCurrentPosition();
 			$currentToken = $this->tokenizer->peekTokenAt($currentTokenIndex);
 
 			do {
@@ -2516,12 +2515,12 @@ class PHPCheckstyle {
 
 			// Reporting the error if the line length exceeds the defined maximum.
 			if ($lineLength > $maxLength) {
-			// Does not report if the line is a multiline comment - i.e. has /* in it)
-			if (strpos($lineString, "/*")) {
-				return;
-			}
-			$msg = sprintf(PHPCHECKSTYLE_LONG_LINE, $lineLength, $maxLength);
-			$this->_writeError('lineLength', $msg);
+				// Does not report if the line is a multiline comment - i.e. has /* in it)
+				if (strpos($lineString, "/*")) {
+					return;
+				}
+				$msg = sprintf(PHPCHECKSTYLE_LONG_LINE, $lineLength, $maxLength);
+				$this->_writeError('lineLength', $msg);
 			}
 		}
 	}
@@ -2581,10 +2580,10 @@ class PHPCheckstyle {
 		$previousToken = $this->tokenizer->peekPrvsToken();
 		// only check a line once
 		if (!isset($this->indentationLevel['previousLine']) || $this->lineNumber != $this->indentationLevel['previousLine']) {
-				
+
 			// Nesting level is the number of items in the branching stack
 			$nesting = $this->statementStack->count();
-				
+
 			// But we must anticipate if the current line change the level
 			if ($this->tokenizer->checkNextValidTextToken("{")) {
 				$nesting++;
@@ -2776,6 +2775,8 @@ class PHPCheckstyle {
 	 * This, of course, assumes that the function/class/interface has to be
 	 * immediately preceded by docblock. Even regular comments are not
 	 * allowed, which I think is okay.
+	 * 
+	 * Launched when a CLASS / FUNCTION or INTERFACE statement is found.
 	 *
 	 * @param Integer $token T_CLASS, T_FUNCTION or T_INTERFACE
 	 * @return true is docblock is found

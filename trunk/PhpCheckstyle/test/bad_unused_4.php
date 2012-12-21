@@ -21,7 +21,7 @@ class Unused {
 		
 		return $a;  
 		
-		$a = $a + 2; // 3 - checkUnusedCode (code after the return)
+		$a = $a + 2; // 4 - checkUnusedCode (code after the return)
 		
 	}
 	

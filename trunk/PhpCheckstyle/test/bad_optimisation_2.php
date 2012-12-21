@@ -20,7 +20,7 @@ class Optimisation {
 			$a++;
 		}
 
-		for ($i = 0; $i < sizeof($b); $i++) {
+		for ($i = 0; $i < count($b); $i++) {
 			// 2- functionInsideLoop : store count($b) in a temp variable :: PHPCHECKSTYLE_FUNCTION_INSIDE_LOOP
 			echo $i;
 		}

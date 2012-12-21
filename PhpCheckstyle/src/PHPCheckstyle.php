@@ -1271,7 +1271,7 @@ class PHPCheckstyle {
 	 * @param String $text the name of the function.
 	 */
 	private function _processFunctionCall($text) {
-
+	
 		if ($text == "define") {
 			$this->_constantDef = true;
 		}
@@ -1396,7 +1396,7 @@ class PHPCheckstyle {
 		}
 
 		// Now we expect the '{' token
-		if (!$this->tokenizer->checkNextValidTextToken('{', $startPos)) {
+		if (!$this->tokenizer->checkNextValidTextToken('{', $startPos + 1)) {
 
 			// If not the case, we store the control statement in the stack
 			$stackitem = new StatementItem();
@@ -2046,7 +2046,7 @@ class PHPCheckstyle {
 			$isSearchResult = false;
 
 			// Get the next token
-			$nextTokenInfo = $this->tokenizer->peekNextValidToken($this->tokenizer->getCurrentPosition());
+			$nextTokenInfo = $this->tokenizer->peekNextValidToken($this->tokenizer->getCurrentPosition() + 1);
 			$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
 
 			// Check if next token is a search function
@@ -2231,7 +2231,7 @@ class PHPCheckstyle {
 
 			// Global variable
 			$pos = $this->tokenizer->getCurrentPosition();
-			$nextTokenInfo = $this->tokenizer->peekNextValidToken($pos);
+			$nextTokenInfo = $this->tokenizer->peekNextValidToken($pos + 1);
 
 			// if the next token is an equal, we suppose that this is an affectation
 			$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
@@ -2251,7 +2251,7 @@ class PHPCheckstyle {
 			// Check the following token
 			$isSearchResult = false;
 			if ($this->_isActive('strictCompare')) {
-				$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
+				$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position + 1);
 				$nextTokenText2 = $this->tokenizer->extractTokenText($nextTokenInfo2->token);
 				$isSearchResult = in_array($nextTokenText2, $this->_config->getTestItems('strictCompare'));
 			}
@@ -2268,10 +2268,12 @@ class PHPCheckstyle {
 			} else if ($isAffectation) {
 				// The variable is reaffected another value, this doesn't count as a valid use.
 			} else {
-
+				
 				// Manage the case of $this->attribute
 				if ($text == '$this') {
 
+					
+					
 					if ($this->tokenizer->checkToken($nextTokenInfo->token, T_OBJECT_OPERATOR)) {
 
 						$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
@@ -2757,7 +2759,7 @@ class PHPCheckstyle {
 	 */
 	private function _isFileDocComment() {
 		$tokenPosition = $this->tokenizer->getCurrentPosition();
-		$nextTokenInfo = $this->tokenizer->peekNextValidToken(++$tokenPosition, true);
+		$nextTokenInfo = $this->tokenizer->peekNextValidToken($tokenPosition + 1, true);
 		$nextToken = $nextTokenInfo->token;
 		return !$this->_inClassStatement && !$this->_inInterfaceStatement && ($nextToken[0] == T_NEW_LINE || $nextToken[0] == T_DOC_COMMENT);
 	}

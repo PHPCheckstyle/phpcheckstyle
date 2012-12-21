@@ -139,17 +139,16 @@ class Tokenizer {
 	 * Peeks at the next valid token.
 	 * A valid token is one that is neither a whitespace or a comment
 	 *
-	 * @param Integer $startPos the start position for the search
+	 * @param Integer $startPos the start position for the search (if the item on this position is valid, it will be returned)
 	 * @param Boolean $stopOnNewLine Indicate if we need to stop when we meet a new line
 	 * @return TokenInfo the info about the token found
 	 */
 	public function peekNextValidToken($startPos = null, $stopOnNewLine = false) {
 		$ret = false;
 		$lineOffset = 0;
-		$pos = $this->getCurrentPosition() + 1; // defaut position for the search
+		$pos = $this->getCurrentPosition() + 1;  // defaut position for the search
 		if ($startPos != null) {
-			$pos = $startPos + 1; // if defined, set the start position
-
+			$pos = $startPos; // if defined, set the start position
 		}
 		while ($pos < count($this->tokens)) {
 			$ret = $this->tokens[$pos];

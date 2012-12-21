@@ -148,7 +148,7 @@ class Tokenizer {
 		$lineOffset = 0;
 		$pos = $this->getCurrentPosition() + 1; // defaut position for the search
 		if ($startPos != null) {
-			$pos = $startPos; // if defined, set the start position
+			$pos = $startPos + 1; // if defined, set the start position
 
 		}
 		while ($pos < count($this->tokens)) {
@@ -314,7 +314,7 @@ class Tokenizer {
 	 *
 	 * @param String $text the text we're looking for
 	 * @param Integer $apos the position to start from (by defaut will use current position)
-	 * @return Integer the position, -1 if not found
+	 * @return Integer the position, null if not found
 	 */
 	public function findNextStringPosition($text, $apos = null) {
 
@@ -326,7 +326,7 @@ class Tokenizer {
 		$pos += 1; // Start from the token following the current position
 
 		while  ($pos < count($this->tokens)) {
-			$token = $this->tokens[$pos - 1];
+			$token = $this->tokens[$pos];
 
 			if ($text == $this->extractTokenText($token)) {
 				return $pos;
@@ -335,7 +335,7 @@ class Tokenizer {
 			$pos++;
 		}
 
-		return -1;
+		return null;
 	}
 
 	/**

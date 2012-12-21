@@ -1,12 +1,4 @@
 <?php
-/*
- *  $Id: CheckStyleConfig.php 28215 2005-07-28 02:53:05Z hkodungallur $
-*
-*  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
-*  Licensed under the Open Source License version 2.1
-*  (See http://www.spikesource.com/license.html)
-*/
-
 if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
 	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__)."/..");
 }

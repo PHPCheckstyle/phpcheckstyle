@@ -17,19 +17,25 @@ define('T_TAB', -2);
  *
  * @see http://www.php.net/manual/en/tokens.php
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
- */
-class TokenUtils {
+*/
+class Tokenizer {
 
-	// Variables
-	private $fileRef;
+	/**
+	 * The array of tokens in a file.
+	 * @var Array[TokenInfo]
+	 */
 	private $tokens;
-	private $totalNumTokens;
-	private $curTokenNumber;
+
+	/**
+	 * Position of the index in the current file.
+	 * @var Integer
+	 */
+	private $index = 0;
 
 	/**
 	 * Constructor
 	 */
-	public function TokenUtils() {
+	public function Tokenizer() {
 		$this->reset();
 	}
 
@@ -38,7 +44,6 @@ class TokenUtils {
 	 * $this->tokens variable.
 	 *
 	 * @param String $filename the line where the token is found
-	 * @return Integer the total nomber of tokens in the file
 	 */
 	public function tokenize($filename) {
 		$contents = "";
@@ -48,9 +53,6 @@ class TokenUtils {
 			fclose($fp);
 		}
 		$this->tokens = $this->_getAllTokens($contents);
-		$this->totalNumTokens = count($this->tokens);
-
-		return $this->totalNumTokens;
 	}
 
 	/**
@@ -58,16 +60,28 @@ class TokenUtils {
 	 *
 	 * In the process moves the index to the next position.
 	 *
-	 * @return the token found
+	 * @return TokenInfo
 	 */
 	public function getNextToken() {
-		$ret = false;
-		if ($this->curTokenNumber < $this->totalNumTokens) {
-			$ret = $this->tokens[$this->curTokenNumber];
-			$this->curTokenNumber++;
+		if ($this->index < (count($this->tokens) - 1)) {
+				
+			// Increment the index
+			$this->index++;
+				
+			// Return the new token
+			return $this->tokens[$this->index];
+		} else {
+			return false;
 		}
+	}
 
-		return $ret;
+	/**
+	 * Gets the current token.
+	 *
+	 * @return TokenInfo
+	 */
+	public function getToken() {
+		return $this->tokens[$this->index];
 	}
 
 	/**
@@ -77,10 +91,10 @@ class TokenUtils {
 	 * @return the token found
 	 */
 	public function peekTokenAt($position) {
-		if ($position < $this->totalNumTokens) {
+		if ($position < count($this->tokens)) {
 			return $this->tokens[$position];
 		} else {
-			return "";
+			return null;
 		}
 	}
 
@@ -90,7 +104,7 @@ class TokenUtils {
 	 * @return current position of the Tokenizer
 	 */
 	public function getCurrentPosition() {
-		return $this->curTokenNumber;
+		return $this->index;
 	}
 
 	/**
@@ -100,25 +114,25 @@ class TokenUtils {
 	 * @return true if the token is found (and update the line value)
 	 */
 	public function peekNextToken() {
-		$ret = false;
-		if ($this->curTokenNumber < $this->totalNumTokens) {
-			$ret = $this->tokens[$this->curTokenNumber];
+		if ($this->index < (count($this->tokens) - 1)) {
+			return $this->tokens[$this->index + 1];
+		} else {
+			return null;
 		}
-		return $ret;
 	}
 
 	/**
 	 * Peeks at the previous token. That is it returns the previous token
-	 * without moving the index
+	 * without moving the index.
 	 *
-	 * @return true if the token is found (and update the line value)
+	 * @return TokenInfo
 	 */
 	public function peekPrvsToken() {
-		$ret = false;
-		if ($this->curTokenNumber > 1) {
-			$ret = $this->tokens[$this->curTokenNumber - 2];
+		if ($this->index > 0) {
+			return $this->tokens[$this->index - 1];
+		} else {
+			return null;
 		}
-		return $ret;
 	}
 
 	/**
@@ -132,12 +146,12 @@ class TokenUtils {
 	public function peekNextValidToken($startPos = null, $stopOnNewLine = false) {
 		$ret = false;
 		$lineOffset = 0;
-		$pos = $this->getCurrentPosition(); // defaut position for the search
+		$pos = $this->getCurrentPosition() + 1; // defaut position for the search
 		if ($startPos != null) {
 			$pos = $startPos; // if defined, set the start position
 
 		}
-		while ($pos < $this->totalNumTokens) {
+		while ($pos < count($this->tokens)) {
 			$ret = $this->tokens[$pos];
 			$pos++;
 			if (is_array($ret)) {
@@ -177,7 +191,7 @@ class TokenUtils {
 	 */
 	public function peekPrvsValidToken() {
 		$ret = false;
-		$tmpTokenNumber = $this->curTokenNumber - 2;
+		$tmpTokenNumber = $this->index - 1;
 		$lineOffset = 0;
 		while ($tmpTokenNumber > 0) {
 			$ret = $this->tokens[$tmpTokenNumber];
@@ -214,9 +228,7 @@ class TokenUtils {
 	 * @access public
 	 */
 	public function reset() {
-		$this->fileRef = false;
-		$this->curTokenNumber = 0;
-		$this->totalNumTokens = 0;
+		$this->index = 0;
 		$this->tokens = array();
 	}
 
@@ -228,7 +240,7 @@ class TokenUtils {
 	 * @param String $text (optional) the text we're looking for
 	 * @return true if the token correspond
 	 */
-	public function checkProvidedToken($token, $value, $text = false) {
+	public function checkToken($token, $value, $text = false) {
 		$ret = false;
 		if (is_array($token)) {
 			list($k, $v) = $token;
@@ -253,22 +265,22 @@ class TokenUtils {
 	 * @return true if the token is found
 	 */
 	public function checkPreviousValidToken($value, $text = false) {
-		$ret = false;
-		$retInfo = $this->peekPrvsValidToken();
-		$token = $retInfo->token;
-		if (is_array($token)) {
-			list($k, $v) = $token;
-			if ($k == $value) {
-				if ($text) {
-					if ($v == $text) {
-						$ret = true;
-					}
-				} else {
-					$ret = true;
-				}
-			}
-		}
-		return $ret;
+		$tokenInfo = $this->peekPrvsValidToken();
+
+		return $this->checkToken($tokenInfo->token, $value, $text);
+	}
+
+	/**
+	 * Check if the previous valid token (ignoring whitespace) correspond to the specified token.
+	 *
+	 * @param Array $value the token ID we're looking for
+	 * @param String $text (optional) the text we're looking for
+	 * @return true if the token is found
+	 */
+	public function checkPreviousToken($value, $text = false) {
+		$token = $this->peekPrvsToken();
+
+		return $this->checkToken($token, $value, $text);
 	}
 
 	/**
@@ -279,22 +291,22 @@ class TokenUtils {
 	 * @return true if the token is found
 	 */
 	public function checkNextToken($value, $text = false) {
-		$ret = false;
 		$token = $this->peekNextToken();
-		if (is_array($token)) {
-			// Case of a real token
-			list($k, $v) = $token;
-			if ($k == $value) {
-				if ($text) {
-					if ($v == $text) {
-						$ret = true;
-					}
-				} else {
-					$ret = true;
-				}
-			}
-		}
-		return $ret;
+
+		return $this->checkToken($token, $value, $text);
+	}
+
+	/**
+	 * Check if a the next token exists (and if its value correspond to what is expected).
+	 *
+	 * @param Integer $value the token we're looking for
+	 * @param String $text (optional) the text we're looking for
+	 * @return true if the token is found
+	 */
+	public function checkCurrentToken($value, $text = false) {
+		$token = $this->getToken();
+
+		return $this->checkToken($token, $value, $text);
 	}
 
 	/**
@@ -313,7 +325,7 @@ class TokenUtils {
 		}
 		$pos += 1; // Start from the token following the current position
 
-		while  ($pos < $this->totalNumTokens) {
+		while  ($pos < count($this->tokens)) {
 			$token = $this->tokens[$pos - 1];
 
 			if ($text == $this->extractTokenText($token)) {
@@ -333,14 +345,9 @@ class TokenUtils {
 	 * @return true if the token is found
 	 */
 	public function checkNextTextToken($text) {
-		$ret = false;
 		$token = $this->peekNextToken();
-		if (is_string($token)) {
-			if ($token == $text) {
-				$ret = true;
-			}
-		}
-		return $ret;
+
+		return $this->checkText($token, $text);
 	}
 
 	/**
@@ -351,17 +358,12 @@ class TokenUtils {
 	 * @return true if the token is found
 	 */
 	public function checkNextValidTextToken($text, $startPos = null) {
-		$ret = false;
-		$retInfo = $this->peekNextValidToken($startPos);
-		if ($retInfo != null) {
-			$token = $retInfo->token;
-			if (is_string($token)) {
-				if ($token == $text) {
-					$ret = true;
-				}
-			}
+		$tokenInfo = $this->peekNextValidToken($startPos);
+		if ($tokenInfo != null) {
+			return $this->checkText($tokenInfo->token, $text);
+		} else {
+			return false;
 		}
-		return $ret;
 	}
 
 	/**
@@ -373,22 +375,13 @@ class TokenUtils {
 	 * @return true if the token is found
 	 */
 	public function checkNextValidToken($value, $text = false, $startPos = null) {
-		$ret = false;
-		$retInfo = $this->peekNextValidToken($startPos);
-		$token = $retInfo->token;
-		if (is_array($token)) {
-			list($k, $v) = $token;
-			if ($k == $value) {
-				if ($text) {
-					if ($v == $text) {
-						$ret = true;
-					}
-				} else {
-					$ret = true;
-				}
-			}
+		$tokenInfo = $this->peekNextValidToken($startPos);
+
+		if ($tokenInfo != null) {
+			return $this->checkToken($tokenInfo->token, $value, $text);
+		} else {
+			return false;
 		}
-		return $ret;
 	}
 
 	/**
@@ -398,7 +391,7 @@ class TokenUtils {
 	 * @param String $text the text
 	 * @return true if the token contains the text
 	 */
-	public function checkProvidedText($token, $text) {
+	public function checkText($token, $text) {
 		$ret = false;
 		if (is_string($token)) {
 			if ($token == $text) {
@@ -493,20 +486,20 @@ class TokenUtils {
 		// Find the opening parenthesis after current position
 		$pos = $this->findNextStringPosition('(', $startPos);
 		$parenthesisCount = 1;
-		
+
 		$pos += 1; // Skip the opening  parenthesis
-		
-		while ($parenthesisCount > 0 && $pos < $this->totalNumTokens) {
+
+		while ($parenthesisCount > 0 && $pos < count($this->tokens)) {
 			// Look for the next token
 			$token = $this->peekTokenAt($pos);
-			
+
 			// Increment or decrement the parenthesis count
 			if ($this->extractTokenText($token) == "(") {
 				$parenthesisCount += 1;
 			} else if ($this->extractTokenText($token) == ")") {
 				$parenthesisCount -= 1;
 			}
-			
+
 			// Increment the position
 			$pos += 1;
 		}

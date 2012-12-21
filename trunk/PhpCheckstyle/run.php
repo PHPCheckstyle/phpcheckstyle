@@ -1,13 +1,5 @@
 #!/usr/bin/php
 <?php
-/*
- *  $Id: run.php 27242 2005-07-21 01:21:42Z hkodungallur $
-*
-*  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
-*  Licensed under the Open Source License version 2.1
-*  (See http://www.spikesource.com/license.html)
-*/
-
 /**
  *  CLI file to run the PHPCheckstyle
  */
@@ -88,7 +80,6 @@ for ($i = 1; $i < $_SERVER["argc"]; $i++) {
 define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__));
 
 require_once PHPCHECKSTYLE_HOME_DIR."/src/PHPCheckstyle.php";
-require_once PHPCHECKSTYLE_HOME_DIR."/src/util/Utility.php";
 
 define("CONFIG_FILE", $options['config']);
 define("DEBUG", $options['debug']);

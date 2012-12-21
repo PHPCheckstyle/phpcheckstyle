@@ -1,6 +1,13 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.10.7
+--------------
+* Issue 43:	False positive for "The function throws an exception"
+* Issue 41: False positive : The statement 'while' must contain its code within a {} block.
+* Issue 24: Line length checking of non-PHP code should be toggleable in a config option.
+* Issue 1 : Refactoring of the code
+
 Version 0.10.6
 --------------
 * Issue 40:	Propose replacement for PHP aliases

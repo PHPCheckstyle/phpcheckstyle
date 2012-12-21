@@ -1,12 +1,4 @@
 <?php
-/*
- *  $Id: styleErrors.inc.php 26757 2005-07-15 03:04:26Z hkodungallur $
- *
- *  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
- *  Licensed under the Open Source License version 2.1
- *  (See http://www.spikesource.com/license.html)
- */
-
 /**
  * Constants describing all the errors
  *

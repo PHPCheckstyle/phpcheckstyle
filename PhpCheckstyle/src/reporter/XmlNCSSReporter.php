@@ -1,12 +1,4 @@
 <?php
-/*
- *  $Id: XmlFormatReporter.php 26740 2005-07-15 01:37:10Z hkodungallur $
- *
- *  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
- *  Licensed under the Open Source License version 2.1
- *  (See http://www.spikesource.com/license.html)
- */
-
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporter.php";
 
 /**
@@ -60,11 +52,9 @@ class XmlNCSSReporter {
 		if (!$this->outputFile) {
 			$this->outputFile = "php://output";
 		}
-		// Creating a util object to allow copying.
-		global $util;
 		//creating the folder if it does not already exist.
 		if (!file_exists($ofolder)) {
-			$util->makeDirRecursive($ofolder);
+			mkdir($ofolder, 0755, true);
 		}
 	}
 

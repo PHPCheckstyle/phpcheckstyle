@@ -10,7 +10,7 @@
  */
 class TokenInfo {
 
-	var	$token = null;  // The token
+	var	$token = null;  // The token ID
 
 	var $position = null; // The position of the token in the file.
 

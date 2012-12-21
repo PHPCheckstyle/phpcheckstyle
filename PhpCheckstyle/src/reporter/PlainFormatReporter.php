@@ -1,12 +1,4 @@
 <?php
-/*
- *  $Id: PlainFormatReporter.php 26734 2005-07-15 01:34:26Z hkodungallur $
- *
- *  Copyright(c) 2004-2005, SpikeSource Inc. All Rights Reserved.
- *  Licensed under the Open Source License version 2.1
- *  (See http://www.spikesource.com/license.html)
- */
-
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporter.php";
 
 /**

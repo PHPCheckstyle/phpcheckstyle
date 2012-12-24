@@ -61,7 +61,6 @@ class PHPCheckstyle {
 	private $_inControlStatement = false;
 
 	private $_inString = false;
-	private $_stringStartCharacter;
 	private $_inArrayStatement = false; // We are in a array statement
 	private $_inClassStatement = false; // Wa are in a class statement (declaration)
 	private $_inInterfaceStatement = false; // Wa are in an interface statement (declaration)
@@ -363,16 +362,14 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Process one php file
+	 * Process one php file.
 	 *
-	 * @param $f input file
-	 * @return  nothing
-	 * @access private
+	 * @param String $filename the file name
 	 */
-	private function _processFile($f) {
+	private function _processFile($filename) {
 
 		if (DEBUG) {
-			echo "Processing File : ".$f.PHP_EOL;
+			echo "Processing File : ".$filename.PHP_EOL;
 		}
 
 		// Reset the tokenizer
@@ -382,24 +379,24 @@ class PHPCheckstyle {
 		$this->_resetValues();
 
 		// Try to detect the type of file in a MVC framework
-		if (stripos($f, 'view') !== false || stripos($f, 'layouts') !== false) {
+		if (stripos($filename, 'view') !== false || stripos($filename, 'layouts') !== false) {
 			$this->_isView = true;
 		}
-		if (stripos($f, 'model') !== false) {
+		if (stripos($filename, 'model') !== false) {
 			$this->_isModel = true;
 		}
-		if (stripos($f, 'controller') !== false) {
+		if (stripos($filename, 'controller') !== false) {
 			$this->_isController = true;
 		}
-		if (stripos($f, 'class') !== false) {
+		if (stripos($filename, 'class') !== false) {
 			// simple simple data objects
 			$this->_isClass = true;
 		}
 
-		$this->_currentFilename = $f;
+		$this->_currentFilename = $filename;
 
 		// Tokenize the file
-		$this->tokenizer->tokenize($f);
+		$this->tokenizer->tokenize($filename);
 
 		// Go to the first token
 		$token = $this->tokenizer->getNextToken();
@@ -407,20 +404,13 @@ class PHPCheckstyle {
 		// Run through every token of the file
 		while ($token !== false) {
 
-			if (is_array($token)) {
-				// The token is an array
-				list($tok, $text) = $token;
-				$this->_processToken($text, $tok);
-			} else if (is_string($token)) {
-				// The token is a String
-				$text = $token;
-				$this->_processString($text);
-			} else {
-				throw new Exception("Unexpected token type");
-			}
+			// Process the token
+			$this->_processToken($token);
 
 			// Go to the next token
 			$token = $this->tokenizer->getNextToken();
+
+			$this->lineNumber = $token->line;
 		}
 
 		// Test the last token of the file
@@ -451,7 +441,7 @@ class PHPCheckstyle {
 
 		// Write the count of lines for this file
 		if ($this->_lineCountReporter != null) {
-			$this->_lineCountReporter->writeFileCount($f, $this->_ncssFileClasses, $this->_ncssFileInterfaces, $this->_ncssFileFunctions, $this->_ncssFileLinesOfCode, $this->_ncssFilePhpdoc, $this->_ncssFileLinesPhpdoc, $this->_ncssFileSingleComment, $this->_ncssFileMultiComment);
+			$this->_lineCountReporter->writeFileCount($filename, $this->_ncssFileClasses, $this->_ncssFileInterfaces, $this->_ncssFileFunctions, $this->_ncssFileLinesOfCode, $this->_ncssFilePhpdoc, $this->_ncssFileLinesPhpdoc, $this->_ncssFileSingleComment, $this->_ncssFileMultiComment);
 		}
 
 		// Reset the suppression warnings
@@ -530,349 +520,91 @@ class PHPCheckstyle {
 		return $files;
 	}
 
-	/**
-	 * Processes a simple string token.
-	 *
-	 * @param $text the token string
-	 * @return nothing
-	 * @access private
-	 */
-	private function _processString($text) {
 
-		if (DEBUG) {
-			echo $this->statementStack->getStackDump().PHP_EOL;
-			echo $this->statementStack->count();
-			echo "-".$this->tokenizer->getCurrentPosition();
-			echo " Line  : ".$this->lineNumber;
-			echo " : ".$text.PHP_EOL;
-		}
-
-		// by defaut any token means we are not at the start of the line
-		$this->_isLineStart = false;
-
-		switch ($text) {
-
-
-
-
-			case "{":
-
-				// "{" signifies beginning of a block. We need to look for
-				// its position when it is a beginning of a control structure
-				// or a function or class definition.
-
-				// Check we have a white space before a curly opening in case of a "same line" indentation
-				if ($this->_config->getTestProperty('funcDefinitionOpenCurly', 'position') == "sl") {
-					$this->_checkWhiteSpaceBefore($text);
-				}
-				$stackitem = new StatementItem();
-				$stackitem->line = $this->lineNumber;
-
-				//FIXME: [Justin] Move this into a constructor
-
-				// if _justAfterFuncStmt is set, the "{" is the beginning of a function definition block
-				if ($this->_justAfterFuncStmt) {
-					$this->_processFunctionStart();
-					$stackitem->type = "FUNCTION";
-					$stackitem->name = $this->_currentFunctionName;
-					$stackitem->visibility = $this->_functionVisibility;
-				} else if ($this->_justAfterControlStmt) {
-					// if _justAfterControlStmt is set, the "{" is the beginning of a control stratement block
-					$this->_processControlStatementStart();
-					$stackitem->type = strtoupper($this->_currentStatement);
-				}  else if ($this->_inClassStatement) {
-					// if _inClassStatement is set then we are just after a class declaration
-					$this->_inClassStatement = false;
-					$this->_processClassStart();
-					$stackitem->type = "CLASS";
-					$stackitem->name = $this->_currentClassname;
-				}  else if ($this->_inInterfaceStatement) {
-					// if _inInterfaceStatement is set then we are just after a Interface declaration
-					$this->_inInterfaceStatement = false;
-					$this->_processInterfaceStart();
-					$stackitem->type = "INTERFACE";
-					$stackitem->name = $this->_currentInterfacename;
-				} else {
-					$stackitem->type = "{";
-				}
-
-				// Check if the block is not empty
-				$this->_checkEmptyBlock();
-
-				$this->statementStack->push($stackitem);
-
-				break;
-
-			case "}":
-				// "}" signifies the end of a block
-				// currently tests whether this token resides on a new line.
-				// This test is desactivated when in a view
-				if ($this->_isActive('controlCloseCurly') && !($this->_isView) && (!$this->_inString)) {
-					$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
-					if ($previousTokenInfo->lineOffset == 0) {
-						// the last token was on the same line
-						$this->_writeError('controlCloseCurly', PHPCHECKSTYLE_END_BLOCK_NEW_LINE);
-					}
-				}
-
-				$_currentStackItem = $this->statementStack->getCurrentStackItem();
-
-				// FIXME: Add more robust handling of lines like:
-				// $_fbTrackingCode = "FB|{$_ref}|{$_source}|{$_fbSource}|{$_notifType}|{$_fbBookmarkPos}";
-
-				// Workaround code
-				if (!Is_String($_currentStackItem)) {
-
-					// Test for the end of a switch bloc
-					if ($this->statementStack->getCurrentStackItem()->type == "SWITCH") {
-						$this->_processSwitchStop();
-					}
-
-					// Test for the end of a function
-					if ($this->statementStack->getCurrentStackItem()->type == "FUNCTION") {
-						$this->_processFunctionStop();
-					}
-
-					// Test for the end of a class
-					if ($this->statementStack->getCurrentStackItem()->type == "CLASS") {
-						$this->_processClassStop();
-					}
-
-					// Test for the end of an interface
-					if ($this->statementStack->getCurrentStackItem()->type == "INTERFACE") {
-						$this->_processInterfaceStop();
-					}
-
-				}
-				$this->statementStack->pop();
-
-				// Particular case of a ELSE IF {}
-				// We unstack both the IF and the ELSE
-				if ($this->statementStack->getCurrentStackItem()->type == "IF" && $this->statementStack->getCurrentStackItem()->type == "ELSE" && $this->statementStack->getCurrentStackItem()->noCurly == true) {
-					$this->statementStack->pop();
-				}
-
-				break;
-
-			case ";":
-
-				// ";" should never be preceded by a whitespace
-				$this->_checkNoWhiteSpaceBefore($text);
-
-				// ";" should never be preceded by ;
-				$this->_checkEmptyStatement();
-
-				// If we are in a statement not surrounded by curly braces, we unstack the last line.
-				if ($this->statementStack->getCurrentStackItem()->noCurly == true) {
-					$this->statementStack->pop();
-				}
-
-				break;
-
-			case "-":
-				if (!$this->_inFuncCall) {
-					$this->_checkWhiteSpaceBefore($text);
-				}
-				// We allow some '-' signs to skip the the space afterwards for negative numbers
-				if (!($this->tokenizer->checkNextToken(T_LNUMBER) || // float number
-						$this->tokenizer->checkNextToken(T_DNUMBER))) {
-					// integer
-					$this->_checkWhiteSpaceAfter($text);
-				}
-
-				break;
-			case "=":
-				$this->_checkInnerAssignment();
-				$this->_checkSurroundingWhiteSpace($text);
-				break;
-			case "<":
-			case ">":
-			case "+":
-			case ".":
-			case "*":
-			case "/":
-			case "?":
-			case "==":
-			case ":":
-			case "%":
-				// operators generally will need to be surrounded by whitespaces
-				$this->_checkSurroundingWhiteSpace($text);
-				break;
-
-			case ",":
-				$this->_checkNoWhiteSpaceBefore($text);
-				$this->_checkWhiteSpaceAfter($text);
-				break;
-
-			case "!":
-				$this->_checkNoWhiteSpaceAfter($text);
-				break;
-
-			case "(":
-				// the only issue with "(" is generally whether there should be space after it or not
-				if ($this->_inFuncCall) {
-					// inside a function call
-					$this->_fcLeftParenthesis += 1;
-				} elseif ($this->_inControlStatement || $this->_inFunctionStatement) {
-					// inside a function or control statement
-					$this->_csLeftParenthesis += 1;
-				}
-
-				$this->_checkNoWhiteSpaceAfter($text);
-				break;
-
-			case ")":
-				// Decrease the number of opened brackets
-				if ($this->_inFuncCall) {
-					$this->_fcLeftParenthesis -= 1;
-				} elseif ($this->_inControlStatement || $this->_inFunctionStatement) {
-					$this->_csLeftParenthesis -= 1;
-				}
-
-				// If 0 we are not in the call anymore
-				if ($this->_fcLeftParenthesis == 0) {
-					$this->_inFuncCall = false;
-				}
-				// If 0 we are not in the statement anymore
-				if ($this->_csLeftParenthesis == 0) {
-
-					if ($this->_inControlStatement) {
-						$this->_inControlStatement = false;
-						$this->_justAfterControlStmt = true;
-						$this->_checkNeedBraces();
-					} elseif ($this->_inFunctionStatement && !$this->_inInterface) {
-						$this->_inFunctionStatement = false;
-						$this->_justAfterFuncStmt = true;
-					}
-				}
-
-				$this->_checkNoWhiteSpaceBefore($text);
-
-				break;
-
-			case "&":
-				// One of the function parameter is passed by reference
-				if ($this->_isActive('avoidPassingReferences')) {
-					if ($this->_inFunctionStatement) {
-						$this->_writeError('avoidPassingReferences', PHPCHECKSTYLE_PASSING_REFERENCE);
-					}
-				}
-				break;
-			case "[":
-				$this->_inArrayStatement = true;
-				break;
-			case "]":
-				$this->_inArrayStatement = false;
-				break;
-
-			case "'":
-				$this->_trackStringOpenOrClose("'");
-				break;
-
-			case '"':
-				$this->_trackStringOpenOrClose('"');
-				break;
-
-			default:
-				break;
-		}
-	}
 
 	/**
-	 * processes a token that is not a string, that is
-	 * a token that is a array of a token id (key) and
-	 * a token text (value).
+	 * Process a token.
 	 * @see http://www.php.net/manual/en/tokens.php
 	 *
-	 * @param $text the text of the token
-	 * @param $tok token id
-	 * @return nothing
-	 * @access private
+	 * @param TokenInfo $token
 	 */
-	private function _processToken($text, $tok) {
+	private function _processToken($token) {
 
 		// Debug
 		if (DEBUG) {
 			echo $this->statementStack->getStackDump().PHP_EOL;
-			echo $this->statementStack->count();
-			echo "-".$this->tokenizer->getCurrentPosition();
-			echo " Line  : ".$this->lineNumber;
-			echo " Token ".$this->tokenizer->getTokenName($tok);
-			echo " : ".$text.PHP_EOL;
+			echo "Level ".$this->statementStack->count()." - ".$token->toString().PHP_EOL;
 		}
 
 		// Check if the token is in the list of prohibited tokens
 		if ($this->_isActive('checkProhibitedTokens') == 1) {
-			foreach ($this->_prohibitedTokens as $prohibitedTokens) {
-				if ($this->tokenizer->getTokenName($tok) == $prohibitedTokens) {
-					$msg = sprintf(PHPCHECKSTYLE_PROHIBITED_TOKEN, $this->tokenizer->getTokenName($tok));
-					$this->_writeError('checkProhibitedTokens', $msg);
-				}
+			if (in_array($token->getName(), $this->_prohibitedTokens)) {
+				$msg = sprintf(PHPCHECKSTYLE_PROHIBITED_TOKEN, $token->getName());
+				$this->_writeError('checkProhibitedTokens', $msg);
 			}
 		}
 
-		switch ($tok) {
+		switch ($token->id) {
 			case T_COMMENT:
 			case T_ML_COMMENT:
 			case T_DOC_COMMENT:
-				$this->_processComment($tok, $text);
+				$this->_processComment($token);
 				break;
 
 			case T_OPEN_TAG:
-				// check if shorthand code tags are allowed
-				if ($this->_isActive('noShortPhpCodeTag')) {
-					$s = strpos($text, '<?php');
-					if ($s === false) {
-						$this->_writeError('noShortPhpCodeTag', PHPCHECKSTYLE_WRONG_OPEN_TAG);
-					}
-				}
+				$this->_checkShortOpenTag($token);
 				break;
 
-				// Beginning of a control statement
 			case T_DO:
 			case T_WHILE:
 			case T_IF:
 			case T_ELSEIF:
 			case T_FOR:
 			case T_FOREACH:
-				$this->_processControlStatement($text);
+				$this->_processControlStatement($token);
 				$this->_cyclomaticComplexity++;
 				break;
+
 			case T_SWITCH:
 				$this->_processSwitchStart();
-				$this->_processControlStatement($text);
+				$this->_processControlStatement($token);
 				$this->_cyclomaticComplexity++;
 				break;
 			case T_ELSE:
 				// We don't increment the cyclomatic complexity for the last else
-				$this->_processControlStatement($text);
+				$this->_processControlStatement($token);
 				break;
 			case T_CASE:
 				$this->_processSwitchCase();
 				$this->_cyclomaticComplexity++;
 				break;
+
 			case T_DEFAULT:
 				$this->_processSwitchDefault();
 				break;
+
 			case T_BREAK:
 				$this->_processSwitchBreak();
 				break;
+
 			case T_TRY:
-				$this->_processControlStatement($text);
+				$this->_processControlStatement($token);
 				break;
+
 			case T_CATCH:
 				$this->_processCatch();
-				$this->_processControlStatement($text);
+				$this->_processControlStatement($token);
 				break;
+
 			case T_WHITESPACE:
 			case T_TAB :
-				{
-					if ($this->_isLineStart) {
-						// If the whitespace is at the start of the line, we check for indentation
-						$this->_checkIndentation($text);
-					}
-					break;
+
+				if ($this->_isLineStart) {
+					// If the whitespace is at the start of the line, we check for indentation
+					$this->_checkIndentation($token->text);
 				}
+				break;
+
 
 			case T_INLINE_HTML:
 				break;
@@ -913,19 +645,30 @@ class PHPCheckstyle {
 			case T_IS_NOT_IDENTICAL:
 			case T_IS_SMALLER_OR_EQUAL:
 			case T_IS_GREATER_OR_EQUAL:
-				$this->_checkSurroundingWhiteSpace($text);
+			case T_IS_GREATER:
+			case T_IS_SMALLER:
+			case T_PLUS:
+			case T_MULTIPLY:
+			case T_DIVIDE:
+			case T_QUESTION_MARK:
+			case T_COLON:
+			case T_MODULO:
+			case T_CONCAT:
+				$this->_checkSurroundingWhiteSpace($token->text);
 				break;
+
 			case T_IS_EQUAL:
 			case T_IS_NOT_EQUAL:
-				$this->_checkStrictCompare($text);
-				$this->_checkSurroundingWhiteSpace($text);
+				$this->_checkStrictCompare($token->text);
+				$this->_checkSurroundingWhiteSpace($token->text);
 				break;
+
 			case T_LOGICAL_AND:
 			case T_LOGICAL_OR:
 				if ($this->_isActive('useBooleanOperators')) {
 					$this->_writeError('useBooleanOperators', PHPCHECKSTYLE_USE_BOOLEAN_OPERATORS);
 				}
-				$this->_checkSurroundingWhiteSpace($text);
+				$this->_checkSurroundingWhiteSpace($token->text);
 				break;
 
 				// ASSUMPTION:
@@ -935,43 +678,30 @@ class PHPCheckstyle {
 
 				// If the word "define" have been used right before the string
 				if ($this->_constantDef == true) {
-					$token = $this->tokenizer->getToken();
-					$this->_checkConstantNaming($this->tokenizer->extractTokenText($token));
+					$this->_checkConstantNaming($token->text);
 				}
 
 				// Check whether this is a function call (and if "define", set the flag)
-				$this->_processFunctionCall($text);
+				$this->_processFunctionCall($token->text);
 
 				break;
 
-				// found constant definition
 			case T_CONST:
 				// Skip until T_STRING representing the constant name
 				while (!$this->tokenizer->checkCurrentToken(T_STRING)) {
 					$this->tokenizer->getNextToken();
 				}
 				$this->_constantDef = true;
-				$token = $this->tokenizer->getToken();
-				$this->_checkConstantNaming($this->tokenizer->extractTokenText($token));
+				$token = $this->tokenizer->getCurrentToken();
+				$this->_checkConstantNaming($token->text);
 				break;
 
 			case T_CONSTANT_ENCAPSED_STRING:
 
 				// If the word "define" have been used right before the constant encapsed string
 				if ($this->_constantDef == true) {
-					$token = $this->tokenizer->getToken();
-					$this->_checkConstantNaming($this->tokenizer->extractTokenText($token));
+					$this->_checkConstantNaming($token->text);
 				}
-
-				// Manage new lines inside string
-				$subToken = strtok($text, PHP_EOL);
-				while ($subToken !== false) {
-					// Increment the lines number (one comment is only one token)
-					$this->lineNumber++;
-					$subToken = strtok(PHP_EOL);
-				}
-				$this->lineNumber--; // One end of line is already counted
-
 				break;
 
 
@@ -979,23 +709,25 @@ class PHPCheckstyle {
 				// Constant part of string with variables
 				$this->_checkEncapsedVariablesInsideString();
 				break;
+
 			case T_CURLY_OPEN: // for protected variables within strings "{$var}"
 				$stackitem = new StatementItem();
-				$stackitem->line = $this->lineNumber;
+				$stackitem->line = $token->line;
 				$stackitem->type = 'curly_open';
 				$stackitem->name = 'curly_open';
 				$this->statementStack->push($stackitem);
 				break;
+
 			case T_DOLLAR_OPEN_CURLY_BRACES: // for extended format "${var}"
 				$stackitem = new StatementItem();
-				$stackitem->line = $this->lineNumber;
+				$stackitem->line = $token->line;
 				$stackitem->type = 'dollar_curly_open';
 				$stackitem->name = 'dollar_curly_open';
 				$this->statementStack->push($stackitem);
 				break;
+
 			case T_NEW_LINE:
 				$this->_countLinesOfCode();
-				$this->lineNumber++;
 				// Case of a control statement without parenthesis, it closes at the end of the line
 				if ($this->_inControlStatement && $this->_csLeftParenthesis == 0) {
 					$this->_inControlStatement = false;
@@ -1005,47 +737,288 @@ class PHPCheckstyle {
 					$this->_checkLargeLine();
 				}
 				break;
+
 			case T_RETURN:
 				$this->_processReturn();
 				break;
+
 			case T_THROW:
 				$this->_processThrow();
 				break;
+
 			case T_INC:
 			case T_DEC:
 				$this->_checkUnaryOperator();
 				break;
+
 			case T_DOUBLE_ARROW:
-				$this->_checkSurroundingWhiteSpace($text);
+				$this->_checkSurroundingWhiteSpace($token->text);
 				break;
+
 			case T_OBJECT_OPERATOR:
-				$this->_checkNoWhiteSpaceBefore($text);
-				$this->_checkNoWhiteSpaceAfter($text);
+				$this->_checkNoWhiteSpaceBefore($token->text);
+				$this->_checkNoWhiteSpaceAfter($token->text);
 				break;
+
 			case T_START_HEREDOC:
 				$this->_processStartHeredoc();
 				break;
+
 			case T_END_HEREDOC:
 				$this->_processEndHeredoc();
 				break;
+
 			case T_VARIABLE:
-				$this->_processVariable($text);
+				$this->_processVariable($token->text);
 				break;
+
 			case T_GOTO:
 				$this->_checkGoTo();
 				break;
+
 			case T_CONTINUE:
 				$this->_checkContinue();
 				break;
+
 			case T_EXIT:  // exit() of die()
-				$this->_checkAliases($text);
+				$this->_checkAliases($token->text);
 				break;
+
+			case T_BRACES_OPEN:  // {
+				$this->_processBracesOpen();
+				break;
+
+			case T_BRACES_CLOSE: // }
+				$this->_processBracesClose();
+				break;
+
+			case T_SEMICOLON: // ;
+				$this->_processSemiColon();
+				break;
+
+			case T_MINUS:
+				$this->_processMinus();
+				break;
+
+			case T_EQUAL:
+				$this->_checkInnerAssignment();
+				$this->_checkSurroundingWhiteSpace($token->text);
+				break;
+
+			case T_COMMA:
+				$this->_checkNoWhiteSpaceBefore($token->text);
+				$this->_checkWhiteSpaceAfter($token->text);
+				break;
+
+			case T_EXCLAMATION_MARK:
+				$this->_checkNoWhiteSpaceAfter($token->text);
+				break;
+
+			case T_PARENTHESIS_OPEN:
+				$this->_processParenthesisOpen();
+				$this->_checkNoWhiteSpaceAfter($token->text);
+				break;
+
+			case T_PARENTHESIS_CLOSE:
+				$this->_processParenthesisClose();
+				$this->_checkNoWhiteSpaceBefore($token->text);
+				break;
+
+			case T_AMPERSAND:
+				// One of the function parameter is passed by reference
+				if ($this->_isActive('avoidPassingReferences')) {
+					if ($this->_inFunctionStatement) {
+						$this->_writeError('avoidPassingReferences', PHPCHECKSTYLE_PASSING_REFERENCE);
+					}
+				}
+				break;
+			case T_SQUARE_BRACKET_OPEN:
+				$this->_inArrayStatement = true;
+				break;
+			case T_SQUARE_BRACKET_CLOSE:
+				$this->_inArrayStatement = false;
+				break;
+
 			default:
 				break;
 		}
 
 		// If the last token is a NEW_LINE, the next token will be at the start of the line
-		$this->_isLineStart = ($tok == T_NEW_LINE);
+		$this->_isLineStart = ($token->id == T_NEW_LINE);
+	}
+
+	/**
+	 * Launched when a ( sign is encoutered.
+	 */
+	private function _processParenthesisOpen() {
+		// the only issue with "(" is generally whether there should be space after it or not
+		if ($this->_inFuncCall) {
+			// inside a function call
+			$this->_fcLeftParenthesis += 1;
+		} elseif ($this->_inControlStatement || $this->_inFunctionStatement) {
+			// inside a function or control statement
+			$this->_csLeftParenthesis += 1;
+		}
+
+	}
+
+
+	/**
+	 * Launched when a ) sign is encoutered.
+	 */
+	private function _processParenthesisClose() {
+		// Decrease the number of opened brackets
+		if ($this->_inFuncCall) {
+			$this->_fcLeftParenthesis -= 1;
+		} elseif ($this->_inControlStatement || $this->_inFunctionStatement) {
+			$this->_csLeftParenthesis -= 1;
+		}
+
+		// If 0 we are not in the call anymore
+		if ($this->_fcLeftParenthesis == 0) {
+			$this->_inFuncCall = false;
+		}
+		// If 0 we are not in the statement anymore
+		if ($this->_csLeftParenthesis == 0) {
+
+			if ($this->_inControlStatement) {
+				$this->_inControlStatement = false;
+				$this->_justAfterControlStmt = true;
+				$this->_checkNeedBraces();
+			} elseif ($this->_inFunctionStatement && !$this->_inInterface) {
+				$this->_inFunctionStatement = false;
+				$this->_justAfterFuncStmt = true;
+			}
+		}
+	}
+
+	/**
+	 * Launched when a minus sign is encoutered.
+	 */
+	private function _processMinus() {
+		if (!$this->_inFuncCall) {
+			$this->_checkWhiteSpaceBefore($text);
+		}
+		// We allow some '-' signs to skip the the space afterwards for negative numbers
+		if (!($this->tokenizer->checkNextToken(T_LNUMBER) || // float number
+				$this->tokenizer->checkNextToken(T_DNUMBER))) {
+			// integer
+			$this->_checkWhiteSpaceAfter($text);
+		}
+	}
+
+	/**
+	 * Launched when a semicolon is encoutered.
+	 */
+	private function _processSemiColon() {
+		// ";" should never be preceded by a whitespace
+		$this->_checkNoWhiteSpaceBefore($text);
+
+		// ";" should never be preceded by ;
+		$this->_checkEmptyStatement();
+
+		// If we are in a statement not surrounded by curly braces, we unstack the last line.
+		if ($this->statementStack->getCurrentStackItem()->noCurly == true) {
+			$this->statementStack->pop();
+		}
+	}
+
+	/**
+	 * Launched when an opening brace is encoutered.
+	 */
+	private function _processBracesOpen() {
+		// "{" signifies beginning of a block. We need to look for
+		// its position when it is a beginning of a control structure
+		// or a function or class definition.
+
+		// Check we have a white space before a curly opening in case of a "same line" indentation
+		if ($this->_config->getTestProperty('funcDefinitionOpenCurly', 'position') == "sl") {
+			$this->_checkWhiteSpaceBefore($text);
+		}
+		$stackitem = new StatementItem();
+		$stackitem->line = $this->lineNumber;
+
+		// if _justAfterFuncStmt is set, the "{" is the beginning of a function definition block
+		if ($this->_justAfterFuncStmt) {
+			$this->_processFunctionStart();
+			$stackitem->type = "FUNCTION";
+			$stackitem->name = $this->_currentFunctionName;
+			$stackitem->visibility = $this->_functionVisibility;
+		} else if ($this->_justAfterControlStmt) {
+			// if _justAfterControlStmt is set, the "{" is the beginning of a control stratement block
+			$this->_processControlStatementStart();
+			$stackitem->type = strtoupper($this->_currentStatement);
+		}  else if ($this->_inClassStatement) {
+			// if _inClassStatement is set then we are just after a class declaration
+			$this->_inClassStatement = false;
+			$this->_processClassStart();
+			$stackitem->type = "CLASS";
+			$stackitem->name = $this->_currentClassname;
+		}  else if ($this->_inInterfaceStatement) {
+			// if _inInterfaceStatement is set then we are just after a Interface declaration
+			$this->_inInterfaceStatement = false;
+			$this->_processInterfaceStart();
+			$stackitem->type = "INTERFACE";
+			$stackitem->name = $this->_currentInterfacename;
+		} else {
+			$stackitem->type = "{";
+		}
+
+		// Check if the block is not empty
+		$this->_checkEmptyBlock();
+
+		$this->statementStack->push($stackitem);
+	}
+
+	/**
+	 * Launched when an closing brace is encoutered.
+	 */
+	private function _processBracesClose() {
+		// signifies the end of a block
+		// currently tests whether this token resides on a new line.
+		// This test is desactivated when in a view
+		if ($this->_isActive('controlCloseCurly') && !($this->_isView) && (!$this->_inString)) {
+			$currentToken = $this->tokenizer->getCurrentToken();
+			$previousToken = $this->tokenizer->peekPrvsValidToken();
+			if ($previousToken->line == $currentToken->line) {
+				// the last token was on the same line
+				$this->_writeError('controlCloseCurly', PHPCHECKSTYLE_END_BLOCK_NEW_LINE);
+			}
+		}
+
+		$currentStackItem = $this->statementStack->getCurrentStackItem();
+
+		// Workaround code
+		if (!is_String($currentStackItem)) {
+
+			// Test for the end of a switch bloc
+			if ($currentStackItem->type == "SWITCH") {
+				$this->_processSwitchStop();
+			}
+
+			// Test for the end of a function
+			if ($currentStackItem->type == "FUNCTION") {
+				$this->_processFunctionStop();
+			}
+
+			// Test for the end of a class
+			if ($currentStackItem->type == "CLASS") {
+				$this->_processClassStop();
+			}
+
+			// Test for the end of an interface
+			if ($currentStackItem->type == "INTERFACE") {
+				$this->_processInterfaceStop();
+			}
+
+		}
+		$this->statementStack->pop();
+
+		// Particular case of a ELSE IF {}
+		// We unstack both the IF and the ELSE
+		if ($currentStackItem->type == "ELSE" && $this->statementStack->getCurrentStackItem()->type == "IF" && $this->statementStack->getCurrentStackItem()->noCurly == true) {
+			$this->statementStack->pop();
+		}
 	}
 
 	/**
@@ -1056,12 +1029,12 @@ class PHPCheckstyle {
 	private function _countLinesOfCode() {
 
 		// We get the previous token (T_WHITESPACE, T_COMMENT, ... ignored);
-		$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
+		$currentToken = $this->tokenizer->getCurrentToken();
+		$previousToken = $this->tokenizer->peekPrvsValidToken();
 
 		// If the previous token is not the new line (empty line), we suppose we have some code
-		if ($previousTokenInfo != null) {
-			$previousToken = $previousTokenInfo->token;
-			if (!$this->tokenizer->checkToken($previousToken, T_NEW_LINE) && $previousTokenInfo->lineOffset == 0) {
+		if ($previousToken != null) {
+			if (!$this->tokenizer->checkToken($previousToken, T_NEW_LINE) && $previousToken->line == $currentToken->line) {
 				$this->_ncssTotalLinesOfCode++;
 				$this->_ncssFileLinesOfCode++;
 			}
@@ -1270,12 +1243,12 @@ class PHPCheckstyle {
 	 * @param String $text the name of the function.
 	 */
 	private function _processFunctionCall($text) {
-	
+
 		if ($text == "define") {
 			$this->_constantDef = true;
 		}
 
-		if ($this->tokenizer->checkNextValidTextToken("(")) {
+		if ($this->tokenizer->checkNextValidToken(T_PARENTHESIS_OPEN)) {
 			// ASSUMPTION:that T_STRING followed by "(" is a function call
 			$this->_inFuncCall = true;
 
@@ -1301,7 +1274,7 @@ class PHPCheckstyle {
 
 			// Detect space after function name
 			if ($this->_isActive('noSpaceAfterFunctionName')) {
-				if (!$this->tokenizer->checkNextTextToken("(")) {
+				if (!$this->tokenizer->checkNextToken(T_PARENTHESIS_OPEN)) {
 					$msg = sprintf(PHPCHECKSTYLE_NO_SPACE_AFTER_TOKEN, $text);
 					$this->_writeError('noSpaceAfterFunctionName', $msg);
 				}
@@ -1322,11 +1295,11 @@ class PHPCheckstyle {
 	/**
 	 * Process a control statement declaration (if/do/while/for/...).
 	 *
-	 * @param String $csText the control statement.
+	 * @param TokenInfo $token the control statement.
 	 */
-	private function _processControlStatement($csText) {
+	private function _processControlStatement($token) {
 
-		$csText = strtolower($csText);
+		$csText = strtolower($token->text);
 
 		$this->_inControlStatement = true;
 		$this->_currentStatement = $csText;
@@ -1334,7 +1307,7 @@ class PHPCheckstyle {
 		// first token: if not one whitespace, error
 		if ($this->_isActive('spaceAfterControlStmt')) {
 			if (!$this->tokenizer->checkNextToken(T_WHITESPACE)) {
-				if ($csText != 'else' && $csText != 'try' && $csText != 'do') {
+				if ($token->id != T_ELSE && $token->id != T_TRY && $token->id != T_DO) {
 					$msg = sprintf(PHPCHECKSTYLE_SPACE_AFTER_TOKEN, $csText);
 					$this->_writeError('spaceAfterControlStmt', $msg);
 				}
@@ -1343,15 +1316,15 @@ class PHPCheckstyle {
 
 		// for some control structures like "else" and "do",
 		// there is no statements they will be followed directly by "{"
-		if ($csText == "else" || $csText == "do" || $csText == "try") {
-			if ($this->tokenizer->checkNextValidTextToken("{")) {
+		if ($token->id == T_ELSE || $token->id == T_DO || $token->id == T_TRY) {
+			if ($this->tokenizer->checkNextValidToken(T_BRACES_OPEN)) {
 				$this->_inControlStatement = false;
 				$this->_justAfterControlStmt = true;
 			}
 		}
 
 		// "else if" is different
-		if ($csText == "else") {
+		if ($token->id == T_ELSE) {
 			if ($this->tokenizer->checkNextValidToken(T_IF)) {
 				// control statement for "else" is done
 				// new control statement "if" will start
@@ -1364,7 +1337,7 @@ class PHPCheckstyle {
 			}
 		}
 
-		if ($csText == "if") {
+		if ($token->id == T_IF) {
 			// IF just after a ELSE with no curly : we close the ELSE statement
 			if ($this->statementStack->getCurrentStackItem()->type == "ELSE" && $this->statementStack->getCurrentStackItem()->noCurly == true) {
 				$this->statementStack->pop();
@@ -1372,14 +1345,14 @@ class PHPCheckstyle {
 		}
 
 		// "else" and "elseif" should start in the same line as "}"
-		if ($csText == "else" || $csText == "elseif") {
+		if ($token->id == T_ELSE || $token->id == T_ELSEIF) {
 			$position = $this->_config->getTestProperty('controlStructElse', 'position');
-			$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
-			if (($position == 'sl') && ($previousTokenInfo->lineOffset != 0)) {
+			$previousToken = $this->tokenizer->peekPrvsValidToken();
+			if (($position == 'sl') && ($previousToken->line != $token->line)) {
 				$msg = sprintf(PHPCHECKSTYLE_CS_STMT_ALIGNED_WITH_CURLY, $csText);
 				$this->_writeError('controlStructElse', $msg);
 			}
-			if (($position == 'nl') && ($previousTokenInfo->lineOffset == 0)) {
+			if (($position == 'nl') && ($previousToken->line == $token->line)) {
 				$msg = sprintf(PHPCHECKSTYLE_CS_STMT_ON_NEW_LINE, $csText);
 				$this->_writeError('controlStructElse', $msg);
 			}
@@ -1387,19 +1360,19 @@ class PHPCheckstyle {
 
 		// By default we consider that the statement block will start after the next '{'
 		// In case there is no curly opening we need to consider the next line as being the statement
-		if ($this->tokenizer->checkNextValidTextToken('(')) {
+		if ($this->tokenizer->checkNextValidToken(T_PARENTHESIS_OPEN)) {
 			// in case the statement type is IF, FOR, FOREACH, CATCH, WHILE we skip the conditional
-			$startPos = $this->tokenizer->findClosingParenthesisPosition($this->tokenizer->getCurrentPosition());
+			$startPos = $this->tokenizer->findClosingParenthesisPosition($token->position);
 		} else {
-			$startPos = $this->tokenizer->getCurrentPosition();
+			$startPos = $token->position;
 		}
 
 		// Now we expect the '{' token
-		if (!$this->tokenizer->checkNextValidTextToken('{', $startPos + 1)) {
+		if (!$this->tokenizer->checkNextValidToken(T_BRACES_OPEN, null, $startPos)) {
 
 			// If not the case, we store the control statement in the stack
 			$stackitem = new StatementItem();
-			$stackitem->line = $this->lineNumber;
+			$stackitem->line = $token->line;
 			$stackitem->type = strtoupper($csText);
 			$stackitem->name = $csText;
 			$stackitem->noCurly = true;
@@ -1408,7 +1381,7 @@ class PHPCheckstyle {
 
 		// To avoid a false positive when treating the while statement of a do/while
 		// We keep track that we have met a do statement
-		if ($csText == "do") {
+		if ($token->id == T_DO) {
 			// Note : The current stack item is not yet the control statement itself, it's the parent
 			$this->statementStack->getCurrentStackItem()->afterDoStatement = true;
 		}
@@ -1426,14 +1399,15 @@ class PHPCheckstyle {
 
 			$pos = $this->_config->getTestProperty('controlStructOpenCurly', 'position');
 
-			$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
+			$currentToken = $this->tokenizer->getCurrentToken();
+			$previousToken = $this->tokenizer->peekPrvsValidToken();
 
 			if ($pos == "nl") {
 				// We expect the next token after the curly to be on a new line
-				$isPosOk = ($previousTokenInfo->lineOffset < 0);
+				$isPosOk = ($previousToken->line < $currentToken->line);
 			} else {
 				// We expect the next token after the curly to be on the same line
-				$isPosOk = ($previousTokenInfo->lineOffset == 0);
+				$isPosOk = ($previousToken->line == $currentToken->line);
 			}
 
 			if (!$isPosOk) {
@@ -1458,14 +1432,15 @@ class PHPCheckstyle {
 		if ($this->_isActive('interfaceOpenCurly')) {
 			$pos = $this->_config->getTestProperty('interfaceOpenCurly', 'position');
 
-			$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
+			$currentToken = $this->tokenizer->getCurrentToken();
+			$previousToken = $this->tokenizer->peekPrvsValidToken();
 
 			if ($pos == "nl") {
 				// The previous token should be on the previous line
-				$isPosOk = ($previousTokenInfo->lineOffset < 0);
+				$isPosOk = ($previousToken->line < $currentToken->line);
 			} else {
 				// The previous token should be on the same line
-				$isPosOk = ($previousTokenInfo->lineOffset == 0);
+				$isPosOk = ($previousToken->line == $currentToken->line);
 			}
 
 			if (!$isPosOk) {
@@ -1495,14 +1470,15 @@ class PHPCheckstyle {
 		if ($this->_isActive('classOpenCurly')) {
 			$pos = $this->_config->getTestProperty('classOpenCurly', 'position');
 
-			$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
+			$currentToken = $this->tokenizer->getCurrentToken();
+			$previousToken = $this->tokenizer->peekPrvsValidToken();
 
 			if ($pos == "nl") {
 				// The previous token should be on the previous line
-				$isPosOk = ($previousTokenInfo->lineOffset < 0);
+				$isPosOk = ($previousToken->line < $currentToken->line);
 			} else {
 				// The previous token should be on the same line
-				$isPosOk = ($previousTokenInfo->lineOffset == 0);
+				$isPosOk = ($previousToken->line == $currentToken->line);
 			}
 
 			if (!$isPosOk) {
@@ -1539,14 +1515,15 @@ class PHPCheckstyle {
 		if ($this->_isActive('funcDefinitionOpenCurly')) {
 			$pos = $this->_config->getTestProperty('funcDefinitionOpenCurly', 'position');
 
-			$previousTokenInfo = $this->tokenizer->peekPrvsValidToken();
+			$currentToken = $this->tokenizer->getCurrentToken();
+			$previousToken = $this->tokenizer->peekPrvsValidToken();
 
 			if ($pos == "nl") {
 				// The previous token should be on the previous line
-				$isPosOk = ($previousTokenInfo->lineOffset < 0);
+				$isPosOk = ($previousToken->line < $currentToken->line);
 			} else {
 				// The previous token should be on the same line
-				$isPosOk = ($previousTokenInfo->lineOffset == 0);
+				$isPosOk = ($previousToken->line == $currentToken->line);
 			}
 
 			if (!$isPosOk) {
@@ -1702,19 +1679,27 @@ class PHPCheckstyle {
 			$this->_functionVisibility = 'PROTECTED';
 		}
 
-		// Detect the function name
-		$nameDetected = $this->tokenizer->checkToken($this->tokenizer->getToken(), T_STRING);
-		$curlyOpeningDetected = $this->tokenizer->checkNextTextToken('(');
-		while (!$nameDetected && !$curlyOpeningDetected) {
+		// Find the function name
+		$currentToken = $this->tokenizer->getCurrentToken();
+
+		$curlyOpeningDetected = $this->tokenizer->checkNextToken(T_PARENTHESIS_OPEN);
+		$nameDetected = null;
+		while ($currentToken != null && !$curlyOpeningDetected) {
+			// Skip the token
 			$this->tokenizer->getNextToken();
-			$nameDetected = $this->tokenizer->checkToken($this->tokenizer->getToken(), T_STRING);
-			$curlyOpeningDetected = $this->tokenizer->checkNextTextToken('(');
+			$currentToken = $this->tokenizer->getCurrentToken();
+
+			if ($currentToken->id = T_STRING) {
+				$nameDetected = $currentToken->text;
+			}
+			$curlyOpeningDetected = $this->tokenizer->checkNextToken(T_PARENTHESIS_OPEN);
 		}
 
+		// currentToken should end up being the function name token
+
 		// Tracking the function's name.
-		if ($nameDetected) {
-			$token = $this->tokenizer->getToken();
-			$functionName = $this->tokenizer->extractTokenText($token);
+		if ($nameDetected != null && trim($nameDetected) != "") {
+			$functionName = $currentToken->text;
 
 			// Check the PHPDoc presence
 			$this->_checkDocExists(T_FUNCTION);
@@ -1730,7 +1715,7 @@ class PHPCheckstyle {
 		// If the function is private we add it to the list of function to use (and store the line number)
 		if ($this->_functionVisibility == 'PRIVATE') {
 			$this->_privateFunctions[$functionName] = $functionName;
-			$this->_privateFunctionsStartLines[$functionName] = $this->lineNumber;
+			$this->_privateFunctionsStartLines[$functionName] = $currentToken->line;
 		}
 
 		// Function is a constructor
@@ -1749,10 +1734,8 @@ class PHPCheckstyle {
 				// Function is a constructor
 				if ($this->_isActive('constructorNaming') && $this->_config->getTestProperty('constructorNaming', 'naming') == 'new') {
 					$msg = sprintf(PHPCHECKSTYLE_CONSTRUCTOR_NAMING, '__construct()');
-
 					$this->_writeError('constructorNaming', $msg);
 				}
-
 			} else {
 
 				// Other function
@@ -1764,8 +1747,8 @@ class PHPCheckstyle {
 					$this->_checkFunctionNaming($this->_currentFunctionName);
 				}
 			}
-
 		}
+
 
 		// List the arguments of the currently analyzed function.
 		// Check the order of the parameters of the function.
@@ -1775,13 +1758,13 @@ class PHPCheckstyle {
 		while (true) {
 			$functionToken = $this->tokenizer->peekTokenAt($functionTokenPosition);
 
-			if ($this->tokenizer->checkText($functionToken, ')')) {
+			if ($this->tokenizer->checkToken($functionToken, T_PARENTHESIS_CLOSE)) {
 				// We found the closing brace
 				break;
 			}
 
 			// If we find a "=" we consided that the parameter has a default value
-			$defaultSpecified = $this->tokenizer->checkText($functionToken, "=");
+			$defaultSpecified = $this->tokenizer->checkToken($functionToken, T_EQUAL);
 			// We have found one default value for at least one parameter
 			if ($defaultSpecified) {
 				$foundDefaultValues = true;
@@ -1790,12 +1773,12 @@ class PHPCheckstyle {
 			// Current token is a parameter
 			if ($this->tokenizer->checkToken($functionToken, T_VARIABLE)) {
 				$this->_nbFunctionParameters++;
-				$parameterName = $this->tokenizer->extractTokenText($functionToken);
+				$parameterName = $functionToken->text;
 				$this->_functionParameters[$parameterName] = "unused"; // We flag the parameter as unused
 
 				// Check is this parameter as a default value
 				$nextTokenInfo = $this->tokenizer->peekNextValidToken($functionTokenPosition + 1);
-				$hasDefaultValue = $this->tokenizer->checkText($nextTokenInfo->token, "=");
+				$hasDefaultValue = $this->tokenizer->checkToken($nextTokenInfo, T_EQUAL);
 
 				// Check if the parameter has a default value
 				if ($this->_isActive('defaultValuesOrder')) {
@@ -1833,7 +1816,7 @@ class PHPCheckstyle {
 	/**
 	 * Process the end of a switch block.
 	 */
-	private function _processSwitchStop() {
+	private function _processSwitchStop() {		
 		$this->_inSwitch = false;
 		$this->_checkSwitchNeedDefault();
 	}
@@ -1844,7 +1827,7 @@ class PHPCheckstyle {
 	 * This function is launched at the end of switch/case.
 	 */
 	private function _checkSwitchNeedDefault() {
-
+		
 		if ($this->_isActive('switchNeedDefault')) {
 			if (!$this->statementStack->getCurrentStackItem()->switchHasDefault) {
 				// Direct call to reporter to include a custom line number.
@@ -1944,7 +1927,8 @@ class PHPCheckstyle {
 			$this->tokenizer->getNextToken();
 		}
 
-		$interfacename = $this->tokenizer->extractTokenText($this->tokenizer->getToken());
+		$token = $this->tokenizer->getCurrentToken();
+		$interfacename = $token->text;
 		$this->_currentInterfacename = $interfacename;
 
 		// Test that the interface name matches the file name
@@ -1989,7 +1973,8 @@ class PHPCheckstyle {
 			$this->tokenizer->getNextToken();
 		}
 
-		$classname = $this->tokenizer->extractTokenText($this->tokenizer->getToken());
+		$token = $this->tokenizer->getCurrentToken();
+		$classname = $token->text;
 		$this->_currentClassname = $classname;
 
 		// Test that the class name matches the file name
@@ -2011,7 +1996,7 @@ class PHPCheckstyle {
 		// If the next valid token is } then the statement is empty.
 		if ($this->_isActive('checkEmptyBlock') && $this->_currentStatement) {
 
-			if ($this->tokenizer->checkNextValidTextToken("}")) {
+			if ($this->tokenizer->checkNextValidToken(T_BRACES_CLOSE)) {
 				$msg = sprintf(PHPCHECKSTYLE_EMPTY_BLOCK, $this->_currentStatement);
 				$this->_writeError('checkEmptyBlock', $msg);
 			}
@@ -2043,7 +2028,7 @@ class PHPCheckstyle {
 
 			// Get the next token
 			$nextTokenInfo = $this->tokenizer->peekNextValidToken($this->tokenizer->getCurrentPosition() + 1);
-			$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
+			$nextTokenText = $nextTokenInfo->text;
 
 			// Check if next token is a search function
 			$isSearchResult = in_array($nextTokenText, $this->_config->getTestItems('strictCompare'));
@@ -2055,8 +2040,8 @@ class PHPCheckstyle {
 			}
 
 			// Get the token before
-			$previousTokenInfo = $this->tokenizer->peekPrvsValidToken($this->tokenizer->getCurrentPosition());
-			$previousTokenText = $this->tokenizer->extractTokenText($previousTokenInfo->token);
+			$previousToken = $this->tokenizer->peekPrvsValidToken($this->tokenizer->getCurrentPosition());
+			$previousTokenText = $previousToken->text;
 
 			// Check if previous token is a search function
 			$isSearchResult = $isSearchResult || in_array($previousTokenText, $this->_config->getTestItems('strictCompare'));
@@ -2104,7 +2089,7 @@ class PHPCheckstyle {
 		// If the next valid token is ; then the statement is empty.
 		if ($this->_isActive('checkEmptyStatement')) {
 
-			if ($this->tokenizer->checkNextValidTextToken(";")) {
+			if ($this->tokenizer->checkNextValidToken(T_SEMICOLON)) {
 				$this->_writeError('checkEmptyStatement', PHPCHECKSTYLE_EMPTY_STATEMENT);
 			}
 		}
@@ -2141,7 +2126,7 @@ class PHPCheckstyle {
 	private function _checkUnusedVariables() {
 
 		if ($this->_isActive('checkUnusedVariables')) {
-			
+
 			foreach ($this->_variables as $variable) {
 
 				if ((!$variable->isUsed) && !($this->_isClass || $this->_isView)) {
@@ -2167,10 +2152,10 @@ class PHPCheckstyle {
 
 				// Find the end of the return statement
 				$pos = $this->tokenizer->findNextStringPosition(';');
-				
+
 				// Find the next valid token after the return statement
 				$nextValidToken = $this->tokenizer->peekNextValidToken($pos + 1);
-					
+
 				// Find the end of the function or bloc of code
 				$posClose = $this->tokenizer->findNextStringPosition('}');
 
@@ -2230,7 +2215,7 @@ class PHPCheckstyle {
 			$nextTokenInfo = $this->tokenizer->peekNextValidToken($pos + 1);
 
 			// if the next token is an equal, we suppose that this is an affectation
-			$nextTokenText = $this->tokenizer->extractTokenText($nextTokenInfo->token);
+			$nextTokenText = $nextTokenInfo->text;
 			$isAffectation = ($nextTokenText == "="
 					|| $nextTokenText == "+="
 					|| $nextTokenText == "*="
@@ -2248,7 +2233,7 @@ class PHPCheckstyle {
 			$isSearchResult = false;
 			if ($this->_isActive('strictCompare')) {
 				$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position + 1);
-				$nextTokenText2 = $this->tokenizer->extractTokenText($nextTokenInfo2->token);
+				$nextTokenText2 = $nextTokenInfo2->text;
 				$isSearchResult = in_array($nextTokenText2, $this->_config->getTestItems('strictCompare'));
 			}
 
@@ -2264,19 +2249,19 @@ class PHPCheckstyle {
 			} else if ($isAffectation) {
 				// The variable is reaffected another value, this doesn't count as a valid use.
 			} else {
-				
+
 				// Manage the case of $this->attribute
 				if ($text == '$this') {
 
-					
-					
+
+
 					if ($this->tokenizer->checkToken($nextTokenInfo->token, T_OBJECT_OPERATOR)) {
 
 						$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
 
 						// This does not look like a function call, it should be a class attribute.
 						// We eliminate the $this-> part
-						$text = '$'.$this->tokenizer->extractTokenText($nextTokenInfo2->token);
+						$text = '$'.$nextTokenInfo2->text;
 
 					}
 				}
@@ -2499,7 +2484,7 @@ class PHPCheckstyle {
 			$currentToken = $this->tokenizer->peekTokenAt($currentTokenIndex);
 
 			do {
-				$currentTokenString = $this->tokenizer->extractTokenText($currentToken);
+				$currentTokenString = $currentToken->text;
 				$lineString .= $currentTokenString;
 
 				$currentTokenIndex += 1;
@@ -2513,12 +2498,12 @@ class PHPCheckstyle {
 
 			// Reporting the error if the line length exceeds the defined maximum.
 			if ($lineLength > $maxLength) {
-				// Does not report if the line is a multiline comment - i.e. has /* in it)
-				if (strpos($lineString, "/*")) {
-					return;
-				}
-				$msg = sprintf(PHPCHECKSTYLE_LONG_LINE, $lineLength, $maxLength);
-				$this->_writeError('lineLength', $msg);
+			// Does not report if the line is a multiline comment - i.e. has /* in it)
+			if (strpos($lineString, "/*")) {
+				return;
+			}
+			$msg = sprintf(PHPCHECKSTYLE_LONG_LINE, $lineLength, $maxLength);
+			$this->_writeError('lineLength', $msg);
 			}
 		}
 	}
@@ -2571,7 +2556,7 @@ class PHPCheckstyle {
 		}
 
 		// don't check empty lines and when we are in a control statement
-		if ($this->_inControlStatement || $this->_inFuncCall || !isset($this->lineNumber) || $this->tokenizer->checkNextToken(T_NEW_LINE) || $this->tokenizer->checkNextValidTextToken(")")) {
+		if ($this->_inControlStatement || $this->_inFuncCall || !isset($this->lineNumber) || $this->tokenizer->checkNextToken(T_NEW_LINE) || $this->tokenizer->checkNextValidToken(T_PARENTHESIS_CLOSE)) {
 			return;
 		}
 
@@ -2583,15 +2568,15 @@ class PHPCheckstyle {
 			$nesting = $this->statementStack->count();
 
 			// But we must anticipate if the current line change the level
-			if ($this->tokenizer->checkNextValidTextToken("{")) {
+			if ($this->tokenizer->checkNextValidToken(T_BRACES_OPEN)) {
 				$nesting++;
-			} else if ($this->tokenizer->checkNextValidTextToken("}")) {
+			} else if ($this->tokenizer->checkNextValidToken(T_BRACES_CLOSE)) {
 				$nesting--;
 			}
 
 			$expectedIndentation = $nesting * $indentationNumber;
 			$indentation = strlen($whitespaceString);
-			if ($previousToken[0] != T_NEW_LINE) {
+			if ($previousToken->id != T_NEW_LINE) {
 				$indentation = 0;
 			}
 
@@ -2607,7 +2592,7 @@ class PHPCheckstyle {
 				}
 
 				// Don't check brackets in a switch
-				if ($this->tokenizer->checkNextValidTextToken("{") || $this->tokenizer->checkNextValidTextToken("}")) {
+				if ($this->tokenizer->checkNextValidToken(T_BRACES_OPEN) || $this->tokenizer->checkNextValidToken(T_BRACES_CLOSE)) {
 					return;
 				}
 			}
@@ -2636,7 +2621,7 @@ class PHPCheckstyle {
 
 			$stmt = strtolower($this->_currentStatement);
 			if ($stmt == "if" || $stmt == "else" || $stmt == "elseif" || $stmt == "do" || ($stmt == "while" && !$this->statementStack->getParentStackItem()->afterDoStatement) || $stmt == "for" || $stmt == "foreach") {
-				if (!$this->tokenizer->checkNextValidTextToken("{")) {
+				if (!$this->tokenizer->checkNextValidToken(T_BRACES_OPEN)) {
 					$msg = sprintf(PHPCHECKSTYLE_NEED_BRACES, $stmt);
 					$this->_writeError('needBraces', $msg);
 				}
@@ -2684,62 +2669,49 @@ class PHPCheckstyle {
 	/**
 	 * Process a comment.
 	 *
-	 * @param Integer $tok the token
-	 * @param String $text the text of the comment
+	 * @param TokenInfo $token the token
 	 */
-	private function _processComment($tok, $text) {
+	private function _processComment($token) {
 
 		// Count the lines of comment
-		if ($tok == T_COMMENT) {
+		if ($token->id == T_COMMENT) {
 			$this->_ncssTotalSingleComment++;
 			$this->_ncssFileSingleComment++;
-		} else if ($tok == T_ML_COMMENT) {
+		} else if ($token->id == T_ML_COMMENT) {
 			$this->_ncssTotalMultiComment++;
 			$this->_ncssFileMultiComment++;
-		} else if ($tok == T_DOC_COMMENT) {
+		} else if ($token->id == T_DOC_COMMENT) {
 			$this->_ncssTotalPhpdoc++;
 			$this->_ncssFilePhpdoc++;
 			if ($this->_isFileDocComment()) {
-				$this->_processAnnotation(T_FILE, $text);
+				$this->_processAnnotation(T_FILE, $token->text);
 			}
 		}
 
-		// Manage new lines inside commments
-		$subTokens = preg_split('#(\r\n|\n|\r)#', $text, -1);
 
-		foreach ($subTokens as $subToken) {
-
-			if ($tok == T_DOC_COMMENT) {
-				$this->_ncssTotalLinesPhpdoc++;
-				$this->_ncssFileLinesPhpdoc++;
-			}
-
-			// Count the @params, @returns and @throw
-			if (stripos($subToken, '@param') !== false) {
-				$this->_docblocNbParams++;
-			}
-			if (stripos($subToken, '@return') !== false) {
-				$this->_docblocNbReturns++;
-			}
-			if (stripos($subToken, '@throw') !== false) {
-				$this->_docblocNbThrows++;
-			}
-
-			// Increment the lines number (one comment is only one token)
-			$this->lineNumber++;
+		// Count the @params, @returns and @throw
+		if (stripos($token->text, '@param') !== false) {
+			$this->_docblocNbParams++;
 		}
-		$this->lineNumber--;  // One end of line is already counted
+		if (stripos($token->text, '@return') !== false) {
+			$this->_docblocNbReturns++;
+		}
+		if (stripos($token->text, '@throw') !== false) {
+			$this->_docblocNbThrows++;
+		}
+
+
 
 		// Check if the comment starts with '#'
 		if ($this->_isActive('noShellComments')) {
-			$s = strpos($text, '#');
+			$s = strpos($token->text, '#');
 			if ($s === 0) {
 				$this->_writeError('noShellComments', PHPCHECKSTYLE_NO_SHELL_COMMENTS);
 			}
 		}
 
 		// Check if the comment contains a TO DO
-		$this->_processTODO($text);
+		$this->_processTODO($token->text);
 	}
 
 	/**
@@ -2755,9 +2727,8 @@ class PHPCheckstyle {
 	 */
 	private function _isFileDocComment() {
 		$tokenPosition = $this->tokenizer->getCurrentPosition();
-		$nextTokenInfo = $this->tokenizer->peekNextValidToken($tokenPosition + 1, true);
-		$nextToken = $nextTokenInfo->token;
-		return !$this->_inClassStatement && !$this->_inInterfaceStatement && ($nextToken[0] == T_NEW_LINE || $nextToken[0] == T_DOC_COMMENT);
+		$nextToken = $this->tokenizer->peekNextValidToken($tokenPosition, true);
+		return !$this->_inClassStatement && !$this->_inInterfaceStatement && ($nextToken->id == T_NEW_LINE || $nextToken->id == T_DOC_COMMENT);
 	}
 
 	/**
@@ -2773,7 +2744,7 @@ class PHPCheckstyle {
 	 * This, of course, assumes that the function/class/interface has to be
 	 * immediately preceded by docblock. Even regular comments are not
 	 * allowed, which I think is okay.
-	 * 
+	 *
 	 * Launched when a CLASS / FUNCTION or INTERFACE statement is found.
 	 *
 	 * @param Integer $token T_CLASS, T_FUNCTION or T_INTERFACE
@@ -2811,9 +2782,9 @@ class PHPCheckstyle {
 		// Records the type, as well as the type name for more precise error reporting.
 		// Two positions forward from declaration of type.
 		$typeToken = $this->tokenizer->peekTokenAt($functionTokenPosition);
-		$type = $this->tokenizer->extractTokenText($typeToken);
+		$type = $typeToken->text;
 		$nameToken = $this->tokenizer->peekTokenAt($functionTokenPosition + 2);
-		$name = $this->tokenizer->extractTokenText($nameToken);
+		$name = $nameToken->text;
 
 		$isOldStyleConstructor = (strtolower($name) == strtolower($this->_currentClassname));
 		$isNewStyleConstructor = (strtolower($name) == '__construct');
@@ -2825,48 +2796,48 @@ class PHPCheckstyle {
 		$isPrivate = false;
 		$docTokenPosition = $functionTokenPosition - 1;
 
+		// List of tokens to ignore when looking for the docblock
+		$tokenToIgnoreList = array(T_STATIC,
+				T_FINAL,
+				T_ABSTRACT,
+				T_PROTECTED,
+				T_PUBLIC,
+				T_WHITESPACE,
+				T_TAB,
+				T_COMMENT,
+				T_ML_COMMENT,
+				T_NEW_LINE);
+
+
 		// Go backward and look for a T_DOC_COMMENT
 		while (true) {
 			$docToken = $this->tokenizer->peekTokenAt($docTokenPosition);
 
-			if (is_array($docToken)) {
-				$tokenToIgnoreList = array(T_STATIC,
-						T_FINAL,
-						T_ABSTRACT,
-						T_PROTECTED,
-						T_PUBLIC,
-						T_WHITESPACE,
-						T_TAB,
-						T_COMMENT,
-						T_ML_COMMENT,
-						T_NEW_LINE);
-				// if the token is in the list above.
-				if ($this->_tokenIsInList($docToken, $tokenToIgnoreList)) {
-					// All these tokens are ignored
-				} else if ($this->tokenizer->checkToken($docToken, T_PRIVATE)) {
-					$isPrivate = true; // we are in a private function
-				} else if ($this->tokenizer->checkToken($docToken, T_DOC_COMMENT)) {
-					// We have found a doc comment
-					$found = true;
-					break;
-				} else {
-					// Any other token found, we stop
-					$found = false;
-					break;
-				}
+			// if the token is in the list above.
+			if ($this->_tokenIsInList($docToken, $tokenToIgnoreList)) {
+				// All these tokens are ignored
+			} else if ($this->tokenizer->checkToken($docToken, T_PRIVATE)) {
+				$isPrivate = true; // we are in a private function
+			} else if ($this->tokenizer->checkToken($docToken, T_DOC_COMMENT)) {
+				// We have found a doc comment
+				$found = true;
+				break;
 			} else {
-				// The previous token is a string
+				// Any other token found, we stop
+				$found = false;
 				break;
 			}
+
 			$docTokenPosition--;
 
 			if ($docTokenPosition == 0) {
-				break;
+				break; // special case for begining of the file
 			}
 		}
+
 		if ($found) {
 			// Doc found, look for annotations
-			$this->_processAnnotation($token, $docToken[1]);
+			$this->_processAnnotation($token, $docToken->text);
 
 		} else {
 			// No documentation found
@@ -2914,7 +2885,7 @@ class PHPCheckstyle {
 
 
 	/**
-	 * Check for silenced call to functons.
+	 * Check for silenced call to functions.
 	 *
 	 * @param String $text The text of the token to test
 	 */
@@ -2923,7 +2894,8 @@ class PHPCheckstyle {
 
 			$exceptions = $this->_config->getTestExceptions('checkSilencedError');
 			if (empty($exceptions) || !in_array($text, $exceptions)) {
-				if ($this->tokenizer->peekPrvsToken() == "@") {
+				$previousToken = $this->tokenizer->peekPrvsToken();
+				if ($previousToken->id == T_AROBAS) {
 					$this->_writeError('checkSilencedError', PHPCHECKSTYLE_SILENCED_ERROR);
 				}
 			}
@@ -2969,6 +2941,21 @@ class PHPCheckstyle {
 		if ($this->_isActive('checkGoTo')) {
 			/* means we've encountered a goto and the rule is active, so complain */
 			$this->_writeError('checkGoTo', PHPCHECKSTYLE_GOTO);
+		}
+	}
+
+	/**
+	 * Check for short open tag.
+	 *
+	 * @param TokenInfo $token
+	 */
+	private function _checkShortOpenTag($token) {
+		// check if shorthand code tags are allowed
+		if ($this->_isActive('noShortPhpCodeTag')) {
+			$s = strpos($token->text, '<?php');
+			if ($s === false) {
+				$this->_writeError('noShortPhpCodeTag', PHPCHECKSTYLE_WRONG_OPEN_TAG);
+			}
 		}
 	}
 
@@ -3035,21 +3022,7 @@ class PHPCheckstyle {
 		return false;
 	}
 
-	/**
-	 * Handles the tracking of string starts and ends to avoid checking of braces inside strings.
-	 *
-	 * @param String $stringTocheck
-	 * 								The string to check for quotes
-	 */
-	private function _trackStringOpenOrClose($stringTocheck) {
-		if (!$this->_inString) {
-			$this->_inString = true;
-			$this->_stringStartCharacter = $stringTocheck;
-		} else if ($this->_stringStartCharacter == $stringTocheck) {
-			$this->_inString = false;
-			$this->_stringStartCharacter = null;
-		}
-	}
+
 
 
 }

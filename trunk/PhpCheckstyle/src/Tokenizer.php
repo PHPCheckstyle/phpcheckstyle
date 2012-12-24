@@ -150,7 +150,8 @@ class Tokenizer {
 		if ($startPos != null) {
 			$pos = $startPos; // if defined, set the start position
 		}
-		while ($pos < count($this->tokens)) {
+		$nbTokens = count($this->tokens);
+		while ($pos < $nbTokens) {
 			$ret = $this->tokens[$pos];
 			$pos++;
 			if (is_array($ret)) {
@@ -324,7 +325,8 @@ class Tokenizer {
 		}
 		$pos += 1; // Start from the token following the current position
 
-		while  ($pos < count($this->tokens)) {
+		$nbTokens = count($this->tokens);
+		while  ($pos < $nbTokens) {
 			$token = $this->tokens[$pos];
 
 			if ($text == $this->extractTokenText($token)) {
@@ -488,7 +490,8 @@ class Tokenizer {
 
 		$pos += 1; // Skip the opening  parenthesis
 
-		while ($parenthesisCount > 0 && $pos < count($this->tokens)) {
+		$nbTokens = count($this->tokens);
+		while ($parenthesisCount > 0 && $pos < $nbTokens) {
 			// Look for the next token
 			$token = $this->peekTokenAt($pos);
 

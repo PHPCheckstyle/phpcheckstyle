@@ -29,8 +29,6 @@ class HTMLFormatReporter extends Reporter {
 	public function HTMLFormatReporter($ofolder = false) {
 		parent::__construct($ofolder, $this->ofile);
 		$this->ofolder = $ofolder;
-		// Creating a util object to allow copying.
-		global $util;
 	}
 
 	/**

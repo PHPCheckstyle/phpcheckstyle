@@ -54,22 +54,22 @@ class CheckStyleConfig {
 	}
 
 	/**
-	 * parses the configuration file and stores the values
+	 * Parses the configuration file and stores the values.
 	 *
-	 * @return none
-	 * @access public
+	 * @throws Exception if cannot access file
 	 */
 	public function parse() {
-		// example from php.net
 		$fp = fopen($this->file, "r");
 		if (!$fp) {
-			die("Could not open XML input file");
+			throw new Exception("Could not open XML input file");
 		}
 
 		$data = fread($fp, 4096);
 		while ($data) {
 			if (!xml_parse($this->_xmlParser, $data, feof($fp))) {
-				$msg = sprintf("Warning: XML error: %s at line %d", xml_error_string(xml_get_error_code($this->_xmlParser)), xml_get_current_line_number($this->_xmlParser));
+				$msg = sprintf("Warning: XML error: %s at line %d",
+						xml_error_string(xml_get_error_code($this->_xmlParser)),
+						xml_get_current_line_number($this->_xmlParser));
 				echo $msg;
 				$this->_myConfig = array();
 			}
@@ -173,7 +173,7 @@ class CheckStyleConfig {
 
 		return $ret;
 	}
-	
+
 	/**
 	 * Return the list of aliases and their replacement.
 	 *
@@ -186,7 +186,7 @@ class CheckStyleConfig {
 		if (array_key_exists($test, $this->_myConfig)) {
 			$ret = $this->_myConfig[$test];
 		}
-	
+
 		return $ret;
 	}
 

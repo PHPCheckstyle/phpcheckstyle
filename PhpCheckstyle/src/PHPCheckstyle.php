@@ -51,7 +51,6 @@ class PHPCheckstyle {
 	private $inDoWhile = false;
 
 	private $token = false;
-	private $prvsToken = false;
 	private $lineNumber = 0; // Store the current line number
 
 	private $_isLineStart = true; // Start of a line (just after a return)
@@ -173,7 +172,7 @@ class PHPCheckstyle {
 	 *
 	 * @param String $formats Array of output formats ("text", "html", "console", ...)
 	 * 					Accordingly creates the formatter objects
-	 * @param String $outfile  output file where results are stored.
+	 * @param String $outDir  output file where results are stored.
 	 * 					Note that in case of "html" format, the output is xml and run.php transforms the xml file into html
 	 * @param String $linecountfile output file where line counts are stored
 	 * @param Boolean $progress indicate if we log the progress of the scan
@@ -1771,7 +1770,6 @@ class PHPCheckstyle {
 		// List the arguments of the currently analyzed function.
 		// Check the order of the parameters of the function.
 		// The parameters having a default value should be in last position.
-		// TODO : refactoring : extract in a method
 		$foundDefaultValues = false;
 		$functionTokenPosition = $this->tokenizer->getCurrentPosition();
 		while (true) {
@@ -2035,8 +2033,6 @@ class PHPCheckstyle {
 	 * Check for potential bugs when using comparison operator.
 	 *
 	 * This function is launched when the current token is T_IS_EQUAL or T_IS_NOT_EQUAL.
-	 *
-	 * TODO : Implement
 	 *
 	 * @param String $text the comparison operator used
 	 */
@@ -2653,9 +2649,9 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Process a TODO comment.
+	 * Process a TO DO comment.
 	 *
-	 * @param String $text the text containing the TODO.
+	 * @param String $text the text.
 	 */
 	private function _processTODO($text) {
 		if ($this->_isActive('showTODOs')) {
@@ -2742,7 +2738,7 @@ class PHPCheckstyle {
 			}
 		}
 
-		// Check if the comment contains a TODO
+		// Check if the comment contains a TO DO
 		$this->_processTODO($text);
 	}
 

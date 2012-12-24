@@ -26,6 +26,9 @@ class GoodTest {
 	function totoTwo() {
 
 		$a = $b = $c = 0;
+		
+		$a['Test'] = 'Test';
+		
 		$text = "";  // correct variable naming
 
 		if ($a == $b) {
@@ -83,7 +86,7 @@ class GoodTest {
 		// Call the private function toto
 		$this->badlyNamedPrivateFunction();
 
-		if ($c) {
+		if ($c > $a) {
 			return $a + $b;
 		} else {
 			return $a;

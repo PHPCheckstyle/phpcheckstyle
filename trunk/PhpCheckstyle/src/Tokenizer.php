@@ -1,10 +1,8 @@
 <?php
-if (!defined("T_ML_COMMENT")) {
-	define("T_ML_COMMENT", T_COMMENT);
+if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
+	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__)."/..");
 }
-
-define('T_NEW_LINE', -1);
-define('T_TAB', -2);
+require_once PHPCHECKSTYLE_HOME_DIR."/src/TokenInfo.php";
 
 /**
  * Lexical Analysis.
@@ -17,7 +15,7 @@ define('T_TAB', -2);
  *
  * @see http://www.php.net/manual/en/tokens.php
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
-*/
+ */
 class Tokenizer {
 
 	/**
@@ -56,6 +54,19 @@ class Tokenizer {
 	}
 
 	/**
+	 * Dump the tokens of the file.
+	 *
+	 * @return String
+	 */
+	public function dumpTokens() {
+		$result = "";
+		foreach ($this->tokens as $token) {
+			$result .= $token->toString().PHP_EOL;
+		}
+		return $result;
+	}
+
+	/**
 	 * Gets the next token.
 	 *
 	 * In the process moves the index to the next position.
@@ -64,10 +75,10 @@ class Tokenizer {
 	 */
 	public function getNextToken() {
 		if ($this->index < (count($this->tokens) - 1)) {
-				
+
 			// Increment the index
 			$this->index++;
-				
+
 			// Return the new token
 			return $this->tokens[$this->index];
 		} else {
@@ -80,15 +91,15 @@ class Tokenizer {
 	 *
 	 * @return TokenInfo
 	 */
-	public function getToken() {
+	public function getCurrentToken() {
 		return $this->tokens[$this->index];
 	}
 
 	/**
-	 * Peeks the token at a given position.
+	 * Get the token at a given position.
 	 *
 	 * @param Integer $position the position of the token
-	 * @return the token found
+	 * @return TokenInfo the token found
 	 */
 	public function peekTokenAt($position) {
 		if ($position < count($this->tokens)) {
@@ -108,10 +119,10 @@ class Tokenizer {
 	}
 
 	/**
-	 * Peeks the next token, i.e., returns the next token without moving
+	 * Returns the next token without moving
 	 * the index.
 	 *
-	 * @return true if the token is found (and update the line value)
+	 * @return TokenInfo if the token is found (and update the line value)
 	 */
 	public function peekNextToken() {
 		if ($this->index < (count($this->tokens) - 1)) {
@@ -144,43 +155,36 @@ class Tokenizer {
 	 * @return TokenInfo the info about the token found
 	 */
 	public function peekNextValidToken($startPos = null, $stopOnNewLine = false) {
-		$ret = false;
-		$lineOffset = 0;
+
+		// define the start position
 		$pos = $this->getCurrentPosition() + 1;  // defaut position for the search
 		if ($startPos != null) {
 			$pos = $startPos; // if defined, set the start position
 		}
+
+		// search for the next valid token
+		$token = null;
 		$nbTokens = count($this->tokens);
 		while ($pos < $nbTokens) {
-			$ret = $this->tokens[$pos];
+			$token = $this->tokens[$pos];
 			$pos++;
-			if (is_array($ret)) {
-				list($k, $v) = $ret;
-				if ($k == T_WHITESPACE || $k == T_TAB || $k == T_COMMENT || $k == T_ML_COMMENT || $k == T_DOC_COMMENT) {
-					continue;
-				} else if ($k == T_NEW_LINE) {
-					$lineOffset++; // increment the line number when a new line is found
-					if ($stopOnNewLine) {
-						break;
-					} else {
-						continue;
-					}
-				} else {
+
+			if ($token->id == T_WHITESPACE || $token->id == T_TAB || $token->id == T_COMMENT || $token->id == T_ML_COMMENT || $token->id == T_DOC_COMMENT) {
+				continue;
+			} else if ($token->id == T_NEW_LINE) {
+				if ($stopOnNewLine) {
 					break;
+				} else {
+					continue;
 				}
 			} else {
 				break;
 			}
+
 		}
-		if ($ret) {
-			$result = new TokenInfo();
-			$result->token = $ret;
-			$result->position = $pos;
-			$result->lineOffset = $lineOffset;
-			return $result;
-		} else {
-			return null;
-		}
+
+		return $token;
+
 	}
 
 	/**
@@ -190,35 +194,25 @@ class Tokenizer {
 	 * @return TokenInfo the info about the token found
 	 */
 	public function peekPrvsValidToken() {
-		$ret = false;
-		$tmpTokenNumber = $this->index - 1;
-		$lineOffset = 0;
-		while ($tmpTokenNumber > 0) {
-			$ret = $this->tokens[$tmpTokenNumber];
-			$tmpTokenNumber--;
-			if (is_array($ret)) {
-				list($k, $v) = $ret;
-				if ($k == T_WHITESPACE || $k == T_TAB || $k == T_COMMENT || $k == T_ML_COMMENT || $k == T_DOC_COMMENT) {
-					continue;
-				} else if ($k == T_NEW_LINE) {
-					$lineOffset--; // decrement the line number when a new line is found
-					continue;
-				} else {
-					break;
-				}
+		$pos = $this->index - 1;
+
+		$token = null;
+		while ($pos > 0) {
+
+			$token = $this->tokens[$pos];
+			$pos--;
+
+			if ($token->id == T_WHITESPACE || $token->id == T_TAB || $token->id == T_COMMENT || $token->id == T_ML_COMMENT || $token->id == T_DOC_COMMENT) {
+				continue;
+			} else if ($token->id == T_NEW_LINE) {
+				continue;
 			} else {
 				break;
 			}
 		}
-		if ($ret) {
-			$result = new TokenInfo();
-			$result->token = $ret;
-			$result->position = $tmpTokenNumber;
-			$result->lineOffset = $lineOffset;
-			return $result;
-		} else {
-			return null;
-		}
+
+		return $token;
+
 	}
 
 	/**
@@ -235,78 +229,74 @@ class Tokenizer {
 	/**
 	 * Check if a token is equal to a given token ID
 	 *
-	 * @param Array $token the token to test
-	 * @param Integer $value the token ID we're looking for
+	 * @param TokenInfo $token the token to test
+	 * @param Integer $id the token ID we're looking for
 	 * @param String $text (optional) the text we're looking for
-	 * @return true if the token correspond
+	 * @return Boolean true if the token correspond
 	 */
-	public function checkToken($token, $value, $text = false) {
-		$ret = false;
-		if (is_array($token)) {
-			list($k, $v) = $token;
-			if ($k == $value) {
-				if ($text) {
-					if ($v == $text) {
-						$ret = true;
-					}
+	public function checkToken($token, $id, $text = false) {
+		$result = false;
+		if ($token->id == $id) {
+			if ($text) {
+				if ($token->text == $text) {
+					$result = true;
 				} else {
-					$ret = true;
+					$result = false;
 				}
+			} else {
+				$result = true;
 			}
+
 		}
-		return $ret;
+		return $result;
 	}
 
 	/**
 	 * Check if the previous valid token (ignoring whitespace) correspond to the specified token.
 	 *
-	 * @param Array $value the token ID we're looking for
+	 * @param Integer $id the token ID we're looking for
 	 * @param String $text (optional) the text we're looking for
-	 * @return true if the token is found
+	 * @return Boolean true if the token is found
 	 */
-	public function checkPreviousValidToken($value, $text = false) {
-		$tokenInfo = $this->peekPrvsValidToken();
-
-		return $this->checkToken($tokenInfo->token, $value, $text);
+	public function checkPreviousValidToken($id, $text = false) {
+		$token = $this->peekPrvsValidToken();
+		return $this->checkToken($token, $id, $text);
 	}
 
 	/**
 	 * Check if the previous valid token (ignoring whitespace) correspond to the specified token.
 	 *
-	 * @param Array $value the token ID we're looking for
+	 * @param Integer $id the token ID we're looking for
 	 * @param String $text (optional) the text we're looking for
-	 * @return true if the token is found
+	 * @return Boolean true if the token is found
 	 */
-	public function checkPreviousToken($value, $text = false) {
+	public function checkPreviousToken($id, $text = false) {
 		$token = $this->peekPrvsToken();
-
-		return $this->checkToken($token, $value, $text);
+		return $this->checkToken($token, $id, $text);
 	}
 
 	/**
 	 * Check if a the next token exists (and if its value correspond to what is expected).
 	 *
-	 * @param Integer $value the token we're looking for
+	 * @param Integer $id the token we're looking for
 	 * @param String $text (optional) the text we're looking for
-	 * @return true if the token is found
+	 * @return Boolean true if the token is found
 	 */
-	public function checkNextToken($value, $text = false) {
+	public function checkNextToken($id, $text = false) {
 		$token = $this->peekNextToken();
-
-		return $this->checkToken($token, $value, $text);
+		return $this->checkToken($token, $id, $text);
 	}
 
 	/**
 	 * Check if a the next token exists (and if its value correspond to what is expected).
 	 *
-	 * @param Integer $value the token we're looking for
+	 * @param Integer $id the token we're looking for
 	 * @param String $text (optional) the text we're looking for
-	 * @return true if the token is found
+	 * @return Boolean true if the token is found
 	 */
-	public function checkCurrentToken($value, $text = false) {
-		$token = $this->getToken();
-
-		return $this->checkToken($token, $value, $text);
+	public function checkCurrentToken($id, $text = false) {
+		$token = $this->getCurrentToken();
+		return $this->checkToken($token, $id, $text);
 	}
 
 	/**
@@ -329,7 +319,7 @@ class Tokenizer {
 		while  ($pos < $nbTokens) {
 			$token = $this->tokens[$pos];
 
-			if ($text == $this->extractTokenText($token)) {
+			if ($text == $token->text) {
 				return $pos;
 			}
 
@@ -340,80 +330,22 @@ class Tokenizer {
 	}
 
 	/**
-	 * Check if the next token (including whitespaces) correspond to the text.
-	 *
-	 * @param String $text the text we're looking for
-	 * @return true if the token is found
-	 */
-	public function checkNextTextToken($text) {
-		$token = $this->peekNextToken();
-
-		return $this->checkText($token, $text);
-	}
-
-	/**
-	 * Check if the next valid token (ignoring whitespaces) correspond to the text.
-	 *
-	 * @param String $text the text we're looking for
-	 * @param Integer $startPos the start position
-	 * @return true if the token is found
-	 */
-	public function checkNextValidTextToken($text, $startPos = null) {
-		$tokenInfo = $this->peekNextValidToken($startPos);
-		if ($tokenInfo != null) {
-			return $this->checkText($tokenInfo->token, $text);
-		} else {
-			return false;
-		}
-	}
-
-	/**
 	 * Check if the next valid token (ignoring whitespaces) correspond to the specified token.
 	 *
-	 * @param Integer $value the value of the token we're looking for
+	 * @param Integer $id the id of the token we're looking for
 	 * @param String $text the text we're looking for
 	 * @param Integer $startPos the start position
 	 * @return true if the token is found
 	 */
-	public function checkNextValidToken($value, $text = false, $startPos = null) {
+	public function checkNextValidToken($id, $text = false, $startPos = null) {
+
 		$tokenInfo = $this->peekNextValidToken($startPos);
 
 		if ($tokenInfo != null) {
-			return $this->checkToken($tokenInfo->token, $value, $text);
+			return $this->checkToken($tokenInfo, $id, $text);
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * Check if the token correspond to a given text
-	 *
-	 * @param Integer $token the token
-	 * @param String $text the text
-	 * @return true if the token contains the text
-	 */
-	public function checkText($token, $text) {
-		$ret = false;
-		if (is_string($token)) {
-			if ($token == $text) {
-				$ret = true;
-			}
-		}
-		return $ret;
-	}
-
-	/**
-	 * Extract the text contained in a token.
-	 *
-	 * @param Integer $token the token
-	 * @return the text content of the token
-	 */
-	public function extractTokenText($token) {
-		$ret = $token;
-		if (is_array($token)) {
-			$ret = $token[1];
-		}
-		return $ret;
 	}
 
 	/**
@@ -427,54 +359,122 @@ class Tokenizer {
 	private function _getAllTokens($source) {
 		$newTokens = array();
 
+		$lineNumber = 1;
+		$position = 0;
+
 		// Get the tokens
 		$tokens = token_get_all($source);
 
 		// Split newlines into their own tokens
 		foreach ($tokens as $token) {
-			$tokenName = is_array($token) ? $token[0] : null;
-			$tokenData = is_array($token) ? $token[1] : $token;
 
-			// Do not split encapsed strings or multiline comments
-			if ($tokenName == T_CONSTANT_ENCAPSED_STRING || substr($tokenData, 0, 2) == '/*') {
-				$newTokens[] = array($tokenName, $tokenData);
-				continue;
-			}
+			$tokenID = is_array($token) ? $token[0] : T_UNKNOWN;
+			$tokenText = is_array($token) ? $token[1] : $token;
 
 			// Split the data up by newlines
-			$splitData = preg_split('#(\r\n|\n|\r)#', $tokenData, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-
+			// To correctly handle T_NEW_LINE inside comments and HTML
+			$splitData = preg_split('#(\r\n|\n|\r)#', $tokenText, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 			foreach ($splitData as $data) {
+
+				$tokenInfo = new TokenInfo();
+				$tokenInfo->text = $data;
+				$tokenInfo->position = $position;
+				$tokenInfo->line = $lineNumber;
 
 				if ($data == "\r\n" || $data == "\n" || $data == "\r") {
 					// This is a new line token
-					$newTokens[] = array(T_NEW_LINE, $data);
+					$tokenInfo->id = T_NEW_LINE;
+					$lineNumber++;
 				} else if ($data == "\t") {
-					// This is a new line token
-					$newTokens[] = array(T_TAB, $data);
+					// This is a tab token
+					$tokenInfo->id = T_TAB;
 				} else {
-					// Add the token under the original token name
-					$newTokens[] = is_array($token) ? array($tokenName, $data) : $data;
+					// Any other token
+					$tokenInfo->id = $tokenID;
 				}
+
+				$position++;
+
+				// Added detections
+				if ($tokenInfo->id == T_UNKNOWN) {
+					switch ($tokenInfo->text) {
+						case ";" :
+							$tokenInfo->id = T_SEMICOLON;
+							break;
+						case "{":
+							$tokenInfo->id = T_BRACES_OPEN;
+							break;
+						case "}":
+							$tokenInfo->id = T_BRACES_CLOSE;
+							break;
+						case "(":
+							$tokenInfo->id = T_PARENTHESIS_OPEN;
+							break;
+						case ")":
+							$tokenInfo->id = T_PARENTHESIS_CLOSE;
+							break;
+						case ",":
+							$tokenInfo->id = T_COMMA;
+							break;
+						case "=":
+							$tokenInfo->id = T_EQUAL;
+							break;
+						case ".":
+							$tokenInfo->id = T_CONCAT;
+							break;
+						case ":" :
+							$tokenInfo->id = T_COLON;
+							break;
+						case "-" :
+							$tokenInfo->id = T_MINUS;
+							break;
+						case "+" :
+							$tokenInfo->id = T_PLUS;
+							break;
+						case ">" :
+							$tokenInfo->id = T_IS_GREATER;
+							break;
+						case "<" :
+							$tokenInfo->id = T_IS_SMALLER;
+							break;
+						case "*" :
+							$tokenInfo->id = T_MULTIPLY;
+							break;
+						case "/" :
+							$tokenInfo->id = T_DIVIDE;
+							break;
+						case "?" :
+							$tokenInfo->id = T_QUESTION_MARK;
+							break;
+						case "%" :
+							$tokenInfo->id = T_MODULO;
+							break;
+						case "!" :
+							$tokenInfo->id = T_EXCLAMATION_MARK;
+							break;
+						case "&" :
+							$tokenInfo->id = T_AMPERSAND;
+							break;
+						case "[" :
+							$tokenInfo->id = T_SQUARE_BRACKET_OPEN;
+							break;
+						case "]" :
+							$tokenInfo->id = T_SQUARE_BRACKET_CLOSE;
+							break;
+						case "@" :
+							$tokenInfo->id = T_AROBAS;
+							break;
+						default:
+					}
+				}
+
+				$newTokens[] = $tokenInfo;
 			}
 		}
 
 		return $newTokens;
 	}
 
-	/**
-	 * Return the name of a token, including the NEW_LINE one.
-	 *
-	 * @param Integer $token a token
-	 * @return the name of the token
-	 */
-	public function getTokenName($token) {
-		if ($token === T_NEW_LINE) {
-			return 'T_NEW_LINE';
-		}
-
-		return token_name($token);
-	}
 
 	/**
 	 * Find the position of the closing parenthesis corresponding to the current position opening parenthesis.
@@ -496,9 +496,9 @@ class Tokenizer {
 			$token = $this->peekTokenAt($pos);
 
 			// Increment or decrement the parenthesis count
-			if ($this->extractTokenText($token) == "(") {
+			if ($token->id == T_PARENTHESIS_OPEN) {
 				$parenthesisCount += 1;
-			} else if ($this->extractTokenText($token) == ")") {
+			} else if ($token->id == T_PARENTHESIS_CLOSE) {
 				$parenthesisCount -= 1;
 			}
 

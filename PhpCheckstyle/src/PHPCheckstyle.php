@@ -2519,6 +2519,8 @@ class PHPCheckstyle {
 
 	/**
 	 * Checks for presence of tab in the whitespace character string.
+	 * 
+	 * Launched when T_WHITESPACE or T_TAB is met at the begining of a line.
 	 *
 	 * @param String $whitespaceString the whitespace string used for indentation
 	 */
@@ -2533,7 +2535,7 @@ class PHPCheckstyle {
 				if ($tabfound) {
 					$this->_writeError('indentation', PHPCHECKSTYLE_INDENTATION_TAB);
 				}
-
+				// Number of spaces used
 				$indentationNumber = $this->_config->getTestProperty('indentation', 'number');
 				if (empty($indentationNumber)) {
 					$indentationNumber = 2;
@@ -2553,6 +2555,8 @@ class PHPCheckstyle {
 
 	/**
 	 * Check the indentation level.
+	 * 
+	 * Launched when T_WHITESPACE is met at the begining of a line.
 	 *
 	 * @param String $whitespaceString the whitespace string used for indentation
 	 * @param String $indentationNumber the expected number of whitespaces used for indentation
@@ -2575,11 +2579,9 @@ class PHPCheckstyle {
 
 			// Nesting level is the number of items in the branching stack
 			$nesting = $this->statementStack->count();
-
+			
 			// But we must anticipate if the current line change the level
-			if ($this->tokenizer->checkNextValidToken(T_BRACES_OPEN)) {
-				$nesting++;
-			} else if ($this->tokenizer->checkNextValidToken(T_BRACES_CLOSE)) {
+			if ($this->tokenizer->checkNextValidToken(T_BRACES_CLOSE)) {
 				$nesting--;
 			}
 
@@ -2612,7 +2614,7 @@ class PHPCheckstyle {
 					$msg = sprintf(PHPCHECKSTYLE_INDENTATION_LEVEL_MORE, $expectedIndentation, $indentation);
 					$this->_writeError('indentationLevel', $msg);
 				}
-			} elseif ($expectedIndentation != $indentation) {
+			} else if ($expectedIndentation != $indentation) {
 				$msg = sprintf(PHPCHECKSTYLE_INDENTATION_LEVEL, $expectedIndentation, $indentation);
 				$this->_writeError('indentationLevel', $msg);
 			}

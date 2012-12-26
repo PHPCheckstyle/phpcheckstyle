@@ -72,6 +72,7 @@ class TokenInfo {
 	 * @return String
 	 */
 	public function toString() {
+		$result = "";
 		$result .= "line : ".$this->line;
 		$result .= ", pos : ".$this->position;
 		$result .= ", id : ".$this->getName($this->id);

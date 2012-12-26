@@ -407,10 +407,10 @@ class PHPCheckstyle {
 			// Process the token
 			$this->_processToken($token);
 
+			$this->lineNumber = $token->line;
+
 			// Go to the next token
 			$token = $this->tokenizer->getNextToken();
-
-			$this->lineNumber = $token->line;
 		}
 
 		// Test the last token of the file
@@ -785,19 +785,19 @@ class PHPCheckstyle {
 				break;
 
 			case T_BRACES_OPEN:  // {
-				$this->_processBracesOpen();
+				$this->_processBracesOpen($token);
 				break;
 
 			case T_BRACES_CLOSE: // }
-				$this->_processBracesClose();
+				$this->_processBracesClose($token);
 				break;
 
 			case T_SEMICOLON: // ;
-				$this->_processSemiColon();
+				$this->_processSemiColon($token);
 				break;
 
 			case T_MINUS:
-				$this->_processMinus();
+				$this->_processMinus($token);
 				break;
 
 			case T_EQUAL:
@@ -894,25 +894,29 @@ class PHPCheckstyle {
 
 	/**
 	 * Launched when a minus sign is encoutered.
+	 * 
+	 * @param TokenInfo $token the current token
 	 */
-	private function _processMinus() {
+	private function _processMinus($token) {
 		if (!$this->_inFuncCall) {
-			$this->_checkWhiteSpaceBefore($text);
+			$this->_checkWhiteSpaceBefore($token->text);
 		}
 		// We allow some '-' signs to skip the the space afterwards for negative numbers
 		if (!($this->tokenizer->checkNextToken(T_LNUMBER) || // float number
 				$this->tokenizer->checkNextToken(T_DNUMBER))) {
 			// integer
-			$this->_checkWhiteSpaceAfter($text);
+			$this->_checkWhiteSpaceAfter($token->text);
 		}
 	}
 
 	/**
 	 * Launched when a semicolon is encoutered.
+	 * 
+	 * @param TokenInfo $token the current token
 	 */
-	private function _processSemiColon() {
+	private function _processSemiColon($token) {
 		// ";" should never be preceded by a whitespace
-		$this->_checkNoWhiteSpaceBefore($text);
+		$this->_checkNoWhiteSpaceBefore($token->text);
 
 		// ";" should never be preceded by ;
 		$this->_checkEmptyStatement();
@@ -925,18 +929,20 @@ class PHPCheckstyle {
 
 	/**
 	 * Launched when an opening brace is encoutered.
+	 * 
+	 * @param TokenInfo $token the current token
 	 */
-	private function _processBracesOpen() {
+	private function _processBracesOpen($token) {
 		// "{" signifies beginning of a block. We need to look for
 		// its position when it is a beginning of a control structure
 		// or a function or class definition.
 
 		// Check we have a white space before a curly opening in case of a "same line" indentation
 		if ($this->_config->getTestProperty('funcDefinitionOpenCurly', 'position') == "sl") {
-			$this->_checkWhiteSpaceBefore($text);
+			$this->_checkWhiteSpaceBefore($token->text);
 		}
 		$stackitem = new StatementItem();
-		$stackitem->line = $this->lineNumber;
+		$stackitem->line = $token->line;
 
 		// if _justAfterFuncStmt is set, the "{" is the beginning of a function definition block
 		if ($this->_justAfterFuncStmt) {
@@ -972,15 +978,16 @@ class PHPCheckstyle {
 
 	/**
 	 * Launched when an closing brace is encoutered.
+	 * 
+	 * @param TokenInfo $token the current token
 	 */
-	private function _processBracesClose() {
+	private function _processBracesClose($token) {
 		// signifies the end of a block
 		// currently tests whether this token resides on a new line.
 		// This test is desactivated when in a view
 		if ($this->_isActive('controlCloseCurly') && !($this->_isView) && (!$this->_inString)) {
-			$currentToken = $this->tokenizer->getCurrentToken();
 			$previousToken = $this->tokenizer->peekPrvsValidToken();
-			if ($previousToken->line == $currentToken->line) {
+			if ($previousToken->line == $token->line) {
 				// the last token was on the same line
 				$this->_writeError('controlCloseCurly', PHPCHECKSTYLE_END_BLOCK_NEW_LINE);
 			}
@@ -1568,6 +1575,14 @@ class PHPCheckstyle {
 			// If the function is not private and we check the doc
 			$isPrivateExcluded = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
 			if (!($isPrivateExcluded && $this->_functionVisibility == 'PRIVATE')) {
+				
+				echo "this->_currentFunctionName : ".$this->_currentFunctionName.PHP_EOL;
+				echo "this->_nbFunctionParameters : ".$this->_nbFunctionParameters.PHP_EOL;
+				echo "this->_functionReturns : ".$this->_functionReturns.PHP_EOL;
+				echo "this->_functionThrows : ".$this->_functionThrows.PHP_EOL;
+				echo "this->_docblocNbParams : ".$this->_docblocNbParams.PHP_EOL;
+				echo "this->_docblocNbReturns : ".$this->_docblocNbReturns.PHP_EOL;
+				echo "this->_docblocNbThrows : ".$this->_docblocNbThrows.PHP_EOL;
 
 				// Check the docblock @return
 				if (($this->_config->getTestProperty('docBlocks', 'testReturn') != 'false')) {
@@ -2126,7 +2141,7 @@ class PHPCheckstyle {
 	private function _checkUnusedVariables() {
 
 		if ($this->_isActive('checkUnusedVariables')) {
-
+			
 			foreach ($this->_variables as $variable) {
 
 				if ((!$variable->isUsed) && !($this->_isClass || $this->_isView)) {
@@ -2252,16 +2267,16 @@ class PHPCheckstyle {
 
 				// Manage the case of $this->attribute
 				if ($text == '$this') {
+					
+					$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
+					
+					if ($this->tokenizer->checkToken($nextTokenInfo2, T_OBJECT_OPERATOR)) {
 
-
-
-					if ($this->tokenizer->checkToken($nextTokenInfo->token, T_OBJECT_OPERATOR)) {
-
-						$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
+						$nextTokenInfo3 = $this->tokenizer->peekNextValidToken($nextTokenInfo2->position + 1);
 
 						// This does not look like a function call, it should be a class attribute.
 						// We eliminate the $this-> part
-						$text = '$'.$nextTokenInfo2->text;
+						$text = '$'.$nextTokenInfo3->text;
 
 					}
 				}
@@ -2398,7 +2413,8 @@ class PHPCheckstyle {
 
 					// To avoid false positives when using a space indentation system, check that we are on the same line as the previous valid token
 					$prevValid = $this->tokenizer->peekPrvsValidToken();
-					if ($prevValid->lineOffset == 0) {
+					$currentToken = $this->tokenizer->getCurrentToken();
+					if ($prevValid->line == $currentToken->line) {
 						$msg = sprintf(PHPCHECKSTYLE_NO_SPACE_BEFORE_TOKEN, $text);
 						$this->_writeError('noSpaceBeforeToken', $msg);
 					}
@@ -2481,7 +2497,7 @@ class PHPCheckstyle {
 			$maxLength = $this->_config->getTestProperty('lineLength', 'maxLineLength');
 			$lineString = ""; // String assembled from tokens
 			$currentTokenIndex = $this->tokenizer->getCurrentPosition();
-			$currentToken = $this->tokenizer->peekTokenAt($currentTokenIndex);
+			$currentToken = $this->tokenizer->getCurrentToken($currentTokenIndex);
 
 			do {
 				$currentTokenString = $currentToken->text;
@@ -2490,8 +2506,9 @@ class PHPCheckstyle {
 				$currentTokenIndex += 1;
 				$currentToken = $this->tokenizer->peekTokenAt($currentTokenIndex);
 
-				$isNewLine = $this->tokenizer->checkToken($currentToken, T_NEW_LINE);
-				$isNull = ($this->tokenizer->peekTokenAt($currentTokenIndex) == null);
+				$isNull = ($currentToken == null);
+				$isNewLine = !$isNull && $this->tokenizer->checkToken($currentToken, T_NEW_LINE);
+				
 			} while (!($isNull || $isNewLine));
 
 			$lineLength = strlen($lineString);

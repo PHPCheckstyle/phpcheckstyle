@@ -1,11 +1,16 @@
 #summary Project History
 #labels Featured
 
-== Version 0.10.53 ==
+
+== Version 0.10.6 ==
+  * Issue 40:	Propose replacement for PHP aliases
+  * Now generates absolute file path in the reports (allow Jenkins to display the source code)
+
+== Version 0.10.5 ==
   * Issue 39:	Error on closing tag for space-based indentation checks
   * Issue 38:	False positive for : The function XXX must have a docblock comment
 
-== Version 0.10.43 ==
+== Version 0.10.4 ==
   * Issue 37: Web interface (currently very limited)
 
 == Version 0.10.3 ==

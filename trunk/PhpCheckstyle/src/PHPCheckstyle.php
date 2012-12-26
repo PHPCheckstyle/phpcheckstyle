@@ -1375,7 +1375,7 @@ class PHPCheckstyle {
 		}
 
 		// Now we expect the '{' token
-		if (!$this->tokenizer->checkNextValidToken(T_BRACES_OPEN, null, $startPos)) {
+		if (!$this->tokenizer->checkNextValidToken(T_BRACES_OPEN, null, $startPos + 1)) {
 
 			// If not the case, we store the control statement in the stack
 			$stackitem = new StatementItem();
@@ -1575,14 +1575,6 @@ class PHPCheckstyle {
 			// If the function is not private and we check the doc
 			$isPrivateExcluded = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
 			if (!($isPrivateExcluded && $this->_functionVisibility == 'PRIVATE')) {
-				
-				echo "this->_currentFunctionName : ".$this->_currentFunctionName.PHP_EOL;
-				echo "this->_nbFunctionParameters : ".$this->_nbFunctionParameters.PHP_EOL;
-				echo "this->_functionReturns : ".$this->_functionReturns.PHP_EOL;
-				echo "this->_functionThrows : ".$this->_functionThrows.PHP_EOL;
-				echo "this->_docblocNbParams : ".$this->_docblocNbParams.PHP_EOL;
-				echo "this->_docblocNbReturns : ".$this->_docblocNbReturns.PHP_EOL;
-				echo "this->_docblocNbThrows : ".$this->_docblocNbThrows.PHP_EOL;
 
 				// Check the docblock @return
 				if (($this->_config->getTestProperty('docBlocks', 'testReturn') != 'false')) {

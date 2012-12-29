@@ -506,7 +506,7 @@ class Tokenizer {
 			$pos += 1;
 		}
 
-		return $pos;
+		return $pos - 1;
 	}
 
 	/**

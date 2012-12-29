@@ -18,6 +18,10 @@
 	<input type="test" id="resultDir" name ="resultDir" value="./checkstyle_result"></input>
 	</p>
 	
+	<p>Configuration file
+	<input type="test" id="configFile" name ="configFile" value="./config/default.cfg.xml"></input>
+	</p>
+	
 	<input type="submit" value="Run"></input>
 	
 	</form>

@@ -509,7 +509,21 @@ class Tokenizer {
 		return $pos;
 	}
 
-
+	/**
+	 * Checks if a token is in the type of token list.
+	 *
+	 * @param TokenInfo $tokenToCheck 	the token to check.
+	 * @param Array[Integer] $tokenList 		an array of token ids, e.g. T_NEW_LINE, T_DOC_COMMENT, etc.
+	 * @return Boolean true if the token is found, false if it is not.
+	 */
+	public function isTokenInList($tokenToCheck, $tokenList) {
+		foreach ($tokenList as $tokenInList) {
+			if ($this->checkToken($tokenToCheck, $tokenInList)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 
 }

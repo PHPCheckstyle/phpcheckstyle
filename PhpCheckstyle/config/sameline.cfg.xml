@@ -379,21 +379,35 @@
     
     <!-- Replace deprecated methods -->
     <test name="checkDeprecation">
-    	<deprecated old="split" new="explode($pattern, $string) or preg_split('@'.$pattern.'@', $string)" version="5.3"/>
-    	<deprecated old="spliti" new="preg_split('@'.$pattern.'@i', $string) " version="5.3"/>
+    	<deprecated old="call_user_method" new="call_user_func" version="4.1"/>
+    	<deprecated old="call_user_method_array" new="call_user_func_array" version="4.1"/>
+    	<deprecated old="define_syslog_variables" new="none" version="5.4"/>
+    	<deprecated old="dl" new="extension_loaded" version="5.3"/>
     	<deprecated old="ereg" new="preg_match('@'.$pattern.'@', $string)"  version="5.3"/>
     	<deprecated old="eregi" new="preg_match('@'.$pattern.'@i', $string)"  version="5.3"/>
     	<deprecated old="ereg_replace" new="preg_replace('@'.$pattern.'@', $string)" version="5.3"/>
     	<deprecated old="eregi_replace" new="preg_replace('@'.$pattern.'@i', $string)" version="5.3"/>
-    	<deprecated old="call_user_method" new="call_user_func" version="5.3"/>
-    	<deprecated old="call_user_method_array" new="call_user_func_array" version="5.3"/>
+    	<deprecated old="import_request_variables" new="none" version="5.4"/>
+    	<deprecated old="magic_quotes_runtime" new="none" version="5.3"/>
+    	<deprecated old="set_magic_quotes_runtime" new="none" version="5.3"/>
+    	<deprecated old="mcrypt_generic_end" new="mcrypt_generic_deinit" version="5.4"/>
+    	<deprecated old="mysql_list_dbs" new="none" version="5.4"/>
+    	<deprecated old="mysql_db_query" new="mysql_select_db and mysql_query" version="5.3"/>
+    	<deprecated old="mysql_escape_string" new="mysql_real_escape_string" version="5.3"/>
+    	<deprecated old="mysqli_bind_param" new="mysqli_stmt_bind_param" version="5.4"/>
+    	<deprecated old="mysqli_bind_result" new="mysqli_stmt_bind_result" version="5.4"/>
+    	<deprecated old="mysqli_client_encoding" new="mysqli_character_set_name" version="5.4"/>
+    	<deprecated old="mysqli_fetch" new="mysqli_stmt_fetch" version="5.4"/>
+    	<deprecated old="mysqli_param_count" new="mysqli_stmt_param_count" version="5.4"/>
+    	<deprecated old="mysqli_get_metadata" new="mysqli_stmt_result_metadata" version="5.4"/>
+    	<deprecated old="mysqli_send_long_data" new=" mysqli_stmt_send_long_data" version="5.4"/>
     	<deprecated old="session_register" new="$_SESSION" version="5.3"/>
     	<deprecated old="session_unregister" new="$_SESSION" version="5.3"/>
     	<deprecated old="session_is_registered" new="$_SESSION" version="5.3"/>
-    	<deprecated old="mysql_db_query" new="mysql_select_db and mysql_query" version="5.3"/>
-    	<deprecated old="mysql_escape_string" new="mysql_real_escape_string" version="5.3"/>
-    	<deprecated old="dl" new="extension_loaded" version="5.3"/>
     	<deprecated old="set_socket_blocking" new="stream_set_blocking" version="5.3"/>
+    	<deprecated old="split" new="explode($pattern, $string) or preg_split('@'.$pattern.'@', $string)" version="5.3"/>
+    	<deprecated old="spliti" new="preg_split('@'.$pattern.'@i', $string)" version="5.3"/>
+    	<deprecated old="sql_regcase" new="none" version="5.3"/>
     	<deprecated old="$HTTP_GET_VARS" new="$_GET" version="5.3"/>
     	<deprecated old="$HTTP_POST_VARS" new="$_POST" version="5.3"/>
     	<deprecated old="$HTTP_COOKIE_VARS" new="$_COOKIE" version="5.3"/>

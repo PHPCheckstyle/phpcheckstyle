@@ -24,7 +24,7 @@ if (!defined("T_ML_COMMENT")) {
 }
 
 /**
- * Main Class. Does most of the parsing and processing
+ * Main Class. Does most of the processing.
  *
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
  */
@@ -41,6 +41,12 @@ class PHPCheckstyle {
 	 * @var StatementStack
 	 */
 	private $statementStack = null;
+	
+	/**
+	 * Debug flag.
+	 * @var Boolean
+	 */
+	private $debug = false;
 
 	// Variables
 	private $validExtensions = array("php", "tpl");
@@ -115,23 +121,29 @@ class PHPCheckstyle {
 	 */
 	private $_specialFunctions = array();
 
-	private $_prohibitedFunctions = array('echo', 'system', "print_r", 'dl',
-			'exec', 'passthru', 'shell_exec',
-			'copy', 'delete', 'unlink',
-			'fwrite');
+	/**
+	 * These functions are not allowed.
+	 */
+	private $_prohibitedFunctions = array();
 
-	private $_prohibitedTokens = array('T_BAD_CHARACTER', 'T_DECLARE',
-			'T_ECHO', 'T_ENDDECLARE', 'T_ENDFOR',
-			'T_ENDFOREACH', 'T_ENDIF',
-			'T_ENDSWITCH', 'T_ENDWHILE',
-			'T_END_HEREDOC', 'T_EXIT',
-			'T_HALT_COMPILER', 'T_INLINE_HTML',
-			'T_OLD_FUNCTION',
-			'T_OPEN_TAG_WITH_ECHO', 'T_PRINT');
+	/**
+	 * These tokens are not allowed.
+	 */
+	private $_prohibitedTokens = array();
 
+	/**
+	 * These functions are deprecated.
+	 */
 	private $_deprecatedFunctions = array();
+	
+	/**
+	 * These functions are aliased.
+	 */
 	private $_aliasedFunctions = array();
 
+	/**
+	 * System variables ($_POST, ...) are not tested for naming.
+	 */
 	private $_systemVariables = array();
 
 
@@ -173,17 +185,21 @@ class PHPCheckstyle {
 	 * 					Accordingly creates the formatter objects
 	 * @param String $outDir  output file where results are stored.
 	 * 					Note that in case of "html" format, the output is xml and run.php transforms the xml file into html
+	 * @param String $configFile The path of the config file
 	 * @param String $linecountfile output file where line counts are stored
+	 * @param Boolean $debug indicate if we print so debug info
 	 * @param Boolean $progress indicate if we log the progress of the scan
 	 * @access public
 	 */
-	public function PHPCheckstyle($formats, $outDir, $linecountfile = null, $progress = false) {
+	public function PHPCheckstyle($formats, $outDir, $configFile, $linecountfile = null, $debug = false, $progress = false) {
 
 		// Initialise the Tokenizer
 		$this->tokenizer = new Tokenizer();
 
-		// Initialise the statement stacl
+		// Initialise the statement stack
 		$this->statementStack = new StatementStack();
+		
+		$this->debug = $debug;
 
 		// Initialise the Reporters
 		$this->_reporter = new Reporters();
@@ -210,7 +226,7 @@ class PHPCheckstyle {
 		$this->_displayProgress = $progress;
 
 		// Initialise the configuration
-		$this->_config = new CheckStyleConfig("");
+		$this->_config = new CheckStyleConfig($configFile);
 		$this->_config->parse();
 
 		// Load the list of system variables
@@ -234,16 +250,13 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * driver function that call processFile repeatedly for each php
-	 * file that is encountered
+	 * Calls processFile repeatedly for each PHP file that is encountered.
 	 *
-	 * @param $src a php file or a directory. in case of directory, it
+	 * @param String $src a php file or a directory. in case of directory, it
 	 *        searches for all the php/tpl files within the directory
 	 *        (recursively) and each of those files are processed
-	 * @param $excludes an array of directories or files that need to be
+	 * @param Array[String] $excludes an array of directories or files that need to be
 	 *        excluded from processing
-	 * @return nothing
-	 * @access public
 	 */
 	public function processFiles($src, $excludes) {
 		$this->_excludeList = $excludes;
@@ -368,7 +381,7 @@ class PHPCheckstyle {
 	 */
 	private function _processFile($filename) {
 
-		if (DEBUG) {
+		if ($this->debug) {
 			echo "Processing File : ".$filename.PHP_EOL;
 		}
 
@@ -453,14 +466,13 @@ class PHPCheckstyle {
 
 	/**
 	 * Go through a directory recursively and get all the
-	 * php (with extension .php and .tpl) files
+	 * PHP files.
 	 * Ignores files or subdirectories that are in the _excludeList
 	 *
 	 * @param String $src source directory
-	 * @param Array $excludes paths to exclude
+	 * @param Array[String] $excludes paths to exclude
 	 * @param String $dir the base directory
-	 * @return an array of php files
-	 * @access private
+	 * @return Array[String] an array of php files
 	 */
 	private function _getAllPhpFiles($src, $excludes, $dir = '') {
 
@@ -531,7 +543,7 @@ class PHPCheckstyle {
 	private function _processToken($token) {
 
 		// Debug
-		if (DEBUG) {
+		if ($this->debug) {
 			echo $this->statementStack->getStackDump().PHP_EOL;
 			echo "Level ".$this->statementStack->count()." - ".$token->toString().PHP_EOL;
 		}
@@ -1050,12 +1062,9 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Checks to see if the constant follows the naming convention
-	 * Constants should only have uppercase letters and underscores
+	 * Checks to see if the constant follows the naming convention.
 	 *
-	 * @param String $text the string containing the constant. Note that the
-	 *        string also has the quotes (single or double), so we need
-	 *        remove them from the string before testing
+	 * @param String $text the string containing the constant. 
 	 */
 	private function _checkConstantNaming($text) {
 		if ($this->_isActive('constantNaming')) {
@@ -1071,12 +1080,9 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Checks to see if the variable follows the naming convention
-	 * Variables should only have letters, start with a lowercase and have no underscore.
+	 * Checks to see if the variable follows the naming convention.
 	 *
-	 * @param String $text the string containing the variable. note that the
-	 *        string also has the quotes (single or double), so we need
-	 *        remove them from the string before testing
+	 * @param String $text the string containing the variable.
 	 */
 	private function _checkVariableNaming($text) {
 
@@ -1095,12 +1101,9 @@ class PHPCheckstyle {
 	 * Utility function to check the naming of a variable
 	 * given its scope rule and message.
 	 *
-	 * @param String $text the string containing the variable. note that the
-	 *        				string also has the quotes (single or double), so
-	 *        				we need to remove them from the string before
-	 *        				testing
-	 * @param String $ruleName the rule for the scope of the variable
-	 * @param String $msgName the message associated with the rule
+	 * @param String $text the string containing the variable. 
+	 * @param String $ruleName the rule for the scope of the variable.
+	 * @param String $msgName the message associated with the rule.
 	 */
 	private function _checkScopedVariableNaming($variableText, $ruleName, $msgName) {
 		if ($this->_isActive($ruleName) || $this->_isActive('variableNaming')) {
@@ -1112,7 +1115,7 @@ class PHPCheckstyle {
 			}
 			// If the variable is not listed as an exception
 			$exceptions = $this->_config->getTestExceptions($ruleName);
-			if (empty($exceptions) || !in_array($text, $exceptions)) {
+			if (empty($exceptions) || !in_array($texttoTest, $exceptions)) {
 
 				if ($this->_isActive($ruleName)) {
 					// Scoped variable
@@ -1544,7 +1547,7 @@ class PHPCheckstyle {
 	/**
 	 * Check the cyclomatic complexity of a function.
 	 *
-	 *  Called by _processFunctionStop()
+	 * Called by _processFunctionStop().
 	 */
 	private function _checkCyclomaticComplexity() {
 		if ($this->_isActive('cyclomaticComplexity')) {
@@ -1565,7 +1568,7 @@ class PHPCheckstyle {
 	/**
 	 * Check that the declared parameters in the docblock match the content of the function.
 	 *
-	 *  Called by _processFunctionStop()
+	 * Called by _processFunctionStop().
 	 */
 	private function _checkDocBlockParameters() {
 
@@ -1611,9 +1614,9 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 *  Check the length of the function.
+	 * Check the length of the function.
 	 *
-	 *  Called by _processFunctionStop()
+	 * Called by _processFunctionStop().
 	 */
 	private function _checkFunctionLenght() {
 		// Check the length of the function
@@ -2825,7 +2828,7 @@ class PHPCheckstyle {
 			$docToken = $this->tokenizer->peekTokenAt($docTokenPosition);
 
 			// if the token is in the list above.
-			if ($this->_tokenIsInList($docToken, $tokenToIgnoreList)) {
+			if ($this->tokenizer->isTokenInList($docToken, $tokenToIgnoreList)) {
 				// All these tokens are ignored
 			} else if ($this->tokenizer->checkToken($docToken, T_PRIVATE)) {
 				$isPrivate = true; // we are in a private function
@@ -3015,25 +3018,5 @@ class PHPCheckstyle {
 
 		$this->_reporter->writeError($lineNumber, $check, $message, $level);
 	}
-
-	/**
-	 * Checks if a token is in the type of token list.
-	 *
-	 * @param $tokenToCheck 	the token to check.
-	 * @param $tokenList 		an array of token types, e.g. T_NEW_LINE, T_DOC_COMMENT, etc.
-	 *
-	 * @return true if the token is found, false if it is not.
-	 */
-	private function _tokenIsInList($tokenToCheck, $tokenList) {
-		foreach ($tokenList as $tokenInList) {
-			if ($this->tokenizer->checkToken($tokenToCheck, $tokenInList)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-
-
 
 }

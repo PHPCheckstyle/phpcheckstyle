@@ -28,7 +28,7 @@
 		<property name="dist.dir" value="${build.dir}/dist" />
 
 		<property name="phpcheckstyle.version.major" value="0" />
-		<property name="phpcheckstyle.version.minor" value="10.6" />
+		<property name="phpcheckstyle.version.minor" value="11.0" />
 		<property name="phpcheckstyle.version" value="${phpcheckstyle.version.major}.${phpcheckstyle.version.minor}" />
 
 		<property name="phpcheckstyle.name" value="PHPCheckStyle-${phpcheckstyle.version}.zip"/>

@@ -78,11 +78,7 @@ for ($i = 1; $i < $_SERVER["argc"]; $i++) {
 }
 
 define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__));
-
 require_once PHPCHECKSTYLE_HOME_DIR."/src/PHPCheckstyle.php";
-
-define("CONFIG_FILE", $options['config']);
-define("DEBUG", $options['debug']);
 
 // check for valid format and set the output file name
 // right now the output file name is not configurable, only
@@ -107,7 +103,7 @@ if (!empty($options['linecount'])) {
 	$lineCountFile = "ncss.xml";
 }
 
-$style = new PHPCheckstyle($formats, $options['outdir'], $lineCountFile, $options['progress']);
+$style = new PHPCheckstyle($formats, $options['outdir'], $options['config'], $lineCountFile, $options['debug'], $options['progress']);
 $style->processFiles($options['src'], $options['exclude']);
 
 echo "\nReporting Completed.\n";

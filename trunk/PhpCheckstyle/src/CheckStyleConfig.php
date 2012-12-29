@@ -4,53 +4,51 @@ if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
 }
 
 /**
- * Loads the user specified test configuration
+ * Loads the test configuration.
  *
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
- * @version $Revision: $
  */
 class CheckStyleConfig {
+	
+	// The configuration file
 	private $file;
 
-	// Array that contains the loaded checks
-	public $_myConfig = array();
+	// Array that contains the loaded checks configuration
+	public $myConfig = array();
 
-	private $_currentTest = false;
+	private $currentTest = false;
 
-	private $_currentConfig = false;
+	private $currentConfig = false;
 
-	private $_xmlParser;
+	private $xmlParser;
 
 	/**
-	 * constructor
-	 *
-	 * @access public
+	 * Constructor.
+	 * 
+	 * @param String $configFile The path of the config file
 	 */
-	public function CheckStyleConfig() {
+	public function CheckStyleConfig($configFile) {
 
-		$_isAbsolutePath = preg_match("/^[a-zA-Z]{1}:\\.*/", CONFIG_FILE);
+		$isAbsolutePath = preg_match("/^[a-zA-Z]{1}:\\.*/", $configFile);
 
-		if ($_isAbsolutePath) {
-			$this->file = CONFIG_FILE;
+		if ($isAbsolutePath) {
+			$this->file = $configFile;
 		} else {
-			$this->file = PHPCHECKSTYLE_HOME_DIR."/config/".CONFIG_FILE;
+			$this->file = PHPCHECKSTYLE_HOME_DIR."/config/".$configFile;
 		}
 
-		$this->_xmlParser = xml_parser_create();
-		xml_set_object($this->_xmlParser, $this);
-		xml_set_element_handler($this->_xmlParser, "_startElement", "_endElement");
-		xml_set_character_data_handler($this->_xmlParser, "_gotCdata");
-		xml_set_default_handler($this->_xmlParser, "_gotCdata");
+		$this->xmlParser = xml_parser_create();
+		xml_set_object($this->xmlParser, $this);
+		xml_set_element_handler($this->xmlParser, "_startElement", "_endElement");
+		xml_set_character_data_handler($this->xmlParser, "_gotCdata");
+		xml_set_default_handler($this->xmlParser, "_gotCdata");
 	}
 
 	/**
-	 * destructor
-	 *
-	 * @return
-	 * @access public
+	 * Destructor.
 	 */
 	public function __destruct() {
-		xml_parser_free($this->_xmlParser);
+		xml_parser_free($this->xmlParser);
 	}
 
 	/**
@@ -66,12 +64,12 @@ class CheckStyleConfig {
 
 		$data = fread($fp, 4096);
 		while ($data) {
-			if (!xml_parse($this->_xmlParser, $data, feof($fp))) {
+			if (!xml_parse($this->xmlParser, $data, feof($fp))) {
 				$msg = sprintf("Warning: XML error: %s at line %d",
-						xml_error_string(xml_get_error_code($this->_xmlParser)),
-						xml_get_current_line_number($this->_xmlParser));
+						xml_error_string(xml_get_error_code($this->xmlParser)),
+						xml_get_current_line_number($this->xmlParser));
 				echo $msg;
-				$this->_myConfig = array();
+				$this->myConfig = array();
 			}
 
 			$data = fread($fp, 4096);
@@ -86,7 +84,7 @@ class CheckStyleConfig {
 	 */
 	public function getTestItems($test) {
 		$test = strtolower($test);
-		return isset($this->_myConfig[$test]['item']) ? $this->_myConfig[$test]['item'] : false;
+		return isset($this->myConfig[$test]['item']) ? $this->myConfig[$test]['item'] : false;
 	}
 
 	/**
@@ -96,7 +94,7 @@ class CheckStyleConfig {
 	 * @return array the list of items for this config.
 	 */
 	public function getConfigItems($config) {
-		return $this->_myConfig[strtolower($config)];
+		return $this->myConfig[strtolower($config)];
 	}
 
 	/**
@@ -107,7 +105,7 @@ class CheckStyleConfig {
 	 */
 	public function getTestExceptions($test) {
 		$test = strtolower($test);
-		return isset($this->_myConfig[$test]['exception']) ? $this->_myConfig[$test]['exception'] : false;
+		return isset($this->myConfig[$test]['exception']) ? $this->myConfig[$test]['exception'] : false;
 	}
 
 	/**
@@ -118,7 +116,7 @@ class CheckStyleConfig {
 	 */
 	public function getTest($test) {
 		$test = strtolower($test);
-		return (array_key_exists($test, $this->_myConfig));
+		return (array_key_exists($test, $this->myConfig));
 	}
 
 	/**
@@ -130,8 +128,8 @@ class CheckStyleConfig {
 	public function getTestLevel($test) {
 		$test = strtolower($test);
 		$ret = WARNING;
-		if (array_key_exists($test, $this->_myConfig) && array_key_exists('level', $this->_myConfig[$test])) {
-			$ret = $this->_myConfig[$test]['level'];
+		if (array_key_exists($test, $this->myConfig) && array_key_exists('level', $this->myConfig[$test])) {
+			$ret = $this->myConfig[$test]['level'];
 		}
 
 		if ($ret != ERROR && $ret != IGNORE && $ret != INFO && $ret != WARNING) {
@@ -151,8 +149,8 @@ class CheckStyleConfig {
 	public function getTestRegExp($test) {
 		$test = strtolower($test);
 		$ret = "";
-		if (array_key_exists($test, $this->_myConfig) && array_key_exists('regexp', $this->_myConfig[$test])) {
-			$ret = $this->_myConfig[$test]['regexp'];
+		if (array_key_exists($test, $this->myConfig) && array_key_exists('regexp', $this->myConfig[$test])) {
+			$ret = $this->myConfig[$test]['regexp'];
 		}
 
 		return $ret;
@@ -167,8 +165,8 @@ class CheckStyleConfig {
 	public function getTestDeprecations($test) {
 		$test = strtolower($test);
 		$ret = "";
-		if (array_key_exists($test, $this->_myConfig)) {
-			$ret = $this->_myConfig[$test];
+		if (array_key_exists($test, $this->myConfig)) {
+			$ret = $this->myConfig[$test];
 		}
 
 		return $ret;
@@ -183,8 +181,8 @@ class CheckStyleConfig {
 	public function getTestAliases($test) {
 		$test = strtolower($test);
 		$ret = "";
-		if (array_key_exists($test, $this->_myConfig)) {
-			$ret = $this->_myConfig[$test];
+		if (array_key_exists($test, $this->myConfig)) {
+			$ret = $this->myConfig[$test];
 		}
 
 		return $ret;
@@ -200,8 +198,8 @@ class CheckStyleConfig {
 	public function getTestProperty($test, $property) {
 		$test = strtolower($test);
 		$property = strtolower($property);
-		if (array_key_exists($test, $this->_myConfig) && array_key_exists($property, $this->_myConfig[$test])) {
-			return $this->_myConfig[$test][$property];
+		if (array_key_exists($test, $this->myConfig) && array_key_exists($property, $this->myConfig[$test])) {
+			return $this->myConfig[$test][$property];
 		} else {
 			return false;
 		}
@@ -220,26 +218,26 @@ class CheckStyleConfig {
 
 			// Case of a configuration property
 			case 'CONFIG':
-				$this->_currentConfig = strtolower($attrs['NAME']);
-				$this->_myConfig[$this->_currentConfig] = array();
+				$this->currentConfig = strtolower($attrs['NAME']);
+				$this->myConfig[$this->currentConfig] = array();
 				break;
 
 				// Case of a configuration property item
 			case 'CONFIGITEM':
-				$this->_myConfig[$this->_currentConfig][] = $attrs['VALUE'];
+				$this->myConfig[$this->currentConfig][] = $attrs['VALUE'];
 				break;
 
 				// Case of a test rule
 			case 'TEST':
-				$this->_currentTest = strtolower($attrs['NAME']);
-				$this->_myConfig[$this->_currentTest] = array();
+				$this->currentTest = strtolower($attrs['NAME']);
+				$this->myConfig[$this->currentTest] = array();
 
 				if (isset($attrs['LEVEL'])) {
-					$this->_myConfig[$this->_currentTest]['level'] = $attrs['LEVEL'];
+					$this->myConfig[$this->currentTest]['level'] = $attrs['LEVEL'];
 				}
 
 				if (isset($attrs['REGEXP'])) {
-					$this->_myConfig[$this->_currentTest]['regexp'] = $attrs['REGEXP'];
+					$this->myConfig[$this->currentTest]['regexp'] = $attrs['REGEXP'];
 				}
 				break;
 
@@ -250,43 +248,43 @@ class CheckStyleConfig {
 				if (array_key_exists('VALUE', $attrs)) {
 					$pval = $attrs['VALUE'];
 				}
-				$this->_myConfig[$this->_currentTest][strtolower($pname)] = $pval;
+				$this->myConfig[$this->currentTest][strtolower($pname)] = $pval;
 				break;
 
 				// Case of a item of a list of values of a rule
 			case 'ITEM':
 				if (isset($attrs['VALUE'])) {
-					$this->_myConfig[$this->_currentTest]['item'][] = $attrs['VALUE'];
+					$this->myConfig[$this->currentTest]['item'][] = $attrs['VALUE'];
 				}
 				break;
 
 				// Case of an exception to a rule
 			case 'EXCEPTION':
 				if (isset($attrs['VALUE'])) {
-					$this->_myConfig[$this->_currentTest]['exception'][] = $attrs['VALUE'];
+					$this->myConfig[$this->currentTest]['exception'][] = $attrs['VALUE'];
 				}
 				break;
 
 				// Case of a deprecated function
 			case 'DEPRECATED':
 				if (isset($attrs['OLD'])) {
-					$this->_myConfig[$this->_currentTest][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
+					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
 				}
 				if (isset($attrs['NEW'])) {
-					$this->_myConfig[$this->_currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
+					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
 				}
 				if (isset($attrs['VERSION'])) {
-					$this->_myConfig[$this->_currentTest][strtolower($attrs['OLD'])]['version'] = $attrs['VERSION'];
+					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['version'] = $attrs['VERSION'];
 				}
 				break;
 
 				// Case of an alias function
 			case 'ALIAS':
 				if (isset($attrs['OLD'])) {
-					$this->_myConfig[$this->_currentTest][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
+					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
 				}
 				if (isset($attrs['NEW'])) {
-					$this->_myConfig[$this->_currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
+					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
 				}
 				break;
 

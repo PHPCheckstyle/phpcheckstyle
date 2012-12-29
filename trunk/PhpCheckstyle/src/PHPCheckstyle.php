@@ -1765,30 +1765,25 @@ class PHPCheckstyle {
 		// The parameters having a default value should be in last position.
 		$foundDefaultValues = false;
 		$functionTokenPosition = $this->tokenizer->getCurrentPosition();
-		while (true) {
-			$functionToken = $this->tokenizer->peekTokenAt($functionTokenPosition);
-
-			if ($this->tokenizer->checkToken($functionToken, T_PARENTHESIS_CLOSE)) {
-				// We found the closing brace
-				break;
-			}
-
-			// If we find a "=" we consided that the parameter has a default value
-			$defaultSpecified = $this->tokenizer->checkToken($functionToken, T_EQUAL);
-			// We have found one default value for at least one parameter
-			if ($defaultSpecified) {
-				$foundDefaultValues = true;
-			}
-
+				
+		$functionParamsStart = $this->tokenizer->findNextStringPosition('(', $functionTokenPosition);
+		$functionParamsStop = $this->tokenizer->findClosingParenthesisPosition($functionTokenPosition);
+		
+		for ($i = $functionParamsStart; $i < $functionParamsStop; $i++) {
+			$functionToken = $this->tokenizer->peekTokenAt($i);
+			
 			// Current token is a parameter
 			if ($this->tokenizer->checkToken($functionToken, T_VARIABLE)) {
 				$this->_nbFunctionParameters++;
 				$parameterName = $functionToken->text;
 				$this->_functionParameters[$parameterName] = "unused"; // We flag the parameter as unused
-
+				
 				// Check is this parameter as a default value
-				$nextTokenInfo = $this->tokenizer->peekNextValidToken($functionTokenPosition + 1);
+				$nextTokenInfo = $this->tokenizer->peekNextValidToken($i + 1);
 				$hasDefaultValue = $this->tokenizer->checkToken($nextTokenInfo, T_EQUAL);
+				if ($hasDefaultValue) {
+					$foundDefaultValues = true;
+				}
 
 				// Check if the parameter has a default value
 				if ($this->_isActive('defaultValuesOrder')) {
@@ -1798,9 +1793,6 @@ class PHPCheckstyle {
 					}
 				}
 			}
-
-			$functionTokenPosition++;
-
 		}
 
 		// Test for the max number of parameters
@@ -2136,7 +2128,7 @@ class PHPCheckstyle {
 	private function _checkUnusedVariables() {
 
 		if ($this->_isActive('checkUnusedVariables')) {
-			
+						
 			foreach ($this->_variables as $variable) {
 
 				if ((!$variable->isUsed) && !($this->_isClass || $this->_isView)) {
@@ -2204,7 +2196,7 @@ class PHPCheckstyle {
 	 * @param String $text The variable name
 	 */
 	private function _processVariable($text) {
-
+		
 		// Check the variable naming
 		if (!in_array($text, $this->_systemVariables)) {
 			$this->_checkVariableNaming($text);

@@ -2689,6 +2689,8 @@ class PHPCheckstyle {
 		} else if ($token->id == T_DOC_COMMENT) {
 			$this->_ncssTotalPhpdoc++;
 			$this->_ncssFilePhpdoc++;
+			$this->_ncssTotalLinesPhpdoc++;
+			$this->_ncssFileLinesPhpdoc++;
 			if ($this->_isFileDocComment()) {
 				$this->_processAnnotation(T_FILE, $token->text);
 			}

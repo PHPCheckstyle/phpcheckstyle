@@ -1,0 +1,27 @@
+= Using PHPCheckstyle with Eclipse =
+
+Eclipse is already able to do some checks and to reformat your code (CTRL + SHIFT + F) with [http://www.eclipse.org/pdt/ PDT].
+
+It is also possible to add some extenal tools like PHPCodeSniffer or PHPCheckstyle to verify the code you're editing.
+
+  * First, install the Eclispe PHP Tool Integration (see http://www.phpsrc.org/wiki/)
+
+Eclipse Update URL : http://www.phpsrc.org/eclipse/pti/
+
+  * Get last version of PHP Checkstyle.
+  * In Eclipse, configure a new validator :
+   * Preferences->Dynamic Languages->Validators
+   * Click "Add..."
+   * Select the "External PHP Script" type
+   * Set the Path to the PHP Checkstyle "run.php" file.
+   * Configure the PHP Executable to match your environment.
+  * Add some arguments to the executable
+{{{
+--src %f --config "default.cfg.xml" --format console
+}}}
+  * Add some pattern rules to read the result:
+   * %f INFO Line:%n - %m Warning
+   * %f WARNING Line:%n - %m Warning
+   * %f ERROR Line:%n - %m Error
+
+And it should be OK, on your PHP Editor, right click, select "DLTK Validators" and the script should run.

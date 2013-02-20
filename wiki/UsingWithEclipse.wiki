@@ -20,8 +20,8 @@ Eclipse Update URL : http://www.phpsrc.org/eclipse/pti/
 --src %f --config "default.cfg.xml" --format console
 }}}
   * Add some pattern rules to read the result:
-   * %f INFO Line:%n - %m Warning
-   * %f WARNING Line:%n - %m Warning
-   * %f ERROR Line:%n - %m Error
+   * %f info Line:%n - %m Warning
+   * %f warning Line:%n - %m Warning
+   * %f error Line:%n - %m Error
 
 And it should be OK, on your PHP Editor, right click, select "DLTK Validators" and the script should run.

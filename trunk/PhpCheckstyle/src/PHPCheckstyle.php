@@ -124,27 +124,27 @@ class PHPCheckstyle {
 
 	/**
 	 * These functions are not allowed.
-	 */
+	*/
 	private $_prohibitedFunctions = array();
 
 	/**
 	 * These tokens are not allowed.
-	 */
+	*/
 	private $_prohibitedTokens = array();
 
 	/**
 	 * These functions are deprecated.
-	 */
+	*/
 	private $_deprecatedFunctions = array();
 
 	/**
 	 * These functions are aliased.
-	 */
+	*/
 	private $_aliasedFunctions = array();
 
 	/**
 	 * System variables ($_POST, ...) are not tested for naming.
-	 */
+	*/
 	private $_systemVariables = array();
 
 
@@ -2290,8 +2290,12 @@ class PHPCheckstyle {
 	 * This function is launched when the current token is T_RETURN
 	 */
 	private function _processReturn() {
-		// Remember that the current function does return something (for PHPDoc)
-		$this->_functionReturns = true;
+		
+		// If not an empty return (no value before the semicolon)
+		if (!$this->tokenizer->checkNextValidToken(T_SEMICOLON)) {
+			// Remember that the current function does return something (for PHPDoc)
+			$this->_functionReturns = true;
+		}
 
 		// Search for unused code after the return
 		$this->_checkUnusedCode('RETURN');

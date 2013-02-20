@@ -86,14 +86,14 @@ class XmlFormatReporter extends Reporter {
 		$this->currentElement->appendChild($e);
 	}
 
-	private function _initXml() {
+	protected function _initXml() {
 		$this->document = new DomDocument("1.0");
 		$this->root = $this->document->createElement('checkstyle');
 		$this->root->setAttribute("version", "1.0.0");
 		$this->document->appendChild($this->root);
 	}
 
-	private function _startNewElement($f) {
+	protected function _startNewElement($f) {
 		$this->currentElement = $this->document->createElement("file");
 
 		// remove the "./" at the beginning ot the path in case of relative path
@@ -104,7 +104,11 @@ class XmlFormatReporter extends Reporter {
 
 	}
 
-	private function _endCurrentElement() {
+	protected function getDocument() {
+		return $this->document;
+	}
+
+	protected function _endCurrentElement() {
 		if ($this->currentElement) {
 			$this->root->appendChild($this->currentElement);
 		}

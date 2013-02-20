@@ -9,12 +9,13 @@ function usage() {
 	echo "    Options: \n";
 	echo "       --src          Root of the source directory tree or a file.\n";
 	echo "       --exclude      [Optional] A directory or file that needs to be excluded.\n";
-	echo "       --format       [Optional] Output format (html/text/console/html_console). Defaults to 'html'.\n";
+	echo "       --format       [Optional] Output format (html/text/xml/xml_console/console/html_console). Defaults to 'html'.\n";
 	echo "       --outdir       [Optional] Report Directory. Defaults to './style-report'.\n";
 	echo "       --config       [Optional] The name of the config file'.\n";
 	echo "       --debug        [Optional] Add some debug logs (warning, very verbose)'.\n";
 	echo "       --linecount    [Optional] Generate a report on the number of lines of code (JavaNCSS format)'.\n";
-	echo "       --progress  	[Optional] Prints a message noting the file and every line that is covered by PHPCheckStyle.\n";
+	echo "       --progress  	  [Optional] Prints a message noting the file and every line that is covered by PHPCheckStyle.\n";
+	echo "       --quiet  	    [Optional] Quiet mode.\n";
 	echo "       --help         Display this usage information.\n";
 	exit;
 }
@@ -27,6 +28,7 @@ $options['outdir'] = "./style-report"; // default ouput directory
 $options['config'] = "default.cfg.xml";
 $options['debug'] = false;
 $options['progress'] = false;
+$options['quiet'] = false;
 $lineCountFile = null;
 
 // loop through user input
@@ -60,12 +62,16 @@ for ($i = 1; $i < $_SERVER["argc"]; $i++) {
 		case "--debug":
 			$options['debug'] = true;
 			break;
-
 		case "--linecount":
 			$options['linecount'] = true;
 			break;
+
 		case "--progress":
 			$options['progress'] = true;
+			break;
+
+		case "--quiet":
+			$options['quiet'] = true;
 			break;
 
 		case "--help":
@@ -83,13 +89,11 @@ require_once PHPCHECKSTYLE_HOME_DIR."/src/PHPCheckstyle.php";
 // check for valid format and set the output file name
 // right now the output file name is not configurable, only
 // the output directory is configurable (from command line)
+$knownFormats = array('html', 'html_console', 'console', 'text', 'xml','xml_console');
 $formats = explode(',', $options['format']);
-if (!(in_array("html", $formats) ||
-	in_array("html_console", $formats) ||
-	in_array("xml", $formats) ||
-	in_array("text", $formats) ||
-	in_array("console", $formats))) {
-	echo "\nUnknown format.\n\n";
+$unknownFormats = array_diff($formats, $knownFormats);
+if (!empty($unknownFormats)) {
+	echo sprintf("\nUnknown format %s.\n\n", implode(', ', $unknownFormats));
 	usage();
 }
 
@@ -106,4 +110,8 @@ if (!empty($options['linecount'])) {
 $style = new PHPCheckstyle($formats, $options['outdir'], $options['config'], $lineCountFile, $options['debug'], $options['progress']);
 $style->processFiles($options['src'], $options['exclude']);
 
-echo "\nReporting Completed.\n";
+if (!$options['quiet']) {
+	echo "\nReporting Completed.\n";
+}
+
+exit(0);

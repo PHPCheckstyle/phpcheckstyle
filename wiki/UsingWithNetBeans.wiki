@@ -8,13 +8,13 @@ Use NetBeans plugin manager to install the plugin.
 
 == Configure the plugin ==
 
-* The "php cli file" should be already detected, if not set the path to your php installation file.
+The "php cli file" should be already detected, if not set the path to your php installation file.
 
-* Set the "PHPCheckstyle run file" value to the "run.php" file in your PHPCheckstyle installation directory.
+Set the "PHPCheckstyle run file" value to the "run.php" file in your PHPCheckstyle installation directory.
 
-* Set the "config" valeu to the name of the configuration file used.
+Set the "config" value to the name of the configuration file used.
 
-http://phpcheckstyle.googlecode.com/svn/wiki/netbeans_plugin_config.PNG
+http://phpcheckstyle.googlecode.com/svn/wiki/images/netbeans_plugin_config.PNG
 
 
 You should them be able to use the "check style" contextual menu on any PHP file.

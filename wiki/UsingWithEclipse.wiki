@@ -1,3 +1,4 @@
+#labels Featured
 = Using PHPCheckstyle with Eclipse =
 
 Eclipse is already able to do some checks and to reformat your code (CTRL + SHIFT + F) with [http://www.eclipse.org/pdt/ PDT].

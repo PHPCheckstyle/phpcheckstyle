@@ -9,6 +9,11 @@ It is also possible to add some extenal tools like PHPCodeSniffer or PHPChecksty
 Eclipse Update URL : http://www.phpsrc.org/eclipse/pti/
 
   * Get last version of PHP Checkstyle.
+
+  * If needed configure the PHP executable path in Eclipse.
+
+http://phpcheckstyle.googlecode.com/svn/wiki/images/eclipse_php_executable.PNG
+
   * In Eclipse, configure a new validator :
    * Preferences->Dynamic Languages->Validators
    * Click "Add..."
@@ -24,4 +29,8 @@ Eclipse Update URL : http://www.phpsrc.org/eclipse/pti/
    * %f warning Line:%n - %m Warning
    * %f error Line:%n - %m Error
 
+http://phpcheckstyle.googlecode.com/svn/wiki/images/eclipse_validator_config.PNG
+
 And it should be OK, on your PHP Editor, right click, select "DLTK Validators" and the script should run.
+
+http://phpcheckstyle.googlecode.com/svn/wiki/images/eclipse_menu.PNG

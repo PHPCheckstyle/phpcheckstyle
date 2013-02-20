@@ -14,6 +14,7 @@ require_once PHPCHECKSTYLE_HOME_DIR."/src/VariableInfo.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporters.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/PlainFormatReporter.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/XmlFormatReporter.php";
+require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/XmlConsoleFormatReporter.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/HTMLConsoleFormatReporter.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/HTMLFormatReporter.php";
 require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/ConsoleReporter.php";
@@ -41,7 +42,7 @@ class PHPCheckstyle {
 	 * @var StatementStack
 	 */
 	private $statementStack = null;
-	
+
 	/**
 	 * Debug flag.
 	 * @var Boolean
@@ -135,7 +136,7 @@ class PHPCheckstyle {
 	 * These functions are deprecated.
 	 */
 	private $_deprecatedFunctions = array();
-	
+
 	/**
 	 * These functions are aliased.
 	 */
@@ -198,7 +199,7 @@ class PHPCheckstyle {
 
 		// Initialise the statement stack
 		$this->statementStack = new StatementStack();
-		
+
 		$this->debug = $debug;
 
 		// Initialise the Reporters
@@ -214,6 +215,9 @@ class PHPCheckstyle {
 		}
 		if (in_array("xml", $formats)) {
 			$this->_reporter->addReporter(new XmlFormatReporter($outDir));
+		}
+		if (in_array("xml_console", $formats)) {
+			$this->_reporter->addReporter(new XmlConsoleFormatReporter());
 		}
 		if (in_array("console", $formats)) {
 			$this->_reporter->addReporter(new ConsoleReporter());
@@ -906,7 +910,7 @@ class PHPCheckstyle {
 
 	/**
 	 * Launched when a minus sign is encoutered.
-	 * 
+	 *
 	 * @param TokenInfo $token the current token
 	 */
 	private function _processMinus($token) {
@@ -923,7 +927,7 @@ class PHPCheckstyle {
 
 	/**
 	 * Launched when a semicolon is encoutered.
-	 * 
+	 *
 	 * @param TokenInfo $token the current token
 	 */
 	private function _processSemiColon($token) {
@@ -941,7 +945,7 @@ class PHPCheckstyle {
 
 	/**
 	 * Launched when an opening brace is encoutered.
-	 * 
+	 *
 	 * @param TokenInfo $token the current token
 	 */
 	private function _processBracesOpen($token) {
@@ -990,7 +994,7 @@ class PHPCheckstyle {
 
 	/**
 	 * Launched when an closing brace is encoutered.
-	 * 
+	 *
 	 * @param TokenInfo $token the current token
 	 */
 	private function _processBracesClose($token) {
@@ -1064,7 +1068,7 @@ class PHPCheckstyle {
 	/**
 	 * Checks to see if the constant follows the naming convention.
 	 *
-	 * @param String $text the string containing the constant. 
+	 * @param String $text the string containing the constant.
 	 */
 	private function _checkConstantNaming($text) {
 		if ($this->_isActive('constantNaming')) {
@@ -1101,7 +1105,7 @@ class PHPCheckstyle {
 	 * Utility function to check the naming of a variable
 	 * given its scope rule and message.
 	 *
-	 * @param String $text the string containing the variable. 
+	 * @param String $text the string containing the variable.
 	 * @param String $ruleName the rule for the scope of the variable.
 	 * @param String $msgName the message associated with the rule.
 	 */
@@ -1765,19 +1769,19 @@ class PHPCheckstyle {
 		// The parameters having a default value should be in last position.
 		$foundDefaultValues = false;
 		$functionTokenPosition = $this->tokenizer->getCurrentPosition();
-				
+
 		$functionParamsStart = $this->tokenizer->findNextStringPosition('(', $functionTokenPosition);
 		$functionParamsStop = $this->tokenizer->findClosingParenthesisPosition($functionTokenPosition);
-		
+
 		for ($i = $functionParamsStart; $i < $functionParamsStop; $i++) {
 			$functionToken = $this->tokenizer->peekTokenAt($i);
-			
+
 			// Current token is a parameter
 			if ($this->tokenizer->checkToken($functionToken, T_VARIABLE)) {
 				$this->_nbFunctionParameters++;
 				$parameterName = $functionToken->text;
 				$this->_functionParameters[$parameterName] = "unused"; // We flag the parameter as unused
-				
+
 				// Check is this parameter as a default value
 				$nextTokenInfo = $this->tokenizer->peekNextValidToken($i + 1);
 				$hasDefaultValue = $this->tokenizer->checkToken($nextTokenInfo, T_EQUAL);
@@ -1818,7 +1822,7 @@ class PHPCheckstyle {
 	/**
 	 * Process the end of a switch block.
 	 */
-	private function _processSwitchStop() {		
+	private function _processSwitchStop() {
 		$this->_inSwitch = false;
 		$this->_checkSwitchNeedDefault();
 	}
@@ -1829,7 +1833,7 @@ class PHPCheckstyle {
 	 * This function is launched at the end of switch/case.
 	 */
 	private function _checkSwitchNeedDefault() {
-		
+
 		if ($this->_isActive('switchNeedDefault')) {
 			if (!$this->statementStack->getCurrentStackItem()->switchHasDefault) {
 				// Direct call to reporter to include a custom line number.
@@ -2128,7 +2132,7 @@ class PHPCheckstyle {
 	private function _checkUnusedVariables() {
 
 		if ($this->_isActive('checkUnusedVariables')) {
-						
+
 			foreach ($this->_variables as $variable) {
 
 				if ((!$variable->isUsed) && !($this->_isClass || $this->_isView)) {
@@ -2196,7 +2200,7 @@ class PHPCheckstyle {
 	 * @param String $text The variable name
 	 */
 	private function _processVariable($text) {
-		
+
 		// Check the variable naming
 		if (!in_array($text, $this->_systemVariables)) {
 			$this->_checkVariableNaming($text);
@@ -2254,9 +2258,9 @@ class PHPCheckstyle {
 
 				// Manage the case of $this->attribute
 				if ($text == '$this') {
-					
+
 					$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
-					
+
 					if ($this->tokenizer->checkToken($nextTokenInfo2, T_OBJECT_OPERATOR)) {
 
 						$nextTokenInfo3 = $this->tokenizer->peekNextValidToken($nextTokenInfo2->position + 1);
@@ -2495,7 +2499,7 @@ class PHPCheckstyle {
 
 				$isNull = ($currentToken == null);
 				$isNewLine = !$isNull && $this->tokenizer->checkToken($currentToken, T_NEW_LINE);
-				
+
 			} while (!($isNull || $isNewLine));
 
 			$lineLength = strlen($lineString);
@@ -2514,7 +2518,7 @@ class PHPCheckstyle {
 
 	/**
 	 * Checks for presence of tab in the whitespace character string.
-	 * 
+	 *
 	 * Launched when T_WHITESPACE or T_TAB is met at the begining of a line.
 	 *
 	 * @param String $whitespaceString the whitespace string used for indentation
@@ -2550,7 +2554,7 @@ class PHPCheckstyle {
 
 	/**
 	 * Check the indentation level.
-	 * 
+	 *
 	 * Launched when T_WHITESPACE is met at the begining of a line.
 	 *
 	 * @param String $whitespaceString the whitespace string used for indentation
@@ -2574,7 +2578,7 @@ class PHPCheckstyle {
 
 			// Nesting level is the number of items in the branching stack
 			$nesting = $this->statementStack->count();
-			
+
 			// But we must anticipate if the current line change the level
 			if ($this->tokenizer->checkNextValidToken(T_BRACES_CLOSE)) {
 				$nesting--;

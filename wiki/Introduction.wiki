@@ -20,6 +20,8 @@ This project was originally written by Hari Kodungallur. Other contributors are:
   * Justin Creasey
   * Adam King
   * Stéphane Roger 
+  * Jens Radtke
+
 
 == Details ==
 

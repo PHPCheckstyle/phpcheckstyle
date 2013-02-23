@@ -1,4 +1,4 @@
-= Using PHPCheckstyle with NetBeans (TO BE TESTED) =
+= Using PHPCheckstyle with NetBeans =
 
 Use the [https://sourceforge.net/projects/phpmdnb/ phpMD / PHP CodeSniffer Netbeans Plugin] (see https://sourceforge.net/projects/phpmdnb/).
 

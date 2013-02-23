@@ -2,6 +2,8 @@
 <?php
 /**
  *  CLI file to run the PHPCheckstyle
+ *  
+ *  @version 1.12.0
  */
 function usage() {
 	echo "Usage: ".$_SERVER['argv'][0]." <options>\n";

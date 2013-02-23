@@ -1,6 +1,11 @@
 #summary Project History
 #labels Featured
 
+== Version 0.12.0 ==
+  * New reporter : xml_console (for use with Netbeans plugin : http://sourceforge.net/projects/phpmdnb/), thanks to Jens Radtke
+  * Issue 47 : False docBlock error when using empty return in a method
+  * Added the version number in the run.php file
+
 == Version 0.11.0 ==
   * Issue 1 : Refactoring of the code
   * Issue 43:	False positive for "The function throws an exception"

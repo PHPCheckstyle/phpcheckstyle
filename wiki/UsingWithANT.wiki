@@ -1,0 +1,66 @@
+To run PHPCheckstyle with ANT we need to launch a PHP cli.
+
+This can be done using the "exec" task of ANT.
+
+Sample ANT file :
+{{{
+<project name="PHPCheckstyle" default="phpcheckstyle" basedir=".">
+
+	<description>
+            Static Analysis tool for PHP.
+    </description>
+
+
+<!-- Test the environment -->
+	<target name="targetCheck">
+		<condition property="isUnix">
+			<and>
+				<os family="unix" />
+			</and>
+		</condition>
+		<condition property="isWindows">
+			<and>
+				<os family="windows" />
+			</and>
+		</condition>
+	</target>
+
+<!-- Launch PHP CheckStyle on Windows -->
+	<target name="_phpcheckstylewindows" depends="targetCheck" if="isWindows">
+		<echo>Windows</echo>
+		<exec executable="./phpcheckstyle.cmd" dir=".">
+		</exec>
+	</target>
+
+	<!-- Launch PHP CheckStyle on Unix -->
+	<target name="_phpcheckstyleunix" depends="targetCheck" if="isUnix">
+		<echo>Unix</echo>
+		<chmod file="./phpcheckstyle.sh" perm="ugo+rx" />
+		<exec executable="./phpcheckstyle.sh" dir=".">
+		</exec>
+	</target>
+
+	<!-- Launch PHP CheckStyle-->
+	<target name="phpcheckstyle" description="Launch PHP CheckStyle" depends="_phpcheckstylewindows, _phpcheckstyleunix">
+	</target>
+
+</project>
+
+}}}
+
+
+The script files can look like this :
+
+phpcheckstyle.cmd
+{{{
+echo "PHP Checkstyle script"
+php run.php --src ./test --outdir ./checkstyle_result --config default.cfg.xml --format html,xml --linecount
+pause
+}}}
+
+phpcheckstyle.sh
+{{{
+#!/bin/sh
+echo "PHP CheckStyle script"
+php run.php --src ./test --outdir ./checkstyle_result --config default.cfg.xml --format html,xml --linecount
+}}}

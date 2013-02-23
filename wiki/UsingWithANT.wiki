@@ -1,3 +1,4 @@
+#labels Featured
 To run PHPCheckstyle with ANT we need to launch a PHP cli.
 
 This can be done using the "exec" task of ANT.

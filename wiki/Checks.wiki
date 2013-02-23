@@ -1,4 +1,5 @@
 #summary PHPCheckstyle list of available check rules
+#labels Featured
 
 The configuration file used by default is config/default.xml. 
 

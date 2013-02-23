@@ -81,7 +81,7 @@ See [UsingWithNetBeans Using PHPCheckstyle with NetBeans].
 
 = Using PHPCheckstyle with Hudson / Jenkins =
 
-See [UsingWitJenKins Using PHPCheckstyle with Hudson / Jenkins].
+See [UsingWithJenkins Using PHPCheckstyle with Hudson / Jenkins].
 
 = Using PHPCheckstyle as a web interface =
 

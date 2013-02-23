@@ -19,7 +19,7 @@
 	</p>
 	
 	<p>Configuration file
-	<input type="test" id="configFile" name ="configFile" value="./config/default.cfg.xml"></input>
+	<input type="test" id="configFile" name ="configFile" value="default.cfg.xml"></input>
 	</p>
 	
 	<input type="submit" value="Run"></input>

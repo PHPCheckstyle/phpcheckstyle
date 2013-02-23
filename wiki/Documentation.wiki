@@ -67,6 +67,10 @@ Execute the run.php script without any options or with the --help option to see 
   * --debug: Generates some debug information about the code analysed (it shows the tokens found, this is very verbose).
   * --linecount: Generates a new XML file in the JavaNCSS format that will contain informations about the number of classes, functions, lines of code and lines of comment of the analysed project.
 
+= Using PHPCheckstyle with ANT =
+
+See [UsingWithANT Using PHPCheckstyle with ANT].
+
 = Using PHPCheckstyle with Eclipse =
 
 See [UsingWithEclipse Using PHPCheckstyle with Eclipse].

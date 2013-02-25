@@ -8,4 +8,14 @@ See [UsingWithANT Using with ANT].
 
 The script must generate a XML result file using the {{{ --format xml }}} flag.
 
-Then, you configure Jenkins with the violation plugin to read the generated xml file using the "checkstyle" type.
+Then, you configure Jenkins to launch this ANT file with the phpcheckstyle target.
+
+http://phpcheckstyle.googlecode.com/svn/wiki/images/checkstyle_jenkins_config_1.PNG
+
+You also configure the violation plugin to read the generated xml file using the "checkstyle" type.
+
+http://phpcheckstyle.googlecode.com/svn/wiki/images/checkstyle_jenkins_config_2.PNG
+
+And you should see the result in the project.
+
+http://phpcheckstyle.googlecode.com/svn/wiki/images/checkstyle_jenkins_result.PNG

@@ -70,6 +70,7 @@ class HTMLFormatReporter extends Reporter {
 		
 		// Copy the CSS file
 		copy(PHPCHECKSTYLE_HOME_DIR."/html/css/global.css", $this->ofolder."/global.css");
+		copy(PHPCHECKSTYLE_HOME_DIR."/html/images/Logo_phpcheckstyle.png", $this->ofolder."/Logo_phpcheckstyle.png");
 	}
 
 	/**

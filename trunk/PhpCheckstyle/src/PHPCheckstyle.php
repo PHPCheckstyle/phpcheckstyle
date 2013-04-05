@@ -486,7 +486,7 @@ class PHPCheckstyle {
 			// Source is a file
 			$isExcluded = false;
 			foreach ($excludes as $patternExcluded) {				
-				if (stristr($src, $patternExcluded)) {
+				if (strstr($src, $patternExcluded)) {
 					$isExcluded = true;
 				}
 			}
@@ -513,7 +513,7 @@ class PHPCheckstyle {
 					$isExcluded = false;
 					foreach ($excludes as $patternExcluded) {
 						
-						if (stristr($fullPath, $patternExcluded)) {
+						if (strstr($fullPath, $patternExcluded)) {
 							$isExcluded = true;
 						}
 					}

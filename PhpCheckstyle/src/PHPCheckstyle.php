@@ -479,14 +479,14 @@ class PHPCheckstyle {
 	 * @return Array[String] an array of php files
 	 */
 	private function _getAllPhpFiles($src, $excludes, $dir = '') {
-
+		
 		$files = array();
 		if (!is_dir($src)) {
-
+			
 			// Source is a file
 			$isExcluded = false;
-			foreach ($excludes as $patternExcluded) {
-				if (strstr($src, $patternExcluded)) {
+			foreach ($excludes as $patternExcluded) {				
+				if (stristr($src, $patternExcluded)) {
 					$isExcluded = true;
 				}
 			}
@@ -512,7 +512,8 @@ class PHPCheckstyle {
 					$relPath = substr($fullPath, strlen($src) - strlen($dir) + 1);
 					$isExcluded = false;
 					foreach ($excludes as $patternExcluded) {
-						if (strstr($relPath, $patternExcluded)) {
+						
+						if (stristr($fullPath, $patternExcluded)) {
 							$isExcluded = true;
 						}
 					}

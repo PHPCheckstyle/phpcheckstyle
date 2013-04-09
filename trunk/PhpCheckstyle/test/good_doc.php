@@ -13,13 +13,30 @@ class GoodTest {
 	 * @param Boolean $c a flag
 	 * @return String a result
 	 */
-	function privateFunction($a, array $b = array(), $c = false) { // should have a underscore
+	function privateFunction($a, array $b = array(), $c = false) { 
 
 		if ($c > $a) {
 			return $a + $b;
 		} else {
 			return $a;
 		}
+	}
+	
+	/**
+	 * Correctly documented function 2.
+	 * 
+	 * The "return" should not count.
+	 *
+	 * @param String $a a string
+	 * @param array $b an array
+	 */
+	function privateFunction2($a, array $b = array()) { 
+	
+		if ($b > $a) {
+			return;
+		} 
+		
+		// do something else
 	}
 
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is an exemple of PHP fiel with all variables used.
+ * This file is an exemple of PHP file with all variables used.
  * Test a false positive.
  */
 class Used {
@@ -10,7 +10,7 @@ class Used {
 	 * @var Integer
 	 */
 	var $toto = null;
-
+	
 	/**
 	 * @return String
 	 */
@@ -24,3 +24,13 @@ class Used {
 	}
 
 }
+
+
+$view = "test";
+?>
+
+Some HTML
+
+<?=$view;?>
+
+<?php 

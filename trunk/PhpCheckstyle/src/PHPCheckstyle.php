@@ -479,13 +479,13 @@ class PHPCheckstyle {
 	 * @return Array[String] an array of php files
 	 */
 	private function _getAllPhpFiles($src, $excludes, $dir = '') {
-		
+
 		$files = array();
 		if (!is_dir($src)) {
-			
+				
 			// Source is a file
 			$isExcluded = false;
-			foreach ($excludes as $patternExcluded) {				
+			foreach ($excludes as $patternExcluded) {
 				if (strstr($src, $patternExcluded)) {
 					$isExcluded = true;
 				}
@@ -512,7 +512,7 @@ class PHPCheckstyle {
 					$relPath = substr($fullPath, strlen($src) - strlen($dir) + 1);
 					$isExcluded = false;
 					foreach ($excludes as $patternExcluded) {
-						
+
 						if (strstr($fullPath, $patternExcluded)) {
 							$isExcluded = true;
 						}
@@ -671,13 +671,15 @@ class PHPCheckstyle {
 			case T_COLON:
 			case T_MODULO:
 			case T_CONCAT:
-				$this->_checkSurroundingWhiteSpace($token->text);
+				$this->_checkWhiteSpaceBefore($token->text);
+				$this->_checkWhiteSpaceAfter($token->text);
 				break;
 
 			case T_IS_EQUAL:
 			case T_IS_NOT_EQUAL:
 				$this->_checkStrictCompare($token->text);
-				$this->_checkSurroundingWhiteSpace($token->text);
+				$this->_checkWhiteSpaceBefore($token->text);
+				$this->_checkWhiteSpaceAfter($token->text);
 				break;
 
 			case T_LOGICAL_AND:
@@ -685,7 +687,8 @@ class PHPCheckstyle {
 				if ($this->_isActive('useBooleanOperators')) {
 					$this->_writeError('useBooleanOperators', PHPCHECKSTYLE_USE_BOOLEAN_OPERATORS);
 				}
-				$this->_checkSurroundingWhiteSpace($token->text);
+				$this->_checkWhiteSpaceBefore($token->text);
+				$this->_checkWhiteSpaceAfter($token->text);
 				break;
 
 				// ASSUMPTION:
@@ -769,7 +772,8 @@ class PHPCheckstyle {
 				break;
 
 			case T_DOUBLE_ARROW:
-				$this->_checkSurroundingWhiteSpace($token->text);
+				$this->_checkWhiteSpaceBefore($token->text);
+				$this->_checkWhiteSpaceAfter($token->text);
 				break;
 
 			case T_OBJECT_OPERATOR:
@@ -819,7 +823,11 @@ class PHPCheckstyle {
 
 			case T_EQUAL:
 				$this->_checkInnerAssignment();
-				$this->_checkSurroundingWhiteSpace($token->text);
+				$this->_checkWhiteSpaceBefore($token->text);
+				// whitespace after (exept for Assign By Reference)
+				if (!$this->tokenizer->checkNextToken(T_AMPERSAND)) {
+					$this->_checkWhiteSpaceAfter($token->text);
+				}				
 				break;
 
 			case T_COMMA:
@@ -2291,7 +2299,7 @@ class PHPCheckstyle {
 	 * This function is launched when the current token is T_RETURN
 	 */
 	private function _processReturn() {
-		
+
 		// If not an empty return (no value before the semicolon)
 		if (!$this->tokenizer->checkNextValidToken(T_SEMICOLON)) {
 			// Remember that the current function does return something (for PHPDoc)
@@ -2361,17 +2369,6 @@ class PHPCheckstyle {
 		if ($this->_isActive('checkHeredoc')) {
 			$this->_writeError('checkHeredoc', PHPCHECKSTYLE_HEREDOC);
 		}
-	}
-
-	/**
-	 * Check for the presence of a white space before and after the text.
-	 *
-	 * @param String $text The text of the token to test
-	 */
-	private function _checkSurroundingWhiteSpace($text) {
-
-		$this->_checkWhiteSpaceBefore($text);
-		$this->_checkWhiteSpaceAfter($text);
 	}
 
 	/**

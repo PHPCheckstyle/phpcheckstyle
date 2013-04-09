@@ -2248,8 +2248,10 @@ class PHPCheckstyle {
 			$isSearchResult = false;
 			if ($this->_isActive('strictCompare')) {
 				$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position + 1);
-				$nextTokenText2 = $nextTokenInfo2->text;
-				$isSearchResult = in_array($nextTokenText2, $this->_config->getTestItems('strictCompare'));
+				if ($nextTokenInfo2 != null) {
+					$nextTokenText2 = $nextTokenInfo2->text;
+					$isSearchResult = in_array($nextTokenText2, $this->_config->getTestItems('strictCompare'));
+				}
 			}
 
 			// Check if the variable has already been met

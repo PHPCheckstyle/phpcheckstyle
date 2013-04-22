@@ -1,6 +1,10 @@
 #summary Project History
 #labels Featured
 
+== Version 0.12.1 == 
+  * Issue 50 : --exclude flag is not honoured
+  * No space expected after '=' when used in assignation by reference
+
 == Version 0.12.0 ==
   * New reporter : xml_console (for use with Netbeans plugin : http://sourceforge.net/projects/phpmdnb/), thanks to Jens Radtke
   * Issue 47 : False docBlock error when using empty return in a method

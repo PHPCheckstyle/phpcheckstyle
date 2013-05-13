@@ -51,7 +51,7 @@ class HTMLFormatReporter extends Reporter {
 		// Write the summary
 		$summaryTmpl = $this->_readTemplate("summary");
 		$values = array();
-		$values['%%nb_files%%'] = $this->nbfiles;
+		$values['%%nb_files%%'] = $this->nbfiles - 1;
 		$values['%%nb_files_error%%'] = $this->nbfilesError;
 		$values['%%nb_total_errors%%'] = $this->nbErrors;
 		$this->writeFragment($this->_fillTemplate($summaryTmpl, $values));

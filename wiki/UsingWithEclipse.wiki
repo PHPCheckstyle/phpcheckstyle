@@ -11,7 +11,7 @@ Eclipse Update URL : http://www.phpsrc.org/eclipse/pti/
 
   * Get last version of PHP Checkstyle.
 
-  * If needed configure the PHP executable path in Eclipse.
+  * If needed configure the PHP executable path in Eclipse (Preferences->PHP->PHP Executables).
 
 http://phpcheckstyle.googlecode.com/svn/wiki/images/eclipse_php_executable.PNG
 

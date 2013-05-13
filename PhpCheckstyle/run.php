@@ -91,7 +91,7 @@ require_once PHPCHECKSTYLE_HOME_DIR."/src/PHPCheckstyle.php";
 // check for valid format and set the output file name
 // right now the output file name is not configurable, only
 // the output directory is configurable (from command line)
-$knownFormats = array('html', 'html_console', 'console', 'text', 'xml','xml_console');
+$knownFormats = array('html', 'html_console', 'console', 'text', 'xml', 'xml_console');
 $formats = explode(',', $options['format']);
 $unknownFormats = array_diff($formats, $knownFormats);
 if (!empty($unknownFormats)) {

@@ -11,15 +11,15 @@
 	<form name="myform" action="runFromWeb.php" method="POST">
 	
 	<p>File(s) to analyse
-	<input type="test" id="sourceDir" name="sourceDir" value="./test"></input>
+	<input type="text" id="sourceDir" name="sourceDir" value="./test"></input>
 	</p>
 	
 	<p>Destination directory
-	<input type="test" id="resultDir" name ="resultDir" value="./checkstyle_result"></input>
+	<input type="text" id="resultDir" name ="resultDir" value="./checkstyle_result"></input>
 	</p>
 	
 	<p>Configuration file
-	<input type="test" id="configFile" name ="configFile" value="default.cfg.xml"></input>
+	<input type="text" id="configFile" name ="configFile" value="default.cfg.xml"></input>
 	</p>
 	
 	<input type="submit" value="Run"></input>

@@ -29,6 +29,8 @@ The user can customize this to suit it to specific coding convention by creating
 
 To change the configuration file used, use the --config flag of the command line.
 
+*Note* : The php.ini used in CLI (Command Line Interface) may be different than the php.ini used by your web server. If the "short_open_tag" param is "Off" in the php.ini, the PHP tokenizer will not correctly return the tokens inside short tags.
+
 
 = Running PHPCheckstyle =
  * Change directory to the PHPCheckstyle installation directory.

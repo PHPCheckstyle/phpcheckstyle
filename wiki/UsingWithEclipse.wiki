@@ -5,7 +5,7 @@ Eclipse is already able to do some checks and to reformat your code (CTRL + SHIF
 
 It is also possible to add some extenal tools like PHPCodeSniffer or PHPCheckstyle to verify the code you're editing.
 
-  * First, install the Eclispe PHP Tool Integration (see http://www.phpsrc.org/wiki/)
+  * First, install the Eclispe PHP Tool Integration (see http://www.phpsrc.org/wiki/). Get the "PHP Tool Integration Core" package.
 
 Eclipse Update URL : http://www.phpsrc.org/eclipse/pti/
 

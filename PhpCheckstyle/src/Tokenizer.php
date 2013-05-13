@@ -4,6 +4,10 @@ if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
 }
 require_once PHPCHECKSTYLE_HOME_DIR."/src/TokenInfo.php";
 
+define("SHORT_OPEN_TAG", "<?");
+define("OPEN_TAG", "<?php");
+define("CLOSE_TAG", "?>");
+
 /**
  * Lexical Analysis.
  *
@@ -15,8 +19,14 @@ require_once PHPCHECKSTYLE_HOME_DIR."/src/TokenInfo.php";
  *
  * @see http://www.php.net/manual/en/tokens.php
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
- */
+*/
 class Tokenizer {
+
+	/**
+	 * Indicate if the "short_open_tag" is off.
+	 * @var Boolean
+	 */
+	private $shortOpenTagOff = false;
 
 	/**
 	 * The array of tokens in a file.
@@ -31,9 +41,29 @@ class Tokenizer {
 	private $index = 0;
 
 	/**
+	 * Number of lines in the file.
+	 * @var Integer
+	 */
+	private $lineNumber = 1;
+
+	/**
+	 * Number of tokens in the file.
+	 * @var Integer
+	 */
+	private $tokenNumber = 0;
+
+	/**
 	 * Constructor
 	 */
 	public function Tokenizer() {
+
+		// Detect the php.ini settings
+		$this->shortOpenTagOff = (ini_get('short_open_tag') == false);
+
+		if ($this->shortOpenTagOff) {
+			echo "Warning : The short_open_tag value of your php.ini setting is off, you may want to activate it for correct code analysis";
+		}
+
 		$this->reset();
 	}
 
@@ -44,6 +74,8 @@ class Tokenizer {
 	 * @param String $filename the line where the token is found
 	 */
 	public function tokenize($filename) {
+
+		// Parse the file
 		$contents = "";
 		if (filesize($filename)) {
 			$fp = fopen($filename, "rb");
@@ -51,6 +83,7 @@ class Tokenizer {
 			fclose($fp);
 		}
 		$this->tokens = $this->_getAllTokens($contents);
+
 	}
 
 	/**
@@ -224,6 +257,8 @@ class Tokenizer {
 	public function reset() {
 		$this->index = 0;
 		$this->tokens = array();
+		$this->tokenNumber = 0;
+		$this->lineNumber = 1;
 	}
 
 	/**
@@ -349,6 +384,122 @@ class Tokenizer {
 	}
 
 	/**
+	 * Identify the token and enventually split the new lines.
+	 *
+	 * @param String $tokenText The token text
+	 * @param Integer $tokenText The token text
+	 * @return an array of tokens
+	 */
+	private function _identifyTokens($tokenText, $tokenID) {
+
+		$newTokens = array();
+
+		// Split the data up by newlines
+		// To correctly handle T_NEW_LINE inside comments and HTML
+		$splitData = preg_split('#(\r\n|\n|\r)#', $tokenText, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+		foreach ($splitData as $data) {
+
+			$tokenInfo = new TokenInfo();
+			$tokenInfo->text = $data;
+			$tokenInfo->position = $this->tokenNumber;
+			$tokenInfo->line = $this->lineNumber;
+
+			if ($data == "\r\n" || $data == "\n" || $data == "\r") {
+				// This is a new line token
+				$tokenInfo->id = T_NEW_LINE;
+				$this->lineNumber++;
+			} else if ($data == "\t") {
+				// This is a tab token
+				$tokenInfo->id = T_TAB;
+			} else {
+				// Any other token
+				$tokenInfo->id = $tokenID;
+			}
+
+			$this->tokenNumber++;
+
+			// Added detections
+			if ($tokenInfo->id == T_UNKNOWN) {
+				switch ($tokenInfo->text) {
+					case ";" :
+						$tokenInfo->id = T_SEMICOLON;
+						break;
+					case "{":
+						$tokenInfo->id = T_BRACES_OPEN;
+						break;
+					case "}":
+						$tokenInfo->id = T_BRACES_CLOSE;
+						break;
+					case "(":
+						$tokenInfo->id = T_PARENTHESIS_OPEN;
+						break;
+					case ")":
+						$tokenInfo->id = T_PARENTHESIS_CLOSE;
+						break;
+					case ",":
+						$tokenInfo->id = T_COMMA;
+						break;
+					case "=":
+						$tokenInfo->id = T_EQUAL;
+						break;
+					case ".":
+						$tokenInfo->id = T_CONCAT;
+						break;
+					case ":" :
+						$tokenInfo->id = T_COLON;
+						break;
+					case "-" :
+						$tokenInfo->id = T_MINUS;
+						break;
+					case "+" :
+						$tokenInfo->id = T_PLUS;
+						break;
+					case ">" :
+						$tokenInfo->id = T_IS_GREATER;
+						break;
+					case "<" :
+						$tokenInfo->id = T_IS_SMALLER;
+						break;
+					case "*" :
+						$tokenInfo->id = T_MULTIPLY;
+						break;
+					case "/" :
+						$tokenInfo->id = T_DIVIDE;
+						break;
+					case "?" :
+						$tokenInfo->id = T_QUESTION_MARK;
+						break;
+					case "%" :
+						$tokenInfo->id = T_MODULO;
+						break;
+					case "!" :
+						$tokenInfo->id = T_EXCLAMATION_MARK;
+						break;
+					case "&" :
+						$tokenInfo->id = T_AMPERSAND;
+						break;
+					case "[" :
+						$tokenInfo->id = T_SQUARE_BRACKET_OPEN;
+						break;
+					case "]" :
+						$tokenInfo->id = T_SQUARE_BRACKET_CLOSE;
+						break;
+					case "@" :
+						$tokenInfo->id = T_AROBAS;
+						break;
+					default:
+				}
+			}
+
+			$newTokens[] = $tokenInfo;
+
+		}
+
+		return $newTokens;
+	}
+
+
+	/**
 	 * Tokenize a string and separate the newline token.
 	 *
 	 * Found here : http://php.net/manual/function.token-get-all.php
@@ -359,117 +510,76 @@ class Tokenizer {
 	private function _getAllTokens($source) {
 		$newTokens = array();
 
-		$lineNumber = 1;
-		$position = 0;
-
 		// Get the tokens
 		$tokens = token_get_all($source);
 
-		// Split newlines into their own tokens
+		// Check each token and transform into an Object
 		foreach ($tokens as $token) {
 
 			$tokenID = is_array($token) ? $token[0] : T_UNKNOWN;
 			$tokenText = is_array($token) ? $token[1] : $token;
 
-			// Split the data up by newlines
-			// To correctly handle T_NEW_LINE inside comments and HTML
-			$splitData = preg_split('#(\r\n|\n|\r)#', $tokenText, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-			foreach ($splitData as $data) {
 
-				$tokenInfo = new TokenInfo();
-				$tokenInfo->text = $data;
-				$tokenInfo->position = $position;
-				$tokenInfo->line = $lineNumber;
+			// Manage T_OPEN_TAG when php.ini setting short_open_tag is Off.
+			if ($this->shortOpenTagOff && $tokenID == T_INLINE_HTML) {
 
-				if ($data == "\r\n" || $data == "\n" || $data == "\r") {
-					// This is a new line token
-					$tokenInfo->id = T_NEW_LINE;
-					$lineNumber++;
-				} else if ($data == "\t") {
-					// This is a tab token
-					$tokenInfo->id = T_TAB;
-				} else {
-					// Any other token
-					$tokenInfo->id = $tokenID;
+				$startPos = strpos($tokenText, SHORT_OPEN_TAG);
+				$endPos = strpos($tokenText, CLOSE_TAG, $startPos + strlen(SHORT_OPEN_TAG));
+
+				echo "tokenText : ".$tokenText.PHP_EOL;
+				echo "startPos : ".$startPos.PHP_EOL;
+				echo "endPos : ".$endPos.PHP_EOL;
+								
+				// Extract the content of the short_open_tag
+				while (strlen($tokenText) > 2 && $startPos !== false && $endPos !== false) {
+
+					// Parse the beginning of the text
+					$beforeText = substr($tokenText, 0, $startPos);
+					$newTokens = array_merge($newTokens, $this->_identifyTokens($beforeText, $tokenID));
+
+					// The open tag
+					$open_tag = new TokenInfo();
+					$open_tag->id = T_OPEN_TAG;
+					$open_tag->text = SHORT_OPEN_TAG;
+					$this->tokenNumber + 1;
+					$open_tag->position = $this->tokenNumber;
+					$open_tag->line = $this->lineNumber;
+					$newTokens[] = $open_tag;
+
+
+					// Tokenize the content
+					$inlineText = substr($tokenText, $startPos + strlen(SHORT_OPEN_TAG), $endPos - $startPos);
+					$inlineText = substr($inlineText, 0, - strlen(CLOSE_TAG));
+
+					echo " inlineText : ##".$inlineText."##".PHP_EOL;
+
+					$inline = $this->_getAllTokens(OPEN_TAG." ".$inlineText);
+
+					array_shift($inline); // remove <?php
+					$newTokens = array_merge($newTokens, $inline);
+
+					// Add the close tag
+					$close_tag = new TokenInfo();
+					$close_tag->id = T_CLOSE_TAG;
+					$close_tag->text = CLOSE_TAG;
+					$this->tokenNumber + 1;
+					$close_tag->position = $this->tokenNumber;
+					$close_tag->line = $this->lineNumber;
+					$newTokens[] = $close_tag;
+					
+					// text = the remaining text
+					$tokenText = substr($tokenText, $endPos + strlen(SHORT_OPEN_TAG));
+						
+					$startPos = strpos($tokenText, SHORT_OPEN_TAG);
+					$endPos = strpos($tokenText, CLOSE_TAG, $startPos + strlen(SHORT_OPEN_TAG));
+
 				}
 
-				$position++;
-
-				// Added detections
-				if ($tokenInfo->id == T_UNKNOWN) {
-					switch ($tokenInfo->text) {
-						case ";" :
-							$tokenInfo->id = T_SEMICOLON;
-							break;
-						case "{":
-							$tokenInfo->id = T_BRACES_OPEN;
-							break;
-						case "}":
-							$tokenInfo->id = T_BRACES_CLOSE;
-							break;
-						case "(":
-							$tokenInfo->id = T_PARENTHESIS_OPEN;
-							break;
-						case ")":
-							$tokenInfo->id = T_PARENTHESIS_CLOSE;
-							break;
-						case ",":
-							$tokenInfo->id = T_COMMA;
-							break;
-						case "=":
-							$tokenInfo->id = T_EQUAL;
-							break;
-						case ".":
-							$tokenInfo->id = T_CONCAT;
-							break;
-						case ":" :
-							$tokenInfo->id = T_COLON;
-							break;
-						case "-" :
-							$tokenInfo->id = T_MINUS;
-							break;
-						case "+" :
-							$tokenInfo->id = T_PLUS;
-							break;
-						case ">" :
-							$tokenInfo->id = T_IS_GREATER;
-							break;
-						case "<" :
-							$tokenInfo->id = T_IS_SMALLER;
-							break;
-						case "*" :
-							$tokenInfo->id = T_MULTIPLY;
-							break;
-						case "/" :
-							$tokenInfo->id = T_DIVIDE;
-							break;
-						case "?" :
-							$tokenInfo->id = T_QUESTION_MARK;
-							break;
-						case "%" :
-							$tokenInfo->id = T_MODULO;
-							break;
-						case "!" :
-							$tokenInfo->id = T_EXCLAMATION_MARK;
-							break;
-						case "&" :
-							$tokenInfo->id = T_AMPERSAND;
-							break;
-						case "[" :
-							$tokenInfo->id = T_SQUARE_BRACKET_OPEN;
-							break;
-						case "]" :
-							$tokenInfo->id = T_SQUARE_BRACKET_CLOSE;
-							break;
-						case "@" :
-							$tokenInfo->id = T_AROBAS;
-							break;
-						default:
-					}
-				}
-
-				$newTokens[] = $tokenInfo;
 			}
+
+			// Identify the tokens
+			$newTokens = array_merge($newTokens, $this->_identifyTokens($tokenText, $tokenID));
+
 		}
 
 		return $newTokens;

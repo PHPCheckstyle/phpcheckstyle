@@ -193,7 +193,7 @@ class PHPCheckstyle {
 	 * @access public
 	 */
 	public function PHPCheckstyle($formats, $outDir, $configFile, $linecountfile = null, $debug = false, $progress = false) {
-
+	
 		// Initialise the Tokenizer
 		$this->tokenizer = new Tokenizer();
 
@@ -416,8 +416,8 @@ class PHPCheckstyle {
 		$this->tokenizer->tokenize($filename);
 
 		// Go to the first token
-		$token = $this->tokenizer->getNextToken();
-
+		$token = $this->tokenizer->getCurrentToken();
+		
 		// Run through every token of the file
 		while ($token !== false) {
 

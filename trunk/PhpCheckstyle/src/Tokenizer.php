@@ -519,16 +519,11 @@ class Tokenizer {
 			$tokenID = is_array($token) ? $token[0] : T_UNKNOWN;
 			$tokenText = is_array($token) ? $token[1] : $token;
 
-
-			// Manage T_OPEN_TAG when php.ini setting short_open_tag is Off.
+			// Manage T_OPEN_TAG when php.ini setting short_open_tag is Off.			
 			if ($this->shortOpenTagOff && $tokenID == T_INLINE_HTML) {
 
 				$startPos = strpos($tokenText, SHORT_OPEN_TAG);
 				$endPos = strpos($tokenText, CLOSE_TAG, $startPos + strlen(SHORT_OPEN_TAG));
-
-				echo "tokenText : ".$tokenText.PHP_EOL;
-				echo "startPos : ".$startPos.PHP_EOL;
-				echo "endPos : ".$endPos.PHP_EOL;
 								
 				// Extract the content of the short_open_tag
 				while (strlen($tokenText) > 2 && $startPos !== false && $endPos !== false) {
@@ -546,12 +541,9 @@ class Tokenizer {
 					$open_tag->line = $this->lineNumber;
 					$newTokens[] = $open_tag;
 
-
 					// Tokenize the content
 					$inlineText = substr($tokenText, $startPos + strlen(SHORT_OPEN_TAG), $endPos - $startPos);
 					$inlineText = substr($inlineText, 0, - strlen(CLOSE_TAG));
-
-					echo " inlineText : ##".$inlineText."##".PHP_EOL;
 
 					$inline = $this->_getAllTokens(OPEN_TAG." ".$inlineText);
 

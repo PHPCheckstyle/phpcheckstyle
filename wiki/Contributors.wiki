@@ -1,9 +1,8 @@
-This project was originally written by Hari Kodungallur and is now maintained by Benoit Pesty.
+This project was originally written by Hari Kodungallur and Nimish Pachapurkar and is now maintained by Benoit Pesty.
 
 Other contributors are:
   * Ashwin Kumar
   * Sylvain Galopin
-  * Nimish Pachapurkar
   * Joshua Kaiser
   * Charles Marion
   * Adrien Pessu

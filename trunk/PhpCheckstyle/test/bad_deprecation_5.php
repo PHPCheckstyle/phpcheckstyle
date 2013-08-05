@@ -16,7 +16,7 @@ class Deprecation {
 
 		$a = split(",", $a);  // 1 - checkDeprecation
 		
-		$a = ereg("([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})", $b)); // 2
+		$a = ereg("([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})", $b); // 2
 		
 		session_register("barney"); // 3
 		

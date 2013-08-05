@@ -6,8 +6,3 @@
 Spike PHPCheckstyle is an open-source tool that helps PHP programmers adhere to certain coding conventions. The tools checks the input PHP source code and reports any deviations from the coding convention.
 
 Intended audience for this tool is PHP developers.
-
-
-== Details ==
-
-PHPCheckstyle works on PHP 5.0 and newer. For more information, see the [Documentation].

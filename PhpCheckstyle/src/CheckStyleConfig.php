@@ -3,6 +3,13 @@ if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
 	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__)."/..");
 }
 
+
+
+define("SAME_LINE", "sl");
+
+define("NEW_LINE", "nl");
+
+
 /**
  * Loads the test configuration.
  *

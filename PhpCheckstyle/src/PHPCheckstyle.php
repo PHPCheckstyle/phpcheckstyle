@@ -963,7 +963,7 @@ class PHPCheckstyle {
 		// or a function or class definition.
 
 		// Check we have a white space before a curly opening in case of a "same line" indentation
-		if ($this->_config->getTestProperty('funcDefinitionOpenCurly', 'position') == "sl") {
+		if ($this->_config->getTestProperty('funcDefinitionOpenCurly', 'position') == SAME_LINE) {
 			$this->_checkWhiteSpaceBefore($token->text);
 		}
 		$stackitem = new StatementItem();
@@ -1371,14 +1371,22 @@ class PHPCheckstyle {
 		if ($token->id == T_ELSE || $token->id == T_ELSEIF) {
 			$position = $this->_config->getTestProperty('controlStructElse', 'position');
 			$previousToken = $this->tokenizer->peekPrvsValidToken();
-			if (($position == 'sl') && ($previousToken->line != $token->line)) {
-				$msg = sprintf(PHPCHECKSTYLE_CS_STMT_ALIGNED_WITH_CURLY, $csText);
-				$this->_writeError('controlStructElse', $msg);
-			}
-			if (($position == 'nl') && ($previousToken->line == $token->line)) {
-				$msg = sprintf(PHPCHECKSTYLE_CS_STMT_ON_NEW_LINE, $csText);
-				$this->_writeError('controlStructElse', $msg);
-			}
+			if ($previousToken->id  == T_BRACES_CLOSE) {  
+				if (($position == SAME_LINE) && ($previousToken->line != $token->line)) {
+					$msg = sprintf(PHPCHECKSTYLE_CS_STMT_ALIGNED_WITH_CURLY, $csText);
+					$this->_writeError('controlStructElse', $msg);
+				}
+				if (($position == NEW_LINE) && ($previousToken->line == $token->line)) {
+					$msg = sprintf(PHPCHECKSTYLE_CS_STMT_ON_NEW_LINE, $csText);
+					$this->_writeError('controlStructElse', $msg);
+				}
+ 			}
+		}
+		
+		// The checkNeedBraces rule is usually launched after a closing parenthesis 
+		// In the case of the "else", we need to launch it now
+		if ($token->id == T_ELSE) {
+			$this->_checkNeedBraces();
 		}
 
 		// By default we consider that the statement block will start after the next '{'
@@ -1425,7 +1433,7 @@ class PHPCheckstyle {
 			$currentToken = $this->tokenizer->getCurrentToken();
 			$previousToken = $this->tokenizer->peekPrvsValidToken();
 
-			if ($pos == "nl") {
+			if ($pos == NEW_LINE) {
 				// We expect the next token after the curly to be on a new line
 				$isPosOk = ($previousToken->line < $currentToken->line);
 			} else {
@@ -1434,7 +1442,7 @@ class PHPCheckstyle {
 			}
 
 			if (!$isPosOk) {
-				$tmp = ($pos == "sl") ? "the previous line." : "a new line.";
+				$tmp = ($pos == SAME_LINE) ? "the previous line." : "a new line.";
 				$msg = sprintf(PHPCHECKSTYLE_LEFT_CURLY_POS, $tmp);
 				$this->_writeError('controlStructOpenCurly', $msg);
 			}
@@ -1458,7 +1466,7 @@ class PHPCheckstyle {
 			$currentToken = $this->tokenizer->getCurrentToken();
 			$previousToken = $this->tokenizer->peekPrvsValidToken();
 
-			if ($pos == "nl") {
+			if ($pos == NEW_LINE) {
 				// The previous token should be on the previous line
 				$isPosOk = ($previousToken->line < $currentToken->line);
 			} else {
@@ -1467,7 +1475,7 @@ class PHPCheckstyle {
 			}
 
 			if (!$isPosOk) {
-				$tmp = ($pos == "sl") ? "the previous line." : "a new line.";
+				$tmp = ($pos == SAME_LINE) ? "the previous line." : "a new line.";
 				$msg = sprintf(PHPCHECKSTYLE_LEFT_CURLY_POS, $tmp);
 				$this->_writeError('interfaceOpenCurly', $msg);
 			}
@@ -1496,7 +1504,7 @@ class PHPCheckstyle {
 			$currentToken = $this->tokenizer->getCurrentToken();
 			$previousToken = $this->tokenizer->peekPrvsValidToken();
 
-			if ($pos == "nl") {
+			if ($pos == NEW_LINE) {
 				// The previous token should be on the previous line
 				$isPosOk = ($previousToken->line < $currentToken->line);
 			} else {
@@ -1505,7 +1513,7 @@ class PHPCheckstyle {
 			}
 
 			if (!$isPosOk) {
-				$tmp = ($pos == "sl") ? "the previous line." : "a new line.";
+				$tmp = ($pos == SAME_LINE) ? "the previous line." : "a new line.";
 				$msg = sprintf(PHPCHECKSTYLE_LEFT_CURLY_POS, $tmp);
 				$this->_writeError('classOpenCurly', $msg);
 			}
@@ -1541,7 +1549,7 @@ class PHPCheckstyle {
 			$currentToken = $this->tokenizer->getCurrentToken();
 			$previousToken = $this->tokenizer->peekPrvsValidToken();
 
-			if ($pos == "nl") {
+			if ($pos == NEW_LINE) {
 				// The previous token should be on the previous line
 				$isPosOk = ($previousToken->line < $currentToken->line);
 			} else {
@@ -1550,7 +1558,7 @@ class PHPCheckstyle {
 			}
 
 			if (!$isPosOk) {
-				$tmp = ($pos == "sl") ? "the previous line." : "a new line.";
+				$tmp = ($pos == SAME_LINE) ? "the previous line." : "a new line.";
 				$msg = sprintf(PHPCHECKSTYLE_LEFT_CURLY_POS, $tmp);
 				$this->_writeError('funcDefinitionOpenCurly', $msg);
 			}
@@ -2634,12 +2642,18 @@ class PHPCheckstyle {
 		if ($this->_isActive('needBraces')) {
 
 			$stmt = strtolower($this->_currentStatement);
-			if ($stmt == "if" || $stmt == "else" || $stmt == "elseif" || $stmt == "do" || ($stmt == "while" && !$this->statementStack->getParentStackItem()->afterDoStatement) || $stmt == "for" || $stmt == "foreach") {
+			if ($stmt == "if" || $stmt == "elseif" || $stmt == "do" || ($stmt == "while" && !$this->statementStack->getParentStackItem()->afterDoStatement) || $stmt == "for" || $stmt == "foreach") {
 				if (!$this->tokenizer->checkNextValidToken(T_BRACES_OPEN)) {
 					$msg = sprintf(PHPCHECKSTYLE_NEED_BRACES, $stmt);
 					$this->_writeError('needBraces', $msg);
 				}
+			} else if ($stmt == "else") {
+				if (!$this->tokenizer->checkNextValidToken(T_BRACES_OPEN) && !$this->tokenizer->checkNextValidToken(T_IF)) {
+					$msg = sprintf(PHPCHECKSTYLE_NEED_BRACES, $stmt);
+					$this->_writeError('needBraces', $msg);
+				}
 			}
+			
 			if ($stmt == "while") {
 				$this->statementStack->getCurrentStackItem()->afterDoStatement = false;
 			}

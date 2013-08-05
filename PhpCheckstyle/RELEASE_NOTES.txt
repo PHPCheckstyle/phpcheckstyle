@@ -1,6 +1,11 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.12.2
+--------------
+* Issue 53:	else/ elseif without curly braces (thanks to Maximilian Pachl)
+* Added a check of the curly braces after a "else" statement
+
 Version 0.12.1
 --------------
 * Issue 50 : --exclude flag is not honoured

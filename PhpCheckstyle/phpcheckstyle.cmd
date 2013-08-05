@@ -1,3 +1,3 @@
 echo "PHP Checkstyle script"
-php run.php --src ./test/t_and_equal.php --outdir ./checkstyle_result --config default.cfg.xml --format html,xml --linecount --debug
+php -c C:\ms4w\Apache\cgi-bin\php.ini run.php --src ./test/issue53.php --outdir ./checkstyle_result --config default.cfg.xml --format html,xml --linecount --debug
 pause

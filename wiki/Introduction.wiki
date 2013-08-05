@@ -7,21 +7,6 @@ Spike PHPCheckstyle is an open-source tool that helps PHP programmers adhere to 
 
 Intended audience for this tool is PHP developers.
 
-== Original Developer ==
-
-This project was originally written by Hari Kodungallur. Other contributors are:
-  * Ashwin Kumar
-  * Benoit Pesty
-  * Sylvain Galopin
-  * Nimish Pachapurkar
-  * Joshua Kaiser
-  * Charles Marion
-  * Adrien Pessu
-  * Justin Creasey
-  * Adam King
-  * Stéphane Roger 
-  * Jens Radtke
-
 
 == Details ==
 

@@ -139,4 +139,6 @@ define("PHPCHECKSTYLE_DEPRECATED_FUNCTION", "%s is deprecated since PHP %s. %s m
 
 define("PHPCHECKSTYLE_ALIASED_FUNCTION", "%s is an alias, consider replacing with %s.");
 
+define("PHPCHECKSTYLE_REPLACED", "Consider replacing %s with %s.");
+
 define("PHPCHECKSTYLE_USE_STRICT_COMPARE", "Please check is you should not use a strict comparison operator instead of %s.");

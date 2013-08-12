@@ -469,7 +469,7 @@
     <test name="checkReplacements">
     	<replacement old="$_POST" new="$this->input->post()"/>
     	<replacement old="$_GET" new="$this->input->get()"/>
-    	<replacement old="$_SERVER" new="$this->input->server()"/>
+    	<!-- <replacement old="$_SERVER" new="$this->input->server()"/>  -->
     </test>
     
 </phpcheckstyle-configuration>

@@ -496,5 +496,15 @@
 		<alias old="sizeof" new="count()" />
 		<alias old="strchr" new="strstr()" />
 	</test>
+	
+	<!--  *********************************************  -->
+    <!--      Replacements for Zend Framework            -->
+    <!--  *********************************************  --> 
+    
+    <!-- Replace  methods -->
+    <test name="checkReplacements">
+    	<replacement old="$_POST" new="$this->getRequest()->getPost()"/>
+    	<replacement old="$_GET" new="$this->getRequest()->getParam()"/>
+    </test>
 
 </phpcheckstyle-configuration>

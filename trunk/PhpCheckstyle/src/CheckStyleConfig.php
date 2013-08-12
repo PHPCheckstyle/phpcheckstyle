@@ -183,7 +183,7 @@ class CheckStyleConfig {
 	 * Return the list of aliases and their replacement.
 	 *
 	 * @param String $test name of the test
-	 * @return the list of depecated values.
+	 * @return the list of replaced values.
 	 */
 	public function getTestAliases($test) {
 		$test = strtolower($test);
@@ -192,6 +192,22 @@ class CheckStyleConfig {
 			$ret = $this->myConfig[$test];
 		}
 
+		return $ret;
+	}
+	
+	/**
+	 * Return the list of replacements.
+	 *
+	 * @param String $test name of the test
+	 * @return the list of replaced values.
+	 */
+	public function getTestReplacements($test) {
+		$test = strtolower($test);
+		$ret = "";
+		if (array_key_exists($test, $this->myConfig)) {
+			$ret = $this->myConfig[$test];
+		}
+	
 		return $ret;
 	}
 
@@ -285,7 +301,7 @@ class CheckStyleConfig {
 				}
 				break;
 
-				// Case of an alias function
+			// Case of an alias function
 			case 'ALIAS':
 				if (isset($attrs['OLD'])) {
 					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
@@ -294,6 +310,16 @@ class CheckStyleConfig {
 					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
 				}
 				break;
+				
+			// Case of a replacement
+			case 'REPLACEMENT':
+					if (isset($attrs['OLD'])) {
+						$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
+					}
+					if (isset($attrs['NEW'])) {
+						$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
+					}
+					break;
 
 			default:
 				break;

@@ -141,6 +141,11 @@ class PHPCheckstyle {
 	 * These functions are aliased.
 	*/
 	private $_aliasedFunctions = array();
+	
+	/**
+	 * These tokens are replaced.
+	 */
+	private $_replacements = array();
 
 	/**
 	 * System variables ($_POST, ...) are not tested for naming.
@@ -249,7 +254,10 @@ class PHPCheckstyle {
 		$this->_deprecatedFunctions = $this->_config->getTestDeprecations('checkDeprecation');
 
 		// Load the list of aliased functions
-		$this->_aliasedFunctions = $this->_config->getTestDeprecations('checkAliases');
+		$this->_aliasedFunctions = $this->_config->getTestAliases('checkAliases');
+		
+		// Load the list of replacements
+		$this->_replacements = $this->_config->getTestReplacements('checkReplacements');
 
 	}
 
@@ -1291,6 +1299,9 @@ class PHPCheckstyle {
 
 			// Detect aliased functions
 			$this->_checkAliases($text);
+			
+			// Detect replaced functions
+			$this->_checkReplacements($text);
 
 			// Detect an @ before the function call
 			$this->_checkSilenced($text);
@@ -2225,6 +2236,9 @@ class PHPCheckstyle {
 
 		// Check if the variable is not a deprecated system variable
 		$this->_checkDeprecation($text);
+		
+		// Check if the variable is not replaced
+		$this->_checkReplacements($text);
 
 		// Check if the variable is a function parameter
 		if (!empty($this->_functionParameters[$text]) && $this->_inFunction) {
@@ -2960,6 +2974,22 @@ class PHPCheckstyle {
 			if (array_key_exists($key, $this->_aliasedFunctions)) {
 				$msg = sprintf(PHPCHECKSTYLE_ALIASED_FUNCTION, $this->_aliasedFunctions[$key]['old'], $this->_aliasedFunctions[$key]['new']);
 				$this->_writeError('checkAliases', $msg);
+			}
+		}
+	}
+	
+	/**
+	 * Check for replaced functions.
+	 *
+	 * @param String $text The text of the token to test
+	 */
+	private function _checkReplacements($text) {
+		if ($this->_isActive('checkReplacements')) {
+	
+			$key = strtolower($text);
+			if (array_key_exists($key, $this->_replacements)) {
+				$msg = sprintf(PHPCHECKSTYLE_REPLACED, $this->_replacements[$key]['old'], $this->_replacements[$key]['new']);
+				$this->_writeError('checkReplacements', $msg);
 			}
 		}
 	}

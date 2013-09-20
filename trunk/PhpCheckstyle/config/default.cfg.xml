@@ -343,6 +343,9 @@
     <test name="oneClassPerFile">
     </test>
     
+     <!-- Detect empty files -->
+    <test name="checkEmptyFile"/>
+    
     
     <!--  ****************  -->
     <!--      Unused        -->

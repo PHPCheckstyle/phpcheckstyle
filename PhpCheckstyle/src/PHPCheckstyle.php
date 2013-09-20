@@ -423,6 +423,12 @@ class PHPCheckstyle {
 		// Tokenize the file
 		$this->tokenizer->tokenize($filename);
 
+		// Empty PHP file
+		if ($this->tokenizer->getTokenNumber() == 0) {			
+			$this->_checkEmptyFile($filename);			
+			return;  // end the scan
+		}
+		
 		// Go to the first token
 		$token = $this->tokenizer->getCurrentToken();
 		
@@ -3043,6 +3049,18 @@ class PHPCheckstyle {
 		$active = $active && !(in_array($check, $this->_functionSuppressWarnings) || in_array($check, $this->_classSuppressWarnings) || in_array($check, $this->_interfaceSuppressWarnings) || in_array($check, $this->_fileSuppressWarnings));
 
 		return $active;
+	}
+	
+	/**
+	 * Check for empty PHP files.
+	 * 
+	 * @param String $fileName the file name
+	 */
+	private function _checkEmptyFile($fileName) {
+		if ($this->_isActive('checkEmptyFile')) {
+			$msg = sprintf(PHPCHECKSTYLE_EMPTY_FILE, $fileName);
+			$this->_writeError('checkEmptyFile', $msg);
+		}
 	}
 
 	/**

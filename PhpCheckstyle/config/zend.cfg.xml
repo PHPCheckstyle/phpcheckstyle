@@ -375,6 +375,9 @@
 	<test name="checkUnusedCode">
 	</test>
 
+     <!-- Detect empty files -->
+    <test name="checkEmptyFile"/>
+
 	<!-- ******************* -->
 	<!-- Optimisation -->
 	<!-- ******************* -->

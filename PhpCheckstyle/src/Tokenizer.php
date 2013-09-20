@@ -118,6 +118,15 @@ class Tokenizer {
 			return false;
 		}
 	}
+	
+	/**
+	 * Return the number of tokens in the file.
+	 *
+	 * @return Integer
+	 */
+	public function getTokenNumber() {
+		return $this->tokenNumber;		
+	}
 
 	/**
 	 * Gets the current token.
@@ -125,7 +134,7 @@ class Tokenizer {
 	 * @return TokenInfo
 	 */
 	public function getCurrentToken() {
-		return $this->tokens[$this->index];
+		return $this->tokens[$this->index];		
 	}
 
 	/**

@@ -1,6 +1,11 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.12.3
+--------------
+* Issue 52:	Config for PHP frameworks
+* Issue 54:	detect empty files
+
 Version 0.12.2
 --------------
 * Issue 53:	else/ elseif without curly braces (thanks to Maximilian Pachl)

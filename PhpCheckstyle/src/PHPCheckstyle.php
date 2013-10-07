@@ -81,7 +81,6 @@ class PHPCheckstyle {
 	private $_functionParameters = array(); // The list of function parameters
 	private $_usedFunctions = array(); // The list of functions that are used in the class
 	private $_variables = array(); // The variables used. Array of VariableInfo.
-	private $_inSwitch = false; // We are inside a switch statement
 	private $_nbFunctionParameters = 0; // Count the number of parameters of the current function
 	private $_justAfterFuncStmt = false; // We are just after a control statement (last } )
 	private $_justAfterControlStmt = false; // We are just after a function statement (last } )
@@ -347,7 +346,6 @@ class PHPCheckstyle {
 		$this->_usedFunctions = array();
 		$this->_variables = array();
 		$this->_privateFunctionsStartLines = array();
-		$this->_inSwitch = false;
 		$this->_inFuncCall = false;
 		$this->_nbFunctionParameters = 0;
 		$this->_justAfterFuncStmt = false;
@@ -1038,7 +1036,7 @@ class PHPCheckstyle {
 		if (!is_String($currentStackItem)) {
 
 			// Test for the end of a switch bloc
-			if ($currentStackItem->type == "SWITCH") {
+			if ($currentStackItem->type == "SWITCH" || $currentStackItem->type == "DEFAULT" || $currentStackItem->type == "CASE") {
 				$this->_processSwitchStop();
 			}
 
@@ -1849,7 +1847,6 @@ class PHPCheckstyle {
 	 * Process the start of a switch block.
 	 */
 	private function _processSwitchStart() {
-		$this->_inSwitch = true;
 		$this->_switchStartLine = $this->lineNumber;
 	}
 
@@ -1857,8 +1854,18 @@ class PHPCheckstyle {
 	 * Process the end of a switch block.
 	 */
 	private function _processSwitchStop() {
-		$this->_inSwitch = false;
+		// If we already are in a "case", we remove it from the stack
+		if ($this->statementStack->getCurrentStackItem()->type == "CASE" ||
+			$this->statementStack->getCurrentStackItem()->type == "DEFAULT") {
+			
+			// Test if the previous case had a break
+			$this->_checkSwitchCaseNeedBreak();
+			
+			$this->statementStack->pop();
+		}
+		
 		$this->_checkSwitchNeedDefault();
+		
 	}
 
 	/**
@@ -1867,7 +1874,6 @@ class PHPCheckstyle {
 	 * This function is launched at the end of switch/case.
 	 */
 	private function _checkSwitchNeedDefault() {
-
 		if ($this->_isActive('switchNeedDefault')) {
 			if (!$this->statementStack->getCurrentStackItem()->switchHasDefault) {
 				// Direct call to reporter to include a custom line number.
@@ -1880,13 +1886,29 @@ class PHPCheckstyle {
 	 * Process a case statement.
 	 */
 	private function _processSwitchCase() {
-
-		// Test if the previous case had a break
-		$this->_checkSwitchCaseNeedBreak();
-
+		
+		// If we already are in a "case", we remove it from the stack 
+		if ($this->statementStack->getCurrentStackItem()->type == "CASE" ||
+			$this->statementStack->getCurrentStackItem()->type == "DEFAULT") {
+			
+			// Test if the previous case had a break
+			$this->_checkSwitchCaseNeedBreak();
+			
+			$this->statementStack->pop();
+		}
+		
 		// If the case arrives after the default
 		$this->_checkSwitchDefaultOrder();
+		
+		
+		// We store the control statement in the stack
+		$stackitem = new StatementItem();
+		$stackitem->line = $this->lineNumber;
+		$stackitem->type = "CASE";
+		$stackitem->name = "case";
+		$this->statementStack->push($stackitem);
 
+				
 		// For this case
 		$this->statementStack->getCurrentStackItem()->caseHasBreak = false;
 		$this->statementStack->getCurrentStackItem()->caseStartLine = $this->lineNumber;
@@ -1912,8 +1934,11 @@ class PHPCheckstyle {
 	 * This function is launched at the start of each case.
 	 */
 	private function _checkSwitchCaseNeedBreak() {
+
+		$stackItem = $this->statementStack->getCurrentStackItem();
+		
 		// Test if the previous case had a break
-		if ($this->_isActive('switchCaseNeedBreak') && !$this->statementStack->getCurrentStackItem()->caseHasBreak) {
+		if ($this->_isActive('switchCaseNeedBreak') && $stackItem->type == "CASE" && !$stackItem->caseHasBreak) {
 			// Direct call to reporter to include a custom line number.
 			$this->_reporter->writeError($this->statementStack->getCurrentStackItem()->caseStartLine, 'switchCaseNeedBreak', PHPCHECKSTYLE_SWITCH_CASE_NEED_BREAK, $this->_config->getTestLevel('switchCaseNeedBreak'));
 		}
@@ -1923,13 +1948,35 @@ class PHPCheckstyle {
 	 * Process a default statement.
 	 */
 	private function _processSwitchDefault() {
+		
+		// If we already are in a "case", we remove it from the stack
+		if ($this->statementStack->getCurrentStackItem()->type == "CASE" ||
+			$this->statementStack->getCurrentStackItem()->type == "DEFAULT") {
+			
+			// Test if the previous case had a break
+			$this->_checkSwitchCaseNeedBreak();
+			
+			$this->statementStack->pop();
+		}
+		
+		// We flag the "SWITCH" stack item as having a default
 		$this->statementStack->getCurrentStackItem()->switchHasDefault = true;
+		
+		// We store the control statement in the stack
+		$stackitem = new StatementItem();
+		$stackitem->line = $this->lineNumber;
+		$stackitem->type = "DEFAULT";
+		$stackitem->name = "default";
+		$this->statementStack->push($stackitem);
+		
+		
 	}
 
 	/**
 	 * Process a break statement.
 	 */
 	private function _processSwitchBreak() {
+		
 		$this->statementStack->getCurrentStackItem()->caseHasBreak = true;
 	}
 
@@ -2628,7 +2675,7 @@ class PHPCheckstyle {
 			}
 
 			// Control switch statement indentation
-			if ($this->_inSwitch) {
+			if ($this->statementStack->getCurrentStackItem()->type == "SWITCH") {
 				if (!$this->tokenizer->checkNextToken(T_CASE) && !$this->tokenizer->checkNextToken(T_DEFAULT)) {
 					$expectedIndentation = $expectedIndentation + $indentationNumber;
 				}

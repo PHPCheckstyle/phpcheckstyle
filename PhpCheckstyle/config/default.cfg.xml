@@ -314,8 +314,8 @@
     </test>
     
      <!-- Switch case should have a break -->
-    <!--  <test name="switchCaseNeedBreak">
-    </test>  -->
+    <test name="switchCaseNeedBreak">
+    </test>
     
     <!-- Switch default value should be at the end -->
     <test name="switchDefaultOrder">

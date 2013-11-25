@@ -1,0 +1,14 @@
+{
+    "name": "PHPCheckstyle",
+    "description": "PHPCheckstyle is an open-source tool that helps PHP programmers adhere to certain coding conventions",
+    "type": "library",
+    "keywords": [
+        "checkstyle",
+        "standard",
+        "convention"
+    ],
+    "homepage": "https://code.google.com/p/phpcheckstyle/",
+    "require": {
+        "php": ">=5.0.0"
+    }
+}

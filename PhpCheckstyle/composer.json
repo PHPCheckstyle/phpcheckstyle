@@ -1,5 +1,5 @@
 {
-    "name": "PHPCheckstyle",
+    "name": "phpcheckstyle/phpcheckstyle",
     "description": "PHPCheckstyle is an open-source tool that helps PHP programmers adhere to certain coding conventions",
     "type": "library",
     "keywords": [

@@ -7,7 +7,7 @@
         "standard",
         "convention"
     ],
-    "homepage": "https://code.google.com/p/phpcheckstyle/",
+    "homepage": "http://code.google.com/p/phpcheckstyle/",
     "require": {
         "php": ">=5.0.0"
     }

@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<checkstyle version="1.0.0"><file name="test/issue56.php"><error line="3" column="1" severity="warning" message="The statement if must contain its code within a {} block." source="needBraces"/><error line="5" column="1" severity="warning" message="The statement if must contain its code within a {} block." source="needBraces"/><error line="5" column="1" severity="warning" message="Undeclared or unused variable : $toto." source="checkUnusedVariables"/></file></checkstyle>

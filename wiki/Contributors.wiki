@@ -1,3 +1,5 @@
+= Contributors =
+
 This project was originally written by Hari Kodungallur and Nimish Pachapurkar and is now maintained by Benoit Pesty.
 
 Other contributors are:
@@ -11,3 +13,14 @@ Other contributors are:
   * Stéphane Roger 
   * Jens Radtke
   * Maximilian Pachl
+
+
+= How to contribute =
+
+The prefered way to contribute to the project is by using the issues page : https://code.google.com/p/phpcheckstyle/issues
+
+To contribute, you can :
+  * Report a problem, preferably with a test case and a sample of code
+  * Suggest a improvement (propose a new check, report a something missing in the documentation, ...)
+  * Submit a patch
+  * After a few accepted patches, you can ask for SVN access if you want to participate more actively.

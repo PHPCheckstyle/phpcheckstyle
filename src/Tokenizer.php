@@ -518,9 +518,21 @@ class Tokenizer {
 	 */
 	private function _getAllTokens($source) {
 		$newTokens = array();
+		
+		// Ugly trick 
+		// Reset the error array by calling an undefined variable
+		set_error_handler('var_dump', 0);
+		@$errorGetLastResetUndefinedVariable;
+		restore_error_handler();
 
 		// Get the tokens
 		$tokens = token_get_all($source);
+		
+		// Check for parsing errors
+		$parsingErrors = error_get_last();
+		if (!empty($parsingErrors) && $parsingErrors["type"] == 128) {
+			throw new Exception($parsingErrors["message"]);	
+		}
 
 		// Check each token and transform into an Object
 		foreach ($tokens as $token) {

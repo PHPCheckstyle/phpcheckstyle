@@ -72,11 +72,11 @@ This could be OK for some files likes view (in a MVC framework) but could provoq
 Tests and reports and error if there is a shell/perl style comment (that starts with '#').
 
 == docBlocks == 
-Tests that every function and class is immediately preceded by a docblock. A property "excludePrivateMembers" can be set if you want to disable docblocks for private member functions.
-* Property excludePrivateMembers (true /false)
-* Property testReturn (true /false)
-* Property testParam (true /false)
-* Property testThrow (true /false)
+Tests that every function and class is immediately preceded by a docblock. A property "excludePrivateMembers" can be set if you want to disable docblocks for private member functions. You can also disable the check for some functions by using an exception with the name of the function.
+  * Property excludePrivateMembers (true / false)
+  * Property testReturn (true / false)
+  * Property testParam (true / false)
+  * Property testThrow (true / false)
 
 
 = Indentation =

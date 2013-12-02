@@ -1640,9 +1640,14 @@ class PHPCheckstyle {
 	 * Called by _processFunctionStop().
 	 */
 	private function _checkDocBlockParameters() {
+		
+		// List of function names that we don't check
+		$exceptions = $this->_config->getTestExceptions('docBlocks');
 
 		// For anonymous functions, we don't check the docblock
-		if ($this->_isActive('docBlocks') && $this->statementStack->getCurrentStackItem()->visibility != 'ANONYMOUS') {
+		if ($this->_isActive('docBlocks') 
+			&& $this->statementStack->getCurrentStackItem()->visibility != 'ANONYMOUS'
+			&& !in_array($this->_currentFunctionName, $exceptions)) {
 
 			// If the function is not private and we check the doc
 			$isPrivateExcluded = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
@@ -1706,8 +1711,6 @@ class PHPCheckstyle {
 	 */
 	private function _processFunctionStop() {
 		
-		echo "_processFunctionStop".PHP_EOL;
-
 		$this->_inFunction = false; // We are out of the function
 
 		// Check the cyclomatic complexity

@@ -113,6 +113,7 @@
         <property name="testReturn" value="true"/>
         <property name="testParam" value="true"/>
         <property name="testThrow" value="true"/>
+        <exception value="__toString"/>
     </test>
     
     <!--  ****************  -->

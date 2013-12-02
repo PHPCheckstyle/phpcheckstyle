@@ -1705,6 +1705,8 @@ class PHPCheckstyle {
 	 * Process the end of a function declaration.
 	 */
 	private function _processFunctionStop() {
+		
+		echo "_processFunctionStop".PHP_EOL;
 
 		$this->_inFunction = false; // We are out of the function
 
@@ -2820,6 +2822,12 @@ class PHPCheckstyle {
 
 
 		// Count the @params, @returns and @throw
+		if (stripos($token->text, '/**') !== false) {
+			// Reset the count of elements if it's a new docblock
+			$this->_docblocNbParams = 0;
+			$this->_docblocNbReturns = 0;
+			$this->_docblocNbThrows = 0;
+		}
 		if (stripos($token->text, '@param') !== false) {
 			$this->_docblocNbParams++;
 		}

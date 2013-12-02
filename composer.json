@@ -8,7 +8,13 @@
         "convention"
     ],
     "homepage": "http://code.google.com/p/phpcheckstyle/",
+    "license": "OSL-2.1",
     "require": {
         "php": ">=5.0.0"
+    },
+    "support" : {
+        "wiki" : "https://code.google.com/p/phpcheckstyle/w/list",
+        "source" : "http://phpcheckstyle.googlecode.com/svn/trunk/"
     }
+   
 }

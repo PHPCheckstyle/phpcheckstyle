@@ -594,7 +594,7 @@ class Tokenizer {
 			$newTokens = array_merge($newTokens, $this->_identifyTokens($tokenText, $tokenID));
 
 		}
-
+		
 		return $newTokens;
 	}
 

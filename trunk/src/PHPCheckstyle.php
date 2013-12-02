@@ -67,7 +67,6 @@ class PHPCheckstyle {
 	// and stops at the closing of the parenthesis or the new line if no parenthesis is used
 	private $_inControlStatement = false;
 
-	private $_inString = false;
 	private $_inArrayStatement = false; // We are in a array statement
 	private $_inClassStatement = false; // Wa are in a class statement (declaration)
 	private $_inInterfaceStatement = false; // Wa are in an interface statement (declaration)
@@ -265,11 +264,9 @@ class PHPCheckstyle {
 	 * 
 	 * @param Integer $errno Level of the error
 	 * @param String $errstr Error message
-	 * @param String $errfile The file
-	 * @param String $errline The line number
 	 * @return boolean
 	 */
-	public function customErrorHandler($errno, $errstr, $errfile, $errline) {
+	public function customErrorHandler($errno, $errstr) {
 
 		$check = 'phpException';
 		$level = $this->_config->getTestLevel($check);
@@ -558,7 +555,6 @@ class PHPCheckstyle {
 						continue;
 					}
 					$fullPath = $src."/".$file;
-					$relPath = substr($fullPath, strlen($src) - strlen($dir) + 1);
 					$isExcluded = false;
 					foreach ($excludes as $patternExcluded) {
 
@@ -1051,7 +1047,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Launched when an closing brace is encoutered.
+	 * Launched when a closing brace is encoutered.
 	 *
 	 * @param TokenInfo $token the current token
 	 */
@@ -1059,7 +1055,7 @@ class PHPCheckstyle {
 		// signifies the end of a block
 		// currently tests whether this token resides on a new line.
 		// This test is desactivated when in a view
-		if ($this->_isActive('controlCloseCurly') && !($this->_isView) && (!$this->_inString)) {
+		if ($this->_isActive('controlCloseCurly') && !($this->_isView)) {
 			$previousToken = $this->tokenizer->peekPrvsValidToken();
 			if ($previousToken->line == $token->line) {
 				// the last token was on the same line

@@ -4,6 +4,8 @@
 <!--  See http://framework.zend.com/wiki/display/ZFDEV2/Coding+Standards -->
 <phpcheckstyle-configuration>
 
+	<test name="phpException" level="error"/>
+
 	<!-- ********************************************************* -->
 	<!-- These functions are not tested for naming -->
 	<!-- cf http://www.php.net/manual/en/language.oop5.magic.php -->

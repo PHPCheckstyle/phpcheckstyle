@@ -259,6 +259,30 @@ class PHPCheckstyle {
 		$this->_replacements = $this->_config->getTestReplacements('checkReplacements');
 
 	}
+	
+	/**
+	 * Custom Error Handler.
+	 * 
+	 * @param Integer $errno Level of the error
+	 * @param String $errstr Error message
+	 * @param String $errfile The file
+	 * @param String $errline The line number
+	 * @return boolean
+	 */
+	public function customErrorHandler($errno, $errstr, $errfile, $errline) {
+
+		$check = 'phpException';
+		$level = $this->_config->getTestLevel($check);
+		if ($level == null) {
+			$level = "warning";
+		}
+		$message = sprintf(PHPCHECKSTYLE_PHP_EXPCEPTION, $errstr);
+		
+		$this->_reporter->writeError($errline, $check, $message, $level);
+		
+		/* Don't execute PHP internal error handler */
+		return false;  
+	}
 
 	/**
 	 * Calls processFile repeatedly for each PHP file that is encountered.
@@ -270,6 +294,14 @@ class PHPCheckstyle {
 	 *        excluded from processing
 	 */
 	public function processFiles($src, $excludes) {
+		
+		// Start reporting the results
+		$this->_reporter->start();
+		
+		// Define the custom error handler
+		set_error_handler(array($this, 'customErrorHandler'), E_ALL);
+		set_exception_handler(array($this, 'customErrorHandler'));
+		
 		$this->_excludeList = $excludes;
 
 		$roots = explode(",", $src);
@@ -279,8 +311,7 @@ class PHPCheckstyle {
 			$files = array_merge($files, $this->_getAllPhpFiles($root, $excludes));
 		}
 
-		// Start reporting the results
-		$this->_reporter->start();
+		
 
 		// Start counting the lines
 		if ($this->_lineCountReporter != null) {
@@ -299,8 +330,14 @@ class PHPCheckstyle {
 
 
 			$this->_reporter->currentlyProcessing($file);
-			$this->_processFile($file);
-		}
+			
+			try {
+				$this->_processFile($file);
+			} catch (Exception $e) {
+				$msg = sprintf(PHPCHECKSTYLE_PHP_EXPCEPTION, $e->getMessage());
+				$this->_writeError('phpException', $msg);				
+			}
+ 		}
 
 		// Stop reporting the results
 		$this->_reporter->stop();

@@ -4,6 +4,7 @@
  *
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
  */
+define("PHPCHECKSTYLE_PHP_EXPCEPTION", "PHP Exception : %s.");
 
 define("PHPCHECKSTYLE_INDENTATION_TAB", "Tab indentation must not be used.");
 

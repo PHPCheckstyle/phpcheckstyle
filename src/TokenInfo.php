@@ -1,12 +1,12 @@
 <?php
-if (!defined("T_ML_COMMENT")) {
+if (! defined("T_ML_COMMENT")) {
 	define("T_ML_COMMENT", T_COMMENT);
 }
 
 define('T_NEW_LINE', 10000);
 define('T_TAB', 10001);
 define('T_SEMICOLON', 10002); // ;
-define('T_BRACES_OPEN', 10003);  // { To avoid confusion with T_CURLY_OPEN
+define('T_BRACES_OPEN', 10003); // { To avoid confusion with T_CURLY_OPEN
 define('T_BRACES_CLOSE', 10004); // }
 define('T_PARENTHESIS_OPEN', 10005); // (
 define('T_PARENTHESIS_CLOSE', 10006); // )
@@ -27,7 +27,8 @@ define('T_AMPERSAND', 10020); // %
 define('T_SQUARE_BRACKET_OPEN', 10021); // [
 define('T_SQUARE_BRACKET_CLOSE', 10022); // ]
 define('T_AROBAS', 10023); // @
-define('T_UNKNOWN', -1);
+define('T_QUOTE', 10024); // " (only detected before and after a T_ENCAPSED_AND_WHITESPACE) otherwise should be included in T_CONSTANT_ENCAPSED_STRING
+define('T_UNKNOWN', - 1);
 
 /**
  * TokenInfo class.
@@ -35,8 +36,9 @@ define('T_UNKNOWN', -1);
  * This object is returned by the tokenizer.
  *
  * @package classes
- * @SuppressWarnings checkUnusedVariables
-*/
+ *          @SuppressWarnings checkUnusedVariables
+ *         
+ */
 class TokenInfo {
 
 	/**
@@ -44,13 +46,14 @@ class TokenInfo {
 	 *
 	 * @var Integer
 	 */
-	var	$id = null;
+	var $id = null;
 
 	/**
 	 * The token text.
+	 * 
 	 * @var String
 	 */
-	var	$text = null;
+	var $text = null;
 
 	/**
 	 * The position of the token in the file.
@@ -66,23 +69,23 @@ class TokenInfo {
 	 */
 	var $line;
 
-
 	/**
 	 * Return a string representation of the token.
+	 * 
 	 * @return String
 	 */
 	public function toString() {
 		$result = "";
-		$result .= "line : ".$this->line;
-		$result .= ", pos : ".$this->position;
-		$result .= ", id : ".$this->getName($this->id);
-
+		$result .= "line : " . $this->line;
+		$result .= ", pos : " . $this->position;
+		$result .= ", id : " . $this->getName($this->id);
+		
 		// Rename some special chars
 		$text = str_replace("\r\n", "\\r\\n", $this->text);
 		$text = str_replace("\r", "\\r", $text);
 		$text = str_replace("\n", "\\n", $text);
-
-		$result .= ", text : ".$text;
+		
+		$result .= ", text : " . $text;
 		return $result;
 	}
 
@@ -171,8 +174,7 @@ class TokenInfo {
 			default:
 				$result = token_name($this->id);
 		}
-
+		
 		return $result;
 	}
-
 }

@@ -67,6 +67,7 @@ class PHPCheckstyle {
 	// and stops at the closing of the parenthesis or the new line if no parenthesis is used
 	private $_inControlStatement = false;
 
+	private $_inString = false; // We are inside a string (only happens with T_ENCAPSED_AND_WHITESPACE)
 	private $_inArrayStatement = false; // We are in a array statement
 	private $_inClassStatement = false; // Wa are in a class statement (declaration)
 	private $_inInterfaceStatement = false; // Wa are in an interface statement (declaration)
@@ -372,6 +373,8 @@ class PHPCheckstyle {
 		$this->inDoWhile = false;
 
 		$this->statementStack = new StatementStack();
+		
+		$this->_inString = false;
 		$this->_inControlStatement = false;
 		$this->_inArrayStatement = false;
 		$this->_inFunctionStatement = false;
@@ -908,7 +911,9 @@ class PHPCheckstyle {
 			case T_SQUARE_BRACKET_CLOSE:
 				$this->_inArrayStatement = false;
 				break;
-
+			case T_QUOTE:
+				$this->_inString = !$this->_inString;
+				break;				
 			default:
 				break;
 		}
@@ -1055,7 +1060,7 @@ class PHPCheckstyle {
 		// signifies the end of a block
 		// currently tests whether this token resides on a new line.
 		// This test is desactivated when in a view
-		if ($this->_isActive('controlCloseCurly') && !($this->_isView)) {
+		if ($this->_isActive('controlCloseCurly') && !($this->_isView) && !($this->_inString)) {
 			$previousToken = $this->tokenizer->peekPrvsValidToken();
 			if ($previousToken->line == $token->line) {
 				// the last token was on the same line

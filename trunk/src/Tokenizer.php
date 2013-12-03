@@ -496,6 +496,9 @@ class Tokenizer {
 					case "@" :
 						$tokenInfo->id = T_AROBAS;
 						break;
+					case '"' :
+						$tokenInfo->id = T_QUOTE;
+						break;
 					default:
 				}
 			}

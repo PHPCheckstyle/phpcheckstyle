@@ -1,6 +1,14 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.12.4
+--------------
+* Issue 59: Enhancement: Add allowed exceptions to docBlocks section of configuration
+* Issue 63:	Catch parsing exceptions and other PHP errors
+* Issue 65: Add composer.json file
+* Issue 66: block closure '}' detected in a string
+
+
 Version 0.12.3
 --------------
 * Issue 52:	Config for PHP frameworks

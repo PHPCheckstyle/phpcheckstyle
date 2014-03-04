@@ -617,7 +617,11 @@ class PHPCheckstyle {
 				break;
 
 			case T_OPEN_TAG:
-				$this->_checkShortOpenTag($token);
+				$this->_processOpenTag($token);
+				break;
+				
+			case T_CLOSE_TAG:
+				$this->_processCloseTag($token);
 				break;
 
 			case T_DO:
@@ -3179,4 +3183,45 @@ class PHPCheckstyle {
 		$this->_reporter->writeError($lineNumber, $check, $message, $level);
 	}
 
+	
+	/**
+	 * Process a PHP Open Tag.
+	 * 
+	 * @param TokenInfo $token the control statement.
+	 */
+	private function _processOpenTag($token) {
+		
+		// Check for short open tag
+		$this->_checkShortOpenTag($token);
+		
+		// Check that the tag is at the beginning of the line
+		$this->_checkPhpTagsStartLine($token);
+	}
+	
+	/**
+	 * Process a PHP Close Tag.
+	 *
+	 * @param TokenInfo $token the control statement.
+	 */
+	private function _processCloseTag($token) {
+		
+		// Check that the tag is at the beginning of the line
+		$this->_checkPhpTagsStartLine($token);
+		
+	}
+	
+	/**
+	 * Check that the PHP oOpen or Close tag is at the beginning of the line..
+	 *
+	 * @param TokenInfo $token
+	 */
+	private function _checkPhpTagsStartLine($token) {
+
+		if ($this->_isActive('phpTagsStartLine')) {
+			if (!$this->_isLineStart) {
+				$this->_writeError('phpTagsStartLine', PHPCHECKSTYLE_PHP_TAGS_START_LINE);
+			}
+		}
+	}
+	
 }

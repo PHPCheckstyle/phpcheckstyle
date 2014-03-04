@@ -1,0 +1,22 @@
+Short description of how things are done. For those who would like to contribute to the project.
+
+
+= Analysis =
+
+  * The "run.php" file launch the scan on all the selected files / directories.
+  * The "Tokenizer.php" file take a file in entry and return an array of TokenInfo items.
+  * the "PHPCheckStyle.php" file is the main part of the project. It launch the tokenization of the files and then analyze the stream of tokens.
+    * The "processToken" method is a big SWITCH / CASE that launch a "processXXX" method depending on the token .
+    * The "processXXX" methods detect different cases and launch the "check" rules.
+    * The "checkXXX" methods do the checks of the rules that are activated.
+
+During the analysis, a stack of currently opened statements is maintained.
+StatementItem objets are stored in the "StatementStack"
+
+This can be easily visualised by launching the tool with the "--debug" flag. It will display something like this :
+
+{{{ CLASS(PHPCheckstyle) -> FUNCTION(_processControlStatement) -> IF -> IF}}}
+
+= Reporting =
+
+When a check rule is not verified an error message is sent to one ore more reporter. All the reporters (Console, HTML, XML, ...) extend the "Reporter" class.

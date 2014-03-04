@@ -1,7 +1,10 @@
+#labels Phase-Design
 Short description of how things are done. For those who would like to contribute to the project.
 
 
 = Analysis =
+
+== Tokenization ==
 
   * The "run.php" file launch the scan on all the selected files / directories.
   * The "Tokenizer.php" file take a file in entry and return an array of TokenInfo items.
@@ -10,8 +13,17 @@ Short description of how things are done. For those who would like to contribute
     * The "processXXX" methods detect different cases and launch the "check" rules.
     * The "checkXXX" methods do the checks of the rules that are activated.
 
-During the analysis, a stack of currently opened statements is maintained.
-StatementItem objets are stored in the "StatementStack"
+We use the default PHP tokenizer that we extend to identify tabs and returns and to add a few tokens. This allow the project to work on any computer having PHP installed without any modification.
+
+A cleaner / more complete solution would be to use a proper AST (http://en.wikipedia.org/wiki/Abstract_syntax_tree) and parse the files with complete information about each token and its context.
+
+The difficulty is that PHP doesn't have a real official grammar and it's not easy to build such an analyser. Some projects could help do that (https://github.com/nikic/PHP-Parser) or we could use facebook's work on HipHopVM.
+
+== Statements Stack ==
+
+To compensate for the lack of a real AST, we build during the analysis a stack of currently opened statements.
+
+StatementItem objets are stored in the "StatementStack". this allow us to have some limited contextual information.
 
 This can be easily visualised by launching the tool with the "--debug" flag. It will display something like this :
 

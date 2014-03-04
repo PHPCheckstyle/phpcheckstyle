@@ -1,4 +1,4 @@
-#labels Phase-Design
+#labels Phase-Design,Featured
 Short description of how things are done. For those who would like to contribute to the project.
 
 

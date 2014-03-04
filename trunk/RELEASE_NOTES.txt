@@ -1,6 +1,10 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.12.5
+--------------
+* Issue 69: PHP tag should be at the beginning of the line
+
 Version 0.12.4
 --------------
 * Issue 59: Enhancement: Add allowed exceptions to docBlocks section of configuration

@@ -557,13 +557,13 @@ class Tokenizer {
 					$newTokens = array_merge($newTokens, $this->_identifyTokens($beforeText, $tokenID));
 
 					// The open tag
-					$open_tag = new TokenInfo();
-					$open_tag->id = T_OPEN_TAG;
-					$open_tag->text = SHORT_OPEN_TAG;
+					$openTag = new TokenInfo();
+					$openTag->id = T_OPEN_TAG;
+					$openTag->text = SHORT_OPEN_TAG;
 					$this->tokenNumber + 1;
-					$open_tag->position = $this->tokenNumber;
-					$open_tag->line = $this->lineNumber;
-					$newTokens[] = $open_tag;
+					$openTag->position = $this->tokenNumber;
+					$openTag->line = $this->lineNumber;
+					$newTokens[] = $openTag;
 
 					// Tokenize the content
 					$inlineText = substr($tokenText, $startPos + strlen(SHORT_OPEN_TAG), $endPos - $startPos);
@@ -575,13 +575,13 @@ class Tokenizer {
 					$newTokens = array_merge($newTokens, $inline);
 
 					// Add the close tag
-					$close_tag = new TokenInfo();
-					$close_tag->id = T_CLOSE_TAG;
-					$close_tag->text = CLOSE_TAG;
+					$closeTag = new TokenInfo();
+					$closeTag->id = T_CLOSE_TAG;
+					$closeTag->text = CLOSE_TAG;
 					$this->tokenNumber + 1;
-					$close_tag->position = $this->tokenNumber;
-					$close_tag->line = $this->lineNumber;
-					$newTokens[] = $close_tag;
+					$closeTag->position = $this->tokenNumber;
+					$closeTag->line = $this->lineNumber;
+					$newTokens[] = $closeTag;
 					
 					// text = the remaining text
 					$tokenText = substr($tokenText, $endPos + strlen(SHORT_OPEN_TAG));

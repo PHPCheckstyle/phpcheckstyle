@@ -419,6 +419,8 @@ class PHPCheckstyle {
 		$this->_isModel = false;
 		$this->_isController = false;
 		$this->_isClass = false;
+		
+		$this->_isLineStart = true;
 	}
 
 	/**

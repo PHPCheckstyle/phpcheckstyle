@@ -1,4 +1,7 @@
 #labels Featured
+
+= Running PHPCheckstyle with ANT =
+
 To run PHPCheckstyle with ANT we need to launch a PHP cli.
 
 This can be done using the "exec" task of ANT.
@@ -12,7 +15,7 @@ Sample ANT file :
     </description>
 
 
-<!-- Test the environment -->
+        <!-- Test the environment -->
 	<target name="targetCheck">
 		<condition property="isUnix">
 			<and>
@@ -26,7 +29,7 @@ Sample ANT file :
 		</condition>
 	</target>
 
-<!-- Launch PHP CheckStyle on Windows -->
+        <!-- Launch PHP CheckStyle on Windows -->
 	<target name="_phpcheckstylewindows" depends="targetCheck" if="isWindows">
 		<echo>Windows</echo>
 		<exec executable="./phpcheckstyle.cmd" dir=".">
@@ -64,4 +67,24 @@ phpcheckstyle.sh
 #!/bin/sh
 echo "PHP CheckStyle script"
 php run.php --src ./test --outdir ./checkstyle_result --config default.cfg.xml --format html,xml --linecount
+}}}
+
+
+
+= PHP Syntax Check =
+
+You can also use ANT to launch a syntax check using the CLI command "php -l". 
+Thanks to Manuel Pichler : http://manuel-pichler.de/archives/25-integrate-php-lint-syntax-checks-in-your-build-process.html
+
+{{{
+
+ <target name="checkphp">
+    <apply executable="php" failonerror="true">
+      <arg value="-l" />
+      <fileset dir="source/src">
+        <include name="**/*.php" />
+      </fileset>
+    </apply>
+  </target>
+
 }}}

@@ -25,7 +25,7 @@ if (false == stripos($mystring2, $findme)) {
 	echo 'Found';
 }
 
-// Should be ===  NOT DETECTED CURRENTLY
+// Should be ===  
 if (stripos($mystring2, $findme) == false) {
 	echo 'Found';
 }

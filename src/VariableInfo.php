@@ -18,7 +18,4 @@ class VariableInfo {
 	
 	// Indicate the the variable have been used at least once.
 	var $isUsed = false;
-	
-	// Indicate if the variable result from a search function like strpos.
-	var $isSearchResult = false;
 }

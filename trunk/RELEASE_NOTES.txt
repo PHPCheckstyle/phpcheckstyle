@@ -1,6 +1,11 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.13.0
+--------------
+* Issue 70: Simplification of the "strictCompare" rule. When active this rule will be checked everywhere. 
+            This may generate lots of warnings. 
+
 Version 0.12.5
 --------------
 * Issue 69: PHP tag should be at the beginning of the line

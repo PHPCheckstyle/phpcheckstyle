@@ -2158,41 +2158,10 @@ class PHPCheckstyle {
 	 * @param String $text the comparison operator used
 	 */
 	private function _checkStrictCompare($text) {
+		
 		if ($this->_isActive('strictCompare')) {
-
-			$isSearchResult = false;
-
-			// Get the next token
-			$nextTokenInfo = $this->tokenizer->peekNextValidToken($this->tokenizer->getCurrentPosition() + 1);
-			$nextTokenText = $nextTokenInfo->text;
-
-			// Check if next token is a search function
-			$isSearchResult = in_array($nextTokenText, $this->_config->getTestItems('strictCompare'));
-
-			// Or a variable that is the result of a search function
-			if (!empty($this->_variables[$nextTokenText])) {
-				$variable = $this->_variables[$nextTokenText];
-				$isSearchResult = $isSearchResult || $variable->isSearchResult;
-			}
-
-			// Get the token before
-			$previousToken = $this->tokenizer->peekPrvsValidToken($this->tokenizer->getCurrentPosition());
-			$previousTokenText = $previousToken->text;
-
-			// Check if previous token is a search function
-			$isSearchResult = $isSearchResult || in_array($previousTokenText, $this->_config->getTestItems('strictCompare'));
-
-			// Or a variable that is the result of a search function
-			if (!empty($this->_variables[$previousTokenText])) {
-				$variable = $this->_variables[$previousTokenText];
-				$isSearchResult = $isSearchResult || $variable->isSearchResult;
-			}
-
-			// If one the 2 compared item is such a variable or directly a listed function
-			if ($isSearchResult) {
-				$message = sprintf(PHPCHECKSTYLE_USE_STRICT_COMPARE, $text);
-				$this->_writeError('strictCompare', $message);
-			}
+			$message = sprintf(PHPCHECKSTYLE_USE_STRICT_COMPARE, $text);
+			$this->_writeError('strictCompare', $message);
 		}
 	}
 
@@ -2368,23 +2337,13 @@ class PHPCheckstyle {
 					|| $nextTokenText == ">>="
 					|| $nextTokenText == ".=");
 
-			// Check the following token
-			$isSearchResult = false;
-			if ($this->_isActive('strictCompare')) {
-				$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position + 1);
-				if ($nextTokenInfo2 != null) {
-					$nextTokenText2 = $nextTokenInfo2->text;
-					$isSearchResult = in_array($nextTokenText2, $this->_config->getTestItems('strictCompare'));
-				}
-			}
-
+			
 			// Check if the variable has already been met
 			if (empty($this->_variables[$text]) && !in_array($text, $this->_systemVariables)) {
 				// The variable is met for the first time
 				$variable = new VariableInfo();
 				$variable->name = $text;
 				$variable->line = $this->lineNumber; // We store the first declaration of the variable
-				$variable->isSearchResult = $isSearchResult;
 				$this->_variables[$text] = $variable;
 
 			} else if ($isAffectation) {

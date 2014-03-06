@@ -142,7 +142,7 @@ define("PHPCHECKSTYLE_ALIASED_FUNCTION", "%s is an alias, consider replacing wit
 
 define("PHPCHECKSTYLE_REPLACED", "Consider replacing %s with %s.");
 
-define("PHPCHECKSTYLE_USE_STRICT_COMPARE", "Please check is you should not use a strict comparison operator instead of %s.");
+define("PHPCHECKSTYLE_USE_STRICT_COMPARE", "Consider using a strict comparison operator instead of %s.");
 
 define("PHPCHECKSTYLE_EMPTY_FILE", "The file %s is empty.");
 

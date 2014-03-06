@@ -465,17 +465,9 @@
 	<!-- FindBugs -->
 	<!-- ******************* -->
 
-	<!-- Use only strict comparison with these functions -->
+	<!-- Use only strict comparison -->
 	<!-- see : http://me.veekun.com/blog/2012/04/09/php-a-fractal-of-bad-design/ -->
-	<test name="strictCompare">
-		<item value="array_search" />
-		<item value="strpos" />
-		<item value="stripos" />
-		<item value="strrpos" />
-		<item value="strripos" />
-		<item value="strripos" />
-		<item value="mb_strpos" />
-	</test>
+	 <test name="strictCompare" />
 
 	<!-- ******************* -->
 	<!-- PHP Aliases -->

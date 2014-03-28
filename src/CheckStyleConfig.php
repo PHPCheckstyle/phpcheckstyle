@@ -36,12 +36,17 @@ class CheckStyleConfig {
 	 */
 	public function CheckStyleConfig($configFile) {
 
-		$isAbsolutePath = preg_match("/^[a-zA-Z]{1}:\\.*/", $configFile);
-
-		if ($isAbsolutePath) {
+		// If the path is a valid file we use it as is
+		if (is_file($configFile)) {
 			$this->file = $configFile;
 		} else {
+			// Otherwise we look in the config directory 
 			$this->file = PHPCHECKSTYLE_HOME_DIR."/config/".$configFile;
+			
+			if (!is_file($this->file)) {
+				echo "Config file not found : ".$configFile;
+				exit(0);
+			}
 		}
 
 		$this->xmlParser = xml_parser_create();
@@ -55,7 +60,9 @@ class CheckStyleConfig {
 	 * Destructor.
 	 */
 	public function __destruct() {
-		xml_parser_free($this->xmlParser);
+		if ($this->xmlParser !== null) {
+			xml_parser_free($this->xmlParser);
+		}
 	}
 
 	/**

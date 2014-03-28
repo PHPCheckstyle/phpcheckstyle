@@ -3,6 +3,7 @@
 Version 0.13.1
 --------------
 * Issue 71:	False positive : close()
+* Issue 72: Allow the config file to be in any directory
 * Issue 73:	False positive : delete()
 * Issue 74: Allow multiple src directories/files in the command line.
             

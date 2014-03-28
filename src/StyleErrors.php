@@ -66,7 +66,7 @@ define("PHPCHECKSTYLE_MISSING_DOCBLOCK", "The %s %s must have a docblock comment
 
 define("PHPCHECKSTYLE_LONG_LINE", "Line length (%s characters) must not exceed %s characters.");
 
-define("PHPCHECKSTYLE_PROHIBITED_FUNCTION", "Function %s must not be called.");
+define("PHPCHECKSTYLE_PROHIBITED_FUNCTION", "PHP Function %s must not be called.");
 
 define("PHPCHECKSTYLE_PROHIBITED_TOKEN", "Token %s must not be used.");
 

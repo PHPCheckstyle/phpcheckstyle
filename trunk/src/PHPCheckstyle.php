@@ -1335,15 +1335,15 @@ class PHPCheckstyle {
 
 			// Add the function name to the list of used functions
 			$this->_usedFunctions[$text] = $text;
+			
+			// Check if the function call is made on an objet of if it's a base PHP function.
+			$isObjectCall = $this->tokenizer->checkPreviousToken(T_OBJECT_OPERATOR);
+			
+			if (!$isObjectCall) {
 
 			// Detect prohibited functions
-			if ($this->_isActive('checkProhibitedFunctions')) {
-				if (in_array($text, $this->_prohibitedFunctions)) {
-					$msg = sprintf(PHPCHECKSTYLE_PROHIBITED_FUNCTION, $text);
-					$this->_writeError('checkProhibitedFunctions', $msg);
-				}
-			}
-
+			$this->_checkProhibitedFunctions($text);
+			
 			// Detect deprecated functions
 			$this->_checkDeprecation($text);
 
@@ -1352,6 +1352,8 @@ class PHPCheckstyle {
 			
 			// Detect replaced functions
 			$this->_checkReplacements($text);
+			
+			}
 
 			// Detect an @ before the function call
 			$this->_checkSilenced($text);
@@ -3027,6 +3029,20 @@ class PHPCheckstyle {
 			if (array_key_exists($key, $this->_deprecatedFunctions)) {
 				$msg = sprintf(PHPCHECKSTYLE_DEPRECATED_FUNCTION, $this->_deprecatedFunctions[$key]['old'], $this->_deprecatedFunctions[$key]['version'], $this->_deprecatedFunctions[$key]['new']);
 				$this->_writeError('checkDeprecation', $msg);
+			}
+		}
+	}
+	
+	/**
+	 * Check for prohibited functions.
+	 *
+	 * @param String $functionName The function name
+	 */
+	private function _checkProhibitedFunctions($functionName) {
+		if ($this->_isActive('checkProhibitedFunctions')) {
+			if (in_array($functionName, $this->_prohibitedFunctions)) {
+				$msg = sprintf(PHPCHECKSTYLE_PROHIBITED_FUNCTION, $functionName);
+				$this->_writeError('checkProhibitedFunctions', $msg);
 			}
 		}
 	}

@@ -9,14 +9,14 @@ function usage() {
 	echo "Usage: ".$_SERVER['argv'][0]." <options>\n";
 	echo "\n";
 	echo "    Options: \n";
-	echo "       --src          Root of the source directory tree or a file.\n";
-	echo "       --exclude      [Optional] A directory or file that needs to be excluded.\n";
+	echo "       --src          Root of the source directory tree or a file (can be repeated for multiple sources).\n";
+	echo "       --exclude      [Optional] A directory or file that needs to be excluded (can be repeated for multiple exclusions).\n";
 	echo "       --format       [Optional] Output format (html/text/xml/xml_console/console/html_console). Defaults to 'html'.\n";
 	echo "       --outdir       [Optional] Report Directory. Defaults to './style-report'.\n";
 	echo "       --config       [Optional] The name of the config file'.\n";
 	echo "       --debug        [Optional] Add some debug logs (warning, very verbose)'.\n";
 	echo "       --linecount    [Optional] Generate a report on the number of lines of code (JavaNCSS format)'.\n";
-	echo "       --progress  	  [Optional] Prints a message noting the file and every line that is covered by PHPCheckStyle.\n";
+	echo "       --progress     [Optional] Prints a message noting the file and every line that is covered by PHPCheckStyle.\n";
 	echo "       --quiet  	    [Optional] Quiet mode.\n";
 	echo "       --help         Display this usage information.\n";
 	exit;
@@ -38,7 +38,7 @@ for ($i = 1; $i < $_SERVER["argc"]; $i++) {
 	switch ($_SERVER["argv"][$i]) {
 		case "--src":
 			$i++;
-			$options['src'] = $_SERVER['argv'][$i];
+			$options['src'][] = $_SERVER['argv'][$i];
 			break;
 
 		case "--outdir":

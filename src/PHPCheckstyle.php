@@ -285,13 +285,13 @@ class PHPCheckstyle {
 	/**
 	 * Calls processFile repeatedly for each PHP file that is encountered.
 	 *
-	 * @param String $src a php file or a directory. in case of directory, it
+	 * @param Array[String] $sources an array php file or a directory. in case of directory, it
 	 *        searches for all the php/tpl files within the directory
-	 *        (recursively) and each of those files are processed
+	 *        (recursively) and each of those files are processed.
 	 * @param Array[String] $excludes an array of directories or files that need to be
-	 *        excluded from processing
+	 *        excluded from processing.
 	 */
-	public function processFiles($src, $excludes) {
+	public function processFiles($sources, $excludes) {
 		
 		// Start reporting the results
 		$this->_reporter->start();
@@ -302,13 +302,15 @@ class PHPCheckstyle {
 		
 		$this->_excludeList = $excludes;
 
-		$roots = explode(",", $src);
 		$files = array();
 
-		foreach ($roots as $root) {
-			$files = array_merge($files, $this->_getAllPhpFiles($root, $excludes));
+		// Iterate over the sources to list the files to process
+		foreach ($sources as $src) {
+			$roots = explode(",", $src);
+			foreach ($roots as $root) {
+				$files = array_merge($files, $this->_getAllPhpFiles($root, $excludes));
+			}
 		}
-
 		
 
 		// Start counting the lines

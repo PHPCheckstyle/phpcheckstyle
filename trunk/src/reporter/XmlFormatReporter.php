@@ -83,6 +83,10 @@ class XmlFormatReporter extends Reporter {
 		$e->setAttribute("severity", $level);
 		$e->setAttribute("message", $message);
 		$e->setAttribute("source", $check);
+		
+		if (empty($this->currentElement)) {
+			$this->_startNewElement("");
+		}
 		$this->currentElement->appendChild($e);
 	}
 

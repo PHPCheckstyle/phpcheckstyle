@@ -1,14 +1,11 @@
 <?php
 if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
-	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__)."/..");
+	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__) . "/..");
 }
-
-
 
 define("SAME_LINE", "sl");
 
 define("NEW_LINE", "nl");
-
 
 /**
  * Loads the test configuration.
@@ -19,7 +16,7 @@ class CheckStyleConfig {
 	
 	// The configuration file
 	private $file;
-
+	
 	// Array that contains the loaded checks configuration
 	public $myConfig = array();
 
@@ -31,24 +28,25 @@ class CheckStyleConfig {
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param String $configFile The path of the config file
+	 *
+	 * @param String $configFile
+	 *        	The path of the config file
 	 */
 	public function CheckStyleConfig($configFile) {
-
+		
 		// If the path is a valid file we use it as is
 		if (is_file($configFile)) {
 			$this->file = $configFile;
 		} else {
-			// Otherwise we look in the config directory 
-			$this->file = PHPCHECKSTYLE_HOME_DIR."/config/".$configFile;
+			// Otherwise we look in the config directory
+			$this->file = PHPCHECKSTYLE_HOME_DIR . "/config/" . $configFile;
 			
 			if (!is_file($this->file)) {
-				echo "Config file not found : ".$configFile;
+				echo "Config file not found : " . $configFile;
 				exit(0);
 			}
 		}
-
+		
 		$this->xmlParser = xml_parser_create();
 		xml_set_object($this->xmlParser, $this);
 		xml_set_element_handler($this->xmlParser, "_startElement", "_endElement");
@@ -75,17 +73,15 @@ class CheckStyleConfig {
 		if (!$fp) {
 			throw new Exception("Could not open XML input file");
 		}
-
+		
 		$data = fread($fp, 4096);
 		while ($data) {
 			if (!xml_parse($this->xmlParser, $data, feof($fp))) {
-				$msg = sprintf("Warning: XML error: %s at line %d",
-						xml_error_string(xml_get_error_code($this->xmlParser)),
-						xml_get_current_line_number($this->xmlParser));
+				$msg = sprintf("Warning: XML error: %s at line %d", xml_error_string(xml_get_error_code($this->xmlParser)), xml_get_current_line_number($this->xmlParser));
 				echo $msg;
 				$this->myConfig = array();
 			}
-
+			
 			$data = fread($fp, 4096);
 		}
 	}
@@ -93,7 +89,8 @@ class CheckStyleConfig {
 	/**
 	 * Return a list of items associed with a test.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return array the list of items for this test.
 	 */
 	public function getTestItems($test) {
@@ -104,7 +101,8 @@ class CheckStyleConfig {
 	/**
 	 * Return a list of items associed with a configuration.
 	 *
-	 * @param String $config name of the config
+	 * @param String $config
+	 *        	name of the config
 	 * @return array the list of items for this config.
 	 */
 	public function getConfigItems($config) {
@@ -114,7 +112,8 @@ class CheckStyleConfig {
 	/**
 	 * Return a list of exceptionfor a test.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return array the list of exceptions for this test.
 	 */
 	public function getTestExceptions($test) {
@@ -125,7 +124,8 @@ class CheckStyleConfig {
 	/**
 	 * Return a true if the test exist, false otherwise.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return Boolean true if test exists.
 	 */
 	public function getTest($test) {
@@ -136,7 +136,8 @@ class CheckStyleConfig {
 	/**
 	 * Return the level of severity of a test.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return the level of severity.
 	 */
 	public function getTestLevel($test) {
@@ -145,19 +146,20 @@ class CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig) && array_key_exists('level', $this->myConfig[$test])) {
 			$ret = $this->myConfig[$test]['level'];
 		}
-
+		
 		if ($ret != ERROR && $ret != IGNORE && $ret != INFO && $ret != WARNING) {
-			echo "Invalid level for test ".$test." : ".$ret;
+			echo "Invalid level for test " . $test . " : " . $ret;
 			$ret = WARNING;
 		}
-
+		
 		return $ret;
 	}
 
 	/**
 	 * Return the regular expression linked to the test.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return the regular expression.
 	 */
 	public function getTestRegExp($test) {
@@ -166,14 +168,15 @@ class CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig) && array_key_exists('regexp', $this->myConfig[$test])) {
 			$ret = $this->myConfig[$test]['regexp'];
 		}
-
+		
 		return $ret;
 	}
 
 	/**
 	 * Return the list of deprecated method and their replacement.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return the list of depecated values.
 	 */
 	public function getTestDeprecations($test) {
@@ -182,14 +185,15 @@ class CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig)) {
 			$ret = $this->myConfig[$test];
 		}
-
+		
 		return $ret;
 	}
 
 	/**
 	 * Return the list of aliases and their replacement.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return the list of replaced values.
 	 */
 	public function getTestAliases($test) {
@@ -198,14 +202,15 @@ class CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig)) {
 			$ret = $this->myConfig[$test];
 		}
-
+		
 		return $ret;
 	}
-	
+
 	/**
 	 * Return the list of replacements.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return the list of replaced values.
 	 */
 	public function getTestReplacements($test) {
@@ -214,15 +219,17 @@ class CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig)) {
 			$ret = $this->myConfig[$test];
 		}
-	
+		
 		return $ret;
 	}
 
 	/**
 	 * Return the value of a property
 	 *
-	 * @param String $test name of the test
-	 * @param String $property name of the property
+	 * @param String $test
+	 *        	name of the test
+	 * @param String $property
+	 *        	name of the property
 	 * @return the value.
 	 */
 	public function getTestProperty($test, $property) {
@@ -239,39 +246,42 @@ class CheckStyleConfig {
 	 * SAX function indicating start of an element
 	 * Store the TEST and PROPERTY values in an array
 	 *
-	 * @param Parser $parser the parser
-	 * @param Elem $elem name of element
-	 * @param Attributes $attrs list of attributes of the element
+	 * @param Parser $parser
+	 *        	the parser
+	 * @param Elem $elem
+	 *        	name of element
+	 * @param Attributes $attrs
+	 *        	list of attributes of the element
 	 */
 	private function _startElement($parser, $elem, $attrs) {
 		switch ($elem) {
-
+			
 			// Case of a configuration property
 			case 'CONFIG':
 				$this->currentConfig = strtolower($attrs['NAME']);
 				$this->myConfig[$this->currentConfig] = array();
 				break;
-
-				// Case of a configuration property item
+			
+			// Case of a configuration property item
 			case 'CONFIGITEM':
 				$this->myConfig[$this->currentConfig][] = $attrs['VALUE'];
 				break;
-
-				// Case of a test rule
+			
+			// Case of a test rule
 			case 'TEST':
 				$this->currentTest = strtolower($attrs['NAME']);
 				$this->myConfig[$this->currentTest] = array();
-
+				
 				if (isset($attrs['LEVEL'])) {
 					$this->myConfig[$this->currentTest]['level'] = $attrs['LEVEL'];
 				}
-
+				
 				if (isset($attrs['REGEXP'])) {
 					$this->myConfig[$this->currentTest]['regexp'] = $attrs['REGEXP'];
 				}
 				break;
-
-				// Case of a propertie of a rule (name / value)
+			
+			// Case of a propertie of a rule (name / value)
 			case 'PROPERTY':
 				$pname = $attrs['NAME'];
 				$pval = true;
@@ -280,22 +290,22 @@ class CheckStyleConfig {
 				}
 				$this->myConfig[$this->currentTest][strtolower($pname)] = $pval;
 				break;
-
-				// Case of a item of a list of values of a rule
+			
+			// Case of a item of a list of values of a rule
 			case 'ITEM':
 				if (isset($attrs['VALUE'])) {
 					$this->myConfig[$this->currentTest]['item'][] = $attrs['VALUE'];
 				}
 				break;
-
-				// Case of an exception to a rule
+			
+			// Case of an exception to a rule
 			case 'EXCEPTION':
 				if (isset($attrs['VALUE'])) {
 					$this->myConfig[$this->currentTest]['exception'][] = $attrs['VALUE'];
 				}
 				break;
-
-				// Case of a deprecated function
+			
+			// Case of a deprecated function
 			case 'DEPRECATED':
 				if (isset($attrs['OLD'])) {
 					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
@@ -307,7 +317,7 @@ class CheckStyleConfig {
 					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['version'] = $attrs['VERSION'];
 				}
 				break;
-
+			
 			// Case of an alias function
 			case 'ALIAS':
 				if (isset($attrs['OLD'])) {
@@ -317,17 +327,17 @@ class CheckStyleConfig {
 					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
 				}
 				break;
-				
+			
 			// Case of a replacement
 			case 'REPLACEMENT':
-					if (isset($attrs['OLD'])) {
-						$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
-					}
-					if (isset($attrs['NEW'])) {
-						$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
-					}
-					break;
-
+				if (isset($attrs['OLD'])) {
+					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['old'] = $attrs['OLD'];
+				}
+				if (isset($attrs['NEW'])) {
+					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
+				}
+				break;
+			
 			default:
 				break;
 		}
@@ -337,20 +347,17 @@ class CheckStyleConfig {
 	 * SAX function indicating end of element
 	 * Currenlty we dont need to do anything here
 	 *
-	 * @param Parser $parser
-	 * @param String $name
+	 * @param Parser $parser        	
+	 * @param String $name        	
 	 */
-	private function _endElement($parser, $name) {
-	}
+	private function _endElement($parser, $name) {}
 
 	/**
 	 * SAX function for processing CDATA
 	 * Currenlty we dont need to do anything here
 	 *
-	 * @param Parser $parser
-	 * @param String $name
+	 * @param Parser $parser        	
+	 * @param String $name        	
 	 */
-	private function _gotCdata($parser, $name) {
-	}
-
+	private function _gotCdata($parser, $name) {}
 }

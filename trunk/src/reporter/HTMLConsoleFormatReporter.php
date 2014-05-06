@@ -1,5 +1,5 @@
 <?php
-require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/HTMLFormatReporter.php";
+require_once PHPCHECKSTYLE_HOME_DIR . "/src/reporter/HTMLFormatReporter.php";
 
 /**
  * Writes the errors to the console in HTML format.
@@ -16,7 +16,8 @@ class HTMLConsoleFormatReporter extends HTMLFormatReporter {
 	/**
 	 * Writes an HTML fragment to stdout.
 	 *
-	 * @param $fragment string The HTML fragment to write.
+	 * @param $fragment string
+	 *        	The HTML fragment to write.
 	 */
 	protected function writeFragment($fragment) {
 		echo $fragment;

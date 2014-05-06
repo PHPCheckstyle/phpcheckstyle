@@ -1,5 +1,5 @@
 <?php
-if (! defined("T_ML_COMMENT")) {
+if (!defined("T_ML_COMMENT")) {
 	define("T_ML_COMMENT", T_COMMENT);
 }
 
@@ -28,7 +28,7 @@ define('T_SQUARE_BRACKET_OPEN', 10021); // [
 define('T_SQUARE_BRACKET_CLOSE', 10022); // ]
 define('T_AROBAS', 10023); // @
 define('T_QUOTE', 10024); // " (only detected before and after a T_ENCAPSED_AND_WHITESPACE) otherwise should be included in T_CONSTANT_ENCAPSED_STRING
-define('T_UNKNOWN', - 1);
+define('T_UNKNOWN', -1);
 
 /**
  * TokenInfo class.
@@ -50,7 +50,7 @@ class TokenInfo {
 
 	/**
 	 * The token text.
-	 * 
+	 *
 	 * @var String
 	 */
 	var $text = null;
@@ -71,7 +71,7 @@ class TokenInfo {
 
 	/**
 	 * Return a string representation of the token.
-	 * 
+	 *
 	 * @return String
 	 */
 	public function toString() {

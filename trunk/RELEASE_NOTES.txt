@@ -1,5 +1,11 @@
                          PHPCheckstyle Release Notes
                          ===========================
+
+Version 0.13.2
+--------------
+* Change in the default configutations : White spaces are required before and after the concatenation operator ".".
+  This may generate lots of new warnings. 
+
 Version 0.13.1
 --------------
 * Issue 71:	False positive : close()

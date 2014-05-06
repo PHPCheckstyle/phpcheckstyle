@@ -170,12 +170,10 @@
     
     <!-- Check for the (required) presence of a white space after some tokens : "," "}" "-" -->
     <test name="checkWhiteSpaceAfter"> 
-    	<exception value="."/>  <!-- Exceptions to this rule -->
     </test>
     
     <!-- Check for the (required) presence of a white space before some tokens : "{" "-" -->
     <test name="checkWhiteSpaceBefore">
-    	<exception value="."/>  <!-- Exceptions to this rule -->
     	<exception value=":"/>  <!-- Because of the switch/case --> 
     </test> 
     

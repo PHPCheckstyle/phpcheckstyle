@@ -1,18 +1,19 @@
 <?php
-require_once PHPCHECKSTYLE_HOME_DIR."/src/reporter/Reporter.php";
+require_once PHPCHECKSTYLE_HOME_DIR . "/src/reporter/Reporter.php";
 
 /**
  * Class used to handle multiple reporters.
  */
 class Reporters {
-
+	
 	// The list of registered reporters.
 	private $reporters = array();
 
 	/**
 	 * Add a reporter to the list of registered reporters.
 	 *
-	 * @param Reporter $reported a Reporter
+	 * @param Reporter $reported
+	 *        	a Reporter
 	 */
 	public function addReporter($reported) {
 		$this->reporters[] = $reported;
@@ -40,7 +41,8 @@ class Reporters {
 	 * this function called everytime a new file has been started for
 	 * checkstyle processing.
 	 *
-	 * @param $phpFile new file's name
+	 * @param $phpFile new
+	 *        	file's name
 	 */
 	public function currentlyProcessing($phpFile) {
 		foreach ($this->reporters as $reporter) {
@@ -54,15 +56,18 @@ class Reporters {
 	 * It is the responsibility of the derived class to appropriately
 	 * format it and write it into the output file
 	 *
-	 * @param $line line number of the error
-	 * @param String $check the name of the check
-	 * @param $message error message
-	 * @param $level the severity level
+	 * @param $line line
+	 *        	number of the error
+	 * @param String $check
+	 *        	the name of the check
+	 * @param $message error
+	 *        	message
+	 * @param $level the
+	 *        	severity level
 	 */
 	public function writeError($line, $check, $message, $level = WARNING) {
 		foreach ($this->reporters as $reporter) {
 			$reporter->writeError($line, $check, $message, $level);
 		}
 	}
-
 }

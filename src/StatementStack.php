@@ -7,44 +7,44 @@
  * @package classes
  */
 class StatementStack {
-	
+
 	/**
 	 * Stack of items.
-	 * 
+	 *
 	 * @var Array[StatementItem]
 	 */
 	var $statements = array();
-	
+
 	/**
 	 * Return the size of the stack.
-	 * 
+	 *
 	 * @return Integer
 	 */
 	function count() {
 		return count($this->statements);
 	}
-	
+
 	/**
 	 * Add a statement to the stack.
-	 * 
-	 * @param StatementItem $item
+	 *
+	 * @param StatementItem $item        	
 	 */
 	function push($item) {
 		array_push($this->statements, $item);
 	}
-	
+
 	/**
 	 * Get the top statement from the stack.
 	 *
-	 * @return StatementItem 
+	 * @return StatementItem
 	 */
 	function pop() {
 		return array_pop($this->statements);
 	}
-	
+
 	/**
 	 * Display the current branching stack.
-	 * 
+	 *
 	 * @return String
 	 */
 	function getStackDump() {
@@ -52,21 +52,20 @@ class StatementStack {
 		foreach ($this->statements as $item) {
 			$dump .= $item->type;
 			if ($item->type == "FUNCTION" || $item->type == "INTERFACE" || $item->type == "CLASS") {
-				$dump .= "(".$item->name.")";
+				$dump .= "(" . $item->name . ")";
 			}
 			$dump .= " -> ";
 		}
-	
+		
 		return $dump;
 	}
-	
+
 	/**
 	 * Return the top stack item.
 	 *
 	 * @return StatementItem
 	 */
 	function getCurrentStackItem() {
-		
 		$topItem = end($this->statements);
 		if ($topItem != null) {
 			return $topItem;
@@ -76,7 +75,7 @@ class StatementStack {
 			return new StatementItem();
 		}
 	}
-	
+
 	/**
 	 * Return the parent stack item.
 	 *
@@ -91,6 +90,4 @@ class StatementStack {
 			return new StatementItem();
 		}
 	}
-	
-
 }

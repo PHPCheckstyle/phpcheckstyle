@@ -5,12 +5,11 @@
  * 
  * @see : http://checkstyle.sourceforge.net/api/index.html
  */
+define("ERROR", "error");
 
-define("ERROR", "error"); 
+define("IGNORE", "ignore");
 
-define("IGNORE", "ignore"); 
-
-define("INFO", "info"); 
+define("INFO", "info");
 
 define("WARNING", "warning"); 
 

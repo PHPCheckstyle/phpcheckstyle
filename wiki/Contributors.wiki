@@ -13,6 +13,7 @@ Other contributors are:
   * Stéphane Roger 
   * Jens Radtke
   * Maximilian Pachl
+  * Mithesh Kavrani
 
 
 = How to contribute =

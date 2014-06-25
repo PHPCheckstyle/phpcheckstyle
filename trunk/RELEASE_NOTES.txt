@@ -5,6 +5,7 @@ Version 0.13.2
 --------------
 * Change in the default configutations : White spaces are required before and after the concatenation operator ".".
   This may generate lots of new warnings. 
+* Issue 77:	Exclude files/directories option from the web launcher.
 
 Version 0.13.1
 --------------

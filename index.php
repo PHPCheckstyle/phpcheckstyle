@@ -10,21 +10,41 @@
 	
 	<form name="myform" action="runFromWeb.php" method="POST">
 	
-	<p>File(s) to analyse
-	<input type="text" id="sourceDir" name="sourceDir" value="./test"></input>
-	</p>
+	<table>
 	
-	<p>Destination directory
-	<input type="text" id="resultDir" name ="resultDir" value="./checkstyle_result"></input>
-	</p>
+	<tr>
+		<td>File(s) to analyse <span style="color:red">*</span></td>
+		<td><input type="text" id="sourceDir" name="sourceDir" value="./test"></input></td>
+	</tr>
 	
-	<p>Configuration file
-	<input type="text" id="configFile" name ="configFile" value="default.cfg.xml"></input>
-	</p>
+	<tr>
+		<td>Destination directory</td>
+		<td><input type="text" id="resultDir" name ="resultDir" value="./checkstyle_result"></input></td>
+	</tr>
 	
+	<tr>
+		<td>Configuration file</td>
+		<td><input type="text" id="configFile" name ="configFile" value="default.cfg.xml"></input></td>
+	</tr>
+		
+	<tr>
+		<td>Exclude Files or Directories <span style="color:red">*</span></td>
+		<td><input type="text" id="excludeFile" name ="excludeFile" value=""></input></td>
+	</tr>
+	
+	</table>
+	
+	<br/>
+	<br/>
+		
 	<input type="submit" value="Run"></input>
 	
+	<br/>
+	<br/>
+	
 	</form>
+	
+	<i><span style="color:red">*</span> Multiple filenames or directory names can be added, comma separated.</i>
 	
 	</body>
 	

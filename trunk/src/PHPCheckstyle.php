@@ -352,6 +352,7 @@ class PHPCheckstyle {
 		foreach ($sources as $src) {
 			$roots = explode(",", $src);
 			foreach ($roots as $root) {
+				$root = trim($root);
 				$files = array_merge($files, $this->_getAllPhpFiles($root, $excludes));
 			}
 		}

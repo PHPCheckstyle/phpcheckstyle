@@ -550,7 +550,7 @@ class Tokenizer {
 		restore_error_handler();
 		
 		// Get the tokens
-		$tokens = token_get_all($source);
+		$tokens = @token_get_all($source);
 		
 		// Check for parsing errors
 		$parsingErrors = error_get_last();

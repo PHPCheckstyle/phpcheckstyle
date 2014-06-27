@@ -29,6 +29,13 @@ class Tokenizer {
 	 * @var Boolean
 	 */
 	private $shortOpenTagOff = false;
+	
+	/**
+	 * The file content.
+	 *
+	 * @var String
+	 */
+	public $content = null;
 
 	/**
 	 * The array of tokens in a file.
@@ -82,14 +89,14 @@ class Tokenizer {
 	 */
 	public function tokenize($filename) {
 		
-		// Parse the file
+		// Read the file
 		$contents = "";
 		if (filesize($filename)) {
 			$fp = fopen($filename, "rb");
-			$contents = fread($fp, filesize($filename));
+			$this->content = fread($fp, filesize($filename));
 			fclose($fp);
 		}
-		$this->tokens = $this->_getAllTokens($contents);
+		$this->tokens = $this->_getAllTokens($this->content);
 	}
 
 	/**

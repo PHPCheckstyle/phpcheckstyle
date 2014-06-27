@@ -147,3 +147,5 @@ define("PHPCHECKSTYLE_USE_STRICT_COMPARE", "Consider using a strict comparison o
 define("PHPCHECKSTYLE_EMPTY_FILE", "The file %s is empty.");
 
 define("PHPCHECKSTYLE_PHP_TAGS_START_LINE", "PHP tag should be at the beginning of the line.");
+
+define("PHPCHECKSTYLE_MANDATORY_HEADER", "Mandatory header not found.");

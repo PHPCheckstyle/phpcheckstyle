@@ -119,6 +119,18 @@
         <exception value="__toString"/>
     </test>
     
+        
+	<!-- Check for the presence of a mandatory header (licence for exemple) -->
+	<!-- Does not take into account spaces, tabs and returns -->    
+	<!-- Does not check that the content is a the beginning of the file -->
+    <test name="mandatoryHeader">
+    	<property name="header" value="
+/**
+ * Mandatory Header.
+ * 
+"/>
+    </test>
+    
     <!--  ****************  -->
     <!--    Indentation     -->
     <!--  ****************  -->    

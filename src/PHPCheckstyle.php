@@ -504,6 +504,10 @@ class PHPCheckstyle {
 		// Go to the first token
 		$token = $this->tokenizer->getCurrentToken();
 		
+		// File start
+		$this->_processFileStart();
+		
+		
 		// Run through every token of the file
 		while ($token !== false) {
 			
@@ -551,6 +555,16 @@ class PHPCheckstyle {
 		$this->_fileSuppressWarnings = array();
 		$this->_classSuppressWarnings = array();
 		$this->_interfaceSuppressWarnings = array();
+	}
+	
+	
+	/**
+	 * Process the start of a file.
+	 */
+	private function _processFileStart() {
+		
+		// Check for the presence of a mandatory header
+		$this->_checkMandatoryHeader();
 	}
 
 	/**
@@ -3000,9 +3014,28 @@ class PHPCheckstyle {
 			$exceptions = $this->_config->getTestExceptions('checkSilencedError');
 			if (empty($exceptions) || !in_array($text, $exceptions)) {
 				$previousToken = $this->tokenizer->peekPrvsToken();
-				if ($previousToken->id == T_AROBAS) {
+				if ($previousToken->id === T_AROBAS) {
 					$this->_writeError('checkSilencedError', PHPCHECKSTYLE_SILENCED_ERROR);
 				}
+			}
+		}
+	}
+	
+	/**
+	 * Check for the presence of a mandatory header.
+	 */
+	private function _checkMandatoryHeader() {
+		if ($this->_isActive('mandatoryHeader')) {
+				
+			$expectedHeader = $this->_config->getTestProperty('mandatoryHeader', 'header');
+			$expectedHeader = trim($expectedHeader);
+			$expectedHeader = preg_replace('~[\r\n\t ]+~', '', $expectedHeader);
+			
+			$filecontent = $this->tokenizer->content;
+			$filecontent = preg_replace('~[\r\n\t ]+~', '', $filecontent);
+			
+			if (strpos($filecontent, $expectedHeader) === FALSE) {
+				$this->_writeError('mandatoryHeader', PHPCHECKSTYLE_MANDATORY_HEADER);
 			}
 		}
 	}

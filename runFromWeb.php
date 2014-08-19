@@ -28,7 +28,7 @@ $sources = explode(',', $sourceDir);
 $style = new PHPCheckstyle\PHPCheckstyle($formats, $resultDir, $configFile, null, false, true);
 $style->processFiles($sources, $options['exclude']);
 
-echo "<pre>".print_r($style->_reporter->reporters[0]->outputFile, TRUE)."</pre>";die();
+echo "<pre>".print_r($style->_reporter->reporters[0]->outputFile, TRUE)."</pre>";
 
 echo "Reporting Completed.</BR></BR>";
 

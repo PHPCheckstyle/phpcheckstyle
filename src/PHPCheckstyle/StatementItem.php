@@ -1,4 +1,5 @@
 <?php
+namespace PHPCheckstyle;
 
 /**
  * Statement Item class.

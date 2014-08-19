@@ -1,5 +1,5 @@
 <?php
-require_once PHPCHECKSTYLE_HOME_DIR . "/src/reporter/Reporter.php";
+namespace PHPCheckstyle\Reporter;
 
 /**
  * Writes the errors into an HTML file.
@@ -28,7 +28,7 @@ class HTMLFormatReporter extends Reporter {
 	 * @param $ofolder the
 	 *        	folder name
 	 */
-	public function HTMLFormatReporter($ofolder = false) {
+	public function __construct($ofolder = false) {
 		parent::__construct($ofolder, $this->ofile);
 		$this->ofolder = $ofolder;
 	}

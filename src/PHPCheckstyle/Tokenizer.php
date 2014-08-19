@@ -1,12 +1,6 @@
 <?php
-if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
-	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__) . "/..");
-}
-require_once PHPCHECKSTYLE_HOME_DIR . "/src/TokenInfo.php";
-
-define("SHORT_OPEN_TAG", "<?");
-define("OPEN_TAG", "<?php");
-define("CLOSE_TAG", "?>");
+namespace PHPCheckstyle;
+use \Exception;
 
 /**
  * Lexical Analysis.
@@ -68,7 +62,7 @@ class Tokenizer {
 	/**
 	 * Constructor
 	 */
-	public function Tokenizer() {
+	public function __construct() {
 		
 		// Detect the php.ini settings
 		$this->shortOpenTagOff = (ini_get('short_open_tag') == false);

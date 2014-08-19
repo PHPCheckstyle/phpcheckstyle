@@ -1,5 +1,5 @@
 <?php
-require_once PHPCHECKSTYLE_HOME_DIR . "/src/reporter/XmlFormatReporter.php";
+namespace PHPCheckstyle\Reporter;
 
 /**
  * Writes the errors into an xml file

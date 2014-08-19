@@ -1,5 +1,5 @@
 <?php
-require_once PHPCHECKSTYLE_HOME_DIR . "/src/reporter/Reporter.php";
+namespace PHPCheckstyle\Reporter;
 
 /**
  * Class used to handle multiple reporters.

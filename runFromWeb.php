@@ -1,7 +1,8 @@
 <?php 
 define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__));
 
-require_once PHPCHECKSTYLE_HOME_DIR."/src/PHPCheckstyle.php";
+// require_once PHPCHECKSTYLE_HOME_DIR."/src/PHPCheckstyle.php";
+require_once "vendor/autoload.php";
 
 // default values
 $options['format'] = "html"; // default format
@@ -24,7 +25,7 @@ $formats = explode(',', $options['format']);
 $sources = explode(',', $sourceDir);
 
 // Launch PHPCheckstyle
-$style = new PHPCheckstyle($formats, $resultDir, $configFile, null, false, true);
+$style = new PHPCheckstyle\PHPCheckstyle($formats, $resultDir, $configFile, null, false, true);
 $style->processFiles($sources, $options['exclude']);
 
 echo "Reporting Completed.</BR></BR>";

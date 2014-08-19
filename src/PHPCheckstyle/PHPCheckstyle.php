@@ -131,6 +131,7 @@ define("CLOSE_TAG", "?>");
 
 use \Exception;
 use PHPCheckstyle\Config\CheckStyleConfig;
+use PHPCheckstyle\Config\CheckArrayStyleConfig;
 use PHPCheckstyle\Config\CheckXMLStyleConfig;
 use PHPCheckstyle\Reporter\Reporters;
 use PHPCheckstyle\Reporter\Reporter;
@@ -389,8 +390,12 @@ class PHPCheckstyle {
 		$this->_displayProgress = $progress;
 		
 		// Initialise the configuration
-		$this->_config = new CheckXMLStyleConfig($configFile);
-		$this->_config->parse();
+		if(is_array($configFile)) {
+			$this->_config = new CheckArrayStyleConfig($configFile);
+		}else{
+			$this->_config = new CheckXMLStyleConfig($configFile);
+			$this->_config->parse();
+		}
 		
 		// Load the list of system variables
 		$this->_systemVariables = $this->_config->getConfigItems('systemVariables');

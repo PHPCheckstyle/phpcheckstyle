@@ -1,7 +1,6 @@
 <?php 
 define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__));
 
-// require_once PHPCHECKSTYLE_HOME_DIR."/src/PHPCheckstyle.php";
 require_once "vendor/autoload.php";
 
 // default values
@@ -23,6 +22,14 @@ else {
 //
 $formats = explode(',', $options['format']);
 $sources = explode(',', $sourceDir);
+
+// @TODO: Make this an includeable file
+$configFile = array(
+	'indentation' => array(
+		"type" => "spaces",
+		"number" => 2
+	)
+);
 
 // Launch PHPCheckstyle
 $style = new PHPCheckstyle\PHPCheckstyle($formats, $resultDir, $configFile, null, false, true);

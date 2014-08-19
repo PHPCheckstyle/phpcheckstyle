@@ -2,7 +2,6 @@
 namespace PHPCheckstyle\Config;
 
 abstract class CheckStyleConfig {
-	abstract public function parse();
 	abstract public function getTestItems($test);
 	abstract public function getConfigItems($config);
 	abstract public function getTestExceptions($test);

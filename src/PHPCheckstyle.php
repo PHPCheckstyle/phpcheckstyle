@@ -107,6 +107,7 @@ class PHPCheckstyle {
 	private $_currentInterfacename = null;
 
 	private $_currentFilename = null;
+	private $_packageName = null;
 
 	private $_currentStatement = false;
 
@@ -445,6 +446,7 @@ class PHPCheckstyle {
 		$this->_currentClassname = null;
 		$this->_currentInterfacename = null;
 		$this->_currentFilename = null;
+		$this->_packageName = null;
 		
 		$this->_docblocNbParams = 0;
 		$this->_docblocNbReturns = 0;
@@ -490,7 +492,11 @@ class PHPCheckstyle {
 			$this->_isClass = true;
 		}
 		
+		// Store the file name
 		$this->_currentFilename = $filename;
+		
+		// By defaut the package name is based on the file name 
+		$this->_packageName = $this->_extractPackageName($filename);
 		
 		// Tokenize the file
 		$this->tokenizer->tokenize($filename);
@@ -548,7 +554,7 @@ class PHPCheckstyle {
 		
 		// Write the count of lines for this file
 		if ($this->_lineCountReporter != null) {
-			$this->_lineCountReporter->writeFileCount($filename, $this->_ncssFileClasses, $this->_ncssFileInterfaces, $this->_ncssFileFunctions, $this->_ncssFileLinesOfCode, $this->_ncssFilePhpdoc, $this->_ncssFileLinesPhpdoc, $this->_ncssFileSingleComment, $this->_ncssFileMultiComment);
+			$this->_lineCountReporter->writeFileCount($this->_packageName, $this->_ncssFileClasses, $this->_ncssFileInterfaces, $this->_ncssFileFunctions, $this->_ncssFileLinesOfCode, $this->_ncssFilePhpdoc, $this->_ncssFileLinesPhpdoc, $this->_ncssFileSingleComment, $this->_ncssFileMultiComment);
 		}
 		
 		// Reset the suppression warnings
@@ -745,6 +751,12 @@ class PHPCheckstyle {
 			case T_INTERFACE:
 				$this->_processInterfaceStatement();
 				break;
+				
+			// Namespace declaration
+			case T_NAMESPACE:
+				$this->_processNamespace();
+				break;
+				
 			
 			// operators, generally, need to be surrounded by whitespace
 			case T_PLUS_EQUAL:
@@ -1604,6 +1616,15 @@ class PHPCheckstyle {
 		$this->_inInterface = false;
 	}
 
+	/**
+	 * Process the namespace declaration.
+	 */
+	private function _processNamespace() {
+		// We replace the package name with the namespace
+		$this->_packageName = $this->tokenizer->peekNextValidToken()->text;
+	}
+	
+	
 	/**
 	 * Process the start of a class.
 	 */
@@ -3233,4 +3254,27 @@ class PHPCheckstyle {
 			}
 		}
 	}
+	
+	/**
+	 * Extract a package name from the filename.
+	 *
+	 * @param String $filename the file name
+	 */
+	private function _extractPackageName($filename) {
+		
+		$filename = str_replace('/', '.', $filename);
+		$filename = str_replace('\\', '.', $filename);
+		while (strpos($filename, '.') == 0) {
+			$filename = substr($filename, 1);
+		}
+		if (strlen($filename) > 4) { // remove the .php at the end
+			$filename = substr($filename, 0, -4);
+		}
+		
+		// Identify the package name
+		$packageName = substr($filename, 0, strrpos($filename, '.'));
+		
+		return $packageName;
+	}
+	
 }

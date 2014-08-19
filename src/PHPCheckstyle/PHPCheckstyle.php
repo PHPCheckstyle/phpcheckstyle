@@ -132,6 +132,7 @@ define("CLOSE_TAG", "?>");
 use \Exception;
 use PHPCheckstyle\Reporter\Reporters;
 use PHPCheckstyle\Reporter\Reporter;
+use PHPCheckstyle\Reporter\ArrayReporter;
 use PHPCheckstyle\Reporter\ConsoleReporter;
 use PHPCheckstyle\Reporter\HTMLConsoleFormatReporter;
 use PHPCheckstyle\Reporter\HTMLFormatReporter;
@@ -147,6 +148,8 @@ use PHPCheckstyle\Reporter\XmlNCSSReporter;
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
  */
 class PHPCheckstyle {
+	// The class used to export the result
+	public $_reporter;
 
 	/**
 	 * The PHP file parser.
@@ -284,9 +287,6 @@ class PHPCheckstyle {
 	 */
 	private $_systemVariables = array();
 	
-	// The class used to export the result
-	private $_reporter;
-	
 	// The class used to export the count of lines
 	private $_lineCountReporter;
 
@@ -378,6 +378,9 @@ class PHPCheckstyle {
 		}
 		if (in_array("console", $formats)) {
 			$this->_reporter->addReporter(new ConsoleReporter());
+		}
+		if (in_array("array", $formats)) {
+			$this->_reporter->addReporter(new ArrayReporter());
 		}
 		if ($linecountfile != null) {
 			$this->_lineCountReporter = new XmlNCSSReporter($outDir, $linecountfile);

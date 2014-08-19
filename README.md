@@ -22,6 +22,11 @@ more information and documentation
 
 ## 3. Installation
 
+### Installation with Composer
+
+
+### Manual Installation
+
 Just unzip the distribution.
 
 ```bash

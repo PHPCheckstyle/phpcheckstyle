@@ -36,7 +36,9 @@ files in it.
 
 - Change directory to the PHPCheckstyle installation directory.
 
+  ```bash
   $> cd phpcheckstyle
+  ```
 
 - Execute the run.php script providing the `--src` option.
 

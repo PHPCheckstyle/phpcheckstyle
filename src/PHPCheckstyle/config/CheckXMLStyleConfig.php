@@ -1,12 +1,12 @@
 <?php
-namespace PHPCheckstyle;
+namespace PHPCheckstyle\Config;
 
 /**
  * Loads the test configuration.
  *
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
  */
-class CheckStyleConfig {
+class CheckXMLStyleConfig extends CheckStyleConfig {
 	
 	// The configuration file
 	private $file;

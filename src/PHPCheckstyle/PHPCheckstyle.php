@@ -130,6 +130,8 @@ define("OPEN_TAG", "<?php");
 define("CLOSE_TAG", "?>");
 
 use \Exception;
+use PHPCheckstyle\Config\CheckStyleConfig;
+use PHPCheckstyle\Config\CheckXMLStyleConfig;
 use PHPCheckstyle\Reporter\Reporters;
 use PHPCheckstyle\Reporter\Reporter;
 use PHPCheckstyle\Reporter\ConsoleReporter;
@@ -387,7 +389,7 @@ class PHPCheckstyle {
 		$this->_displayProgress = $progress;
 		
 		// Initialise the configuration
-		$this->_config = new CheckStyleConfig($configFile);
+		$this->_config = new CheckXMLStyleConfig($configFile);
 		$this->_config->parse();
 		
 		// Load the list of system variables

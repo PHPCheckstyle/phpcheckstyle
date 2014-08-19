@@ -3,7 +3,7 @@ require_once PHPCHECKSTYLE_HOME_DIR . "/src/reporter/Reporter.php";
 
 /**
  * Writes the count of lines of codes in an XML file.
- * 
+ *
  * Format compatible with javancss:
  * ================================
  * <?xml version="1.0"?>
@@ -60,10 +60,10 @@ class XmlNCSSReporter {
 	/**
 	 * Constructor; calls parent's constructor
 	 *
-	 * @param $ofolder the
-	 *        	output folder
-	 * @param $ofile the
-	 *        	output filename
+	 * @param String $ofolder
+	 *        	the output folder
+	 * @param String $ofile
+	 *        	the output filename
 	 */
 	public function XmlNCSSReporter($ofolder = false, $ofile = null) {
 		$this->outputFile = $ofolder . $ofile;
@@ -101,8 +101,8 @@ class XmlNCSSReporter {
 	 * @see Reporter::currentlyProcessing add the previous element to the tree and start a new elemtn
 	 *      for the new file
 	 *     
-	 * @param $phpFile the
-	 *        	file currently processed
+	 * @param String $phpFile
+	 *        	the file currently processed
 	 *        	@SuppressWarnings checkUnusedFunctionParameters The parameter is inherited
 	 */
 	public function currentlyProcessing($phpFile) {}
@@ -110,36 +110,30 @@ class XmlNCSSReporter {
 	/**
 	 * Write the count of lines for one file
 	 *
-	 * @param $fileName the
-	 *        	file name
-	 * @param $classes the
-	 *        	number of classes in the file
-	 * @param $interfaces the
-	 *        	number of interfaces in the file
-	 * @param $functions the
-	 *        	number of functions
-	 * @param $ncss the
-	 *        	number of non empty lines of code
-	 * @param $javadocs the
-	 *        	number of PHPDoc blocks
-	 * @param $javadocLines the
-	 *        	number of PHPDoc lines
-	 * @param $singleCommentLines the
-	 *        	number of single line comments
-	 * @param $multiCommentLines the
-	 *        	number of multi-line comments
+	 * @param Integer $packageName
+	 *        	the package name
+	 * @param Integer $classes
+	 *        	the number of classes in the file
+	 * @param Integer $interfaces
+	 *        	the number of interfaces in the file
+	 * @param Integer $functions
+	 *        	the number of functions
+	 * @param Integer $ncss
+	 *        	the number of non empty lines of code
+	 * @param Integer $javadocs
+	 *        	the number of PHPDoc blocks
+	 * @param Integer $javadocLines
+	 *        	the number of PHPDoc lines
+	 * @param Integer $singleCommentLines
+	 *        	the number of single line comments
+	 * @param Integer $multiCommentLines
+	 *        	the number of multi-line comments
 	 */
-	public function writeFileCount($fileName, $classes, $interfaces, $functions, $ncss, $javadocs, $javadocLines, $singleCommentLines, $multiCommentLines) {
-		$fileName = str_replace('/', '.', $fileName);
-		while (strpos($fileName, '.') == 0) {
-			$fileName = substr($fileName, 1);
-		}
-		if (strlen($fileName) > 4) { // remove the .php at the end
-			$fileName = substr($fileName, 0, -4);
-		}
+	public function writeFileCount($packageName, $classes, $interfaces, $functions, $ncss, $javadocs, $javadocLines, $singleCommentLines, $multiCommentLines) {
+			
 		
-		// Identify the package name
-		$packageName = substr($fileName, 0, strrpos($fileName, '.'));
+		echo "packageName : " . $packageName . PHP_EOL;
+		
 		if ($this->lastPackageName === $packageName) {
 			
 			// Add the values
@@ -177,11 +171,11 @@ class XmlNCSSReporter {
 		$name = $this->document->createElement('name', $packageName);
 		$e->appendChild($name);
 		
-		$classesE = $this->document->createElement('classes', $this->packageClasses);
+		$classesE = $this->document->createElement('classes', $this->packageClasses + $this->packageInterfaces);
 		$e->appendChild($classesE);
 		
-		$interfacesE = $this->document->createElement('interfaces', $this->packageInterfaces);
-		$e->appendChild($interfacesE);
+		// $interfacesE = $this->document->createElement('interfaces', $this->packageInterfaces);
+		// $e->appendChild($interfacesE);
 		
 		$functionsE = $this->document->createElement('functions', $this->packageFunctions);
 		$e->appendChild($functionsE);
@@ -209,7 +203,7 @@ class XmlNCSSReporter {
 		//
 		$obj = $this->document->createElement("object");
 		
-		$objname = $this->document->createElement('name', $fileName);
+		$objname = $this->document->createElement('name', $packageName);
 		$obj->appendChild($objname);
 		
 		$objncss = $this->document->createElement('ncss', $ncss);
@@ -232,24 +226,24 @@ class XmlNCSSReporter {
 	/**
 	 * Write the total count of lines for the project.
 	 *
-	 * @param $nbFiles the
-	 *        	number of files.
-	 * @param $classes the
-	 *        	number of classes
-	 * @param $interfaces the
-	 *        	number of interfaces
-	 * @param $functions the
-	 *        	number of functions
-	 * @param $ncss the
-	 *        	number of non empty lines of code
-	 * @param $javadocs the
-	 *        	number of PHPDoc blocks
-	 * @param $javadocLines the
-	 *        	number of PHPDoc lines
-	 * @param $singleCommentLines the
-	 *        	number of single line comments
-	 * @param $multiCommentLines the
-	 *        	number of multi-line comments
+	 * @param Integer $nbFiles
+	 *        	the number of files.
+	 * @param Integer $classes
+	 *        	the number of classes
+	 * @param Integer $interfaces
+	 *        	the number of interfaces
+	 * @param Integer $functions
+	 *        	the number of functions
+	 * @param Integer $ncss
+	 *        	the	number of non empty lines of code
+	 * @param Integer $javadocs
+	 *        	the	number of PHPDoc blocks
+	 * @param Integer $javadocLines
+	 *        	the	number of PHPDoc lines
+	 * @param Integer $singleCommentLines
+	 *        	the number of single line comments
+	 * @param Integer $multiCommentLines
+	 *        	the	number of multi-line comments
 	 */
 	public function writeTotalCount($nbFiles, $classes, $interfaces, $functions, $ncss, $javadocs, $javadocLines, $singleCommentLines, $multiCommentLines) {
 		
@@ -258,11 +252,11 @@ class XmlNCSSReporter {
 		//
 		$e = $this->document->createElement("total");
 		
-		$classesE = $this->document->createElement('classes', $classes);
+		$classesE = $this->document->createElement('classes', $classes + $interfaces);
 		$e->appendChild($classesE);
 		
-		$interfacesE = $this->document->createElement('interfaces', $interfaces);
-		$e->appendChild($interfacesE);
+		// $interfacesE = $this->document->createElement('interfaces', $interfaces);
+		// $e->appendChild($interfacesE);
 		
 		$functionsE = $this->document->createElement('functions', $functions);
 		$e->appendChild($functionsE);

@@ -67,9 +67,9 @@ class Tokenizer {
 		// Detect the php.ini settings
 		$this->shortOpenTagOff = (ini_get('short_open_tag') == false);
 		
-		if ($this->shortOpenTagOff) {
+		/*if ($this->shortOpenTagOff) {
 			echo "Warning : The short_open_tag value of your php.ini setting is off, you may want to activate it for correct code analysis";
-		}
+		}*/
 		
 		$this->reset();
 	}

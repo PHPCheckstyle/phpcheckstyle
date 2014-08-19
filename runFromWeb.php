@@ -5,7 +5,7 @@ define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__));
 require_once "vendor/autoload.php";
 
 // default values
-$options['format'] = "html"; // default format
+$options['format'] = "array"; // default format
 
 // Get user selection
 $sourceDir = $_POST['sourceDir'];
@@ -27,6 +27,8 @@ $sources = explode(',', $sourceDir);
 // Launch PHPCheckstyle
 $style = new PHPCheckstyle\PHPCheckstyle($formats, $resultDir, $configFile, null, false, true);
 $style->processFiles($sources, $options['exclude']);
+
+echo "<pre>".print_r($style->_reporter->reporters[0]->outputFile, TRUE)."</pre>";die();
 
 echo "Reporting Completed.</BR></BR>";
 

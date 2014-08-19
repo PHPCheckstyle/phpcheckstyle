@@ -9,10 +9,10 @@ namespace PHPCheckstyle\Reporter;
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
  */
 abstract class Reporter {
+	
+	public $outputFile;
 
 	protected $currentPhpFile;
-
-	protected $outputFile;
 
 	/**
 	 * Constructor

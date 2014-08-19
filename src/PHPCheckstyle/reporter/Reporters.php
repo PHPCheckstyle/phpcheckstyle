@@ -7,7 +7,7 @@ namespace PHPCheckstyle\Reporter;
 class Reporters {
 	
 	// The list of registered reporters.
-	private $reporters = array();
+	public $reporters = array();
 
 	/**
 	 * Add a reporter to the list of registered reporters.

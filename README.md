@@ -40,7 +40,7 @@ files in it.
   $> cd phpcheckstyle
   ```
 
-- Execute the run.php script providing the `--src` option.
+- Execute the `run.php` script providing the `--src` option.
 
   ```bash
   $> php run.php --src <php source directory/file>
@@ -54,4 +54,4 @@ files in it.
 
 
 # License
-See [LICENSE](/jbrooksuk/phpcheckstyle/blob/master/LICENSE.txt)
+See [LICENSE](/LICENSE.txt)

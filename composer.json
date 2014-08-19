@@ -1,5 +1,5 @@
 {
-    "name": "phpcheckstyle/phpcheckstyle",
+    "name": "jbrooksuk/phpcheckstyle",
     "description": "PHPCheckstyle is an open-source tool that helps PHP programmers adhere to certain coding conventions",
     "type": "library",
     "keywords": [
@@ -7,14 +7,14 @@
         "standard",
         "convention"
     ],
-    "homepage": "http://code.google.com/p/phpcheckstyle/",
+    "homepage": "https://github.com/jbrooksuk/phpcheckstyle/",
     "license": "OSL-2.1",
     "require": {
         "php": ">=5.0.0"
     },
     "support" : {
-        "wiki" : "https://code.google.com/p/phpcheckstyle/w/list",
-        "source" : "http://phpcheckstyle.googlecode.com/svn/trunk/"
+        "wiki" : "https://github.com/jbrooksuk/phpcheckstyle/wiki",
+        "source" : "https://github.com/jbrooksuk/phpcheckstyle"
     },
     "autoload": {
         "psr-0": {

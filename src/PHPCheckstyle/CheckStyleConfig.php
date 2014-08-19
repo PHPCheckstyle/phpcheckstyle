@@ -1,11 +1,5 @@
 <?php
-if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
-	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__) . "/..");
-}
-
-define("SAME_LINE", "sl");
-
-define("NEW_LINE", "nl");
+namespace PHPCheckstyle;
 
 /**
  * Loads the test configuration.
@@ -32,7 +26,7 @@ class CheckStyleConfig {
 	 * @param String $configFile
 	 *        	The path of the config file
 	 */
-	public function CheckStyleConfig($configFile) {
+	public function __construct($configFile) {
 		
 		// If the path is a valid file we use it as is
 		if (is_file($configFile)) {

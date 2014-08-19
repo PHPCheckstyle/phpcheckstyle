@@ -1,5 +1,5 @@
 <?php
-require_once PHPCHECKSTYLE_HOME_DIR . "/src/reporter/Reporter.php";
+namespace PHPCheckstyle\Reporter;
 
 /**
  * Writes the errors into in plain text to the output file
@@ -26,7 +26,7 @@ class PlainFormatReporter extends Reporter {
 	 * @param $ofolder the
 	 *        	folder name
 	 */
-	public function PlainFormatReporter($ofolder = false) {
+	public function __construct($ofolder = false) {
 		parent::__construct($ofolder, $this->ofile);
 	}
 

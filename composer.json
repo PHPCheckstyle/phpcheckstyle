@@ -15,6 +15,11 @@
     "support" : {
         "wiki" : "https://code.google.com/p/phpcheckstyle/w/list",
         "source" : "http://phpcheckstyle.googlecode.com/svn/trunk/"
+    },
+    "autoload": {
+        "psr-0": {
+            "PHPCheckstyle\\": "src/"
+        }
     }
    
 }

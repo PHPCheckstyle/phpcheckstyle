@@ -1,5 +1,6 @@
 <?php
-require_once PHPCHECKSTYLE_HOME_DIR . "/src/reporter/Reporter.php";
+namespace PHPCheckstyle\Reporter;
+use DomDocument;
 
 /**
  * Writes the count of lines of codes in an XML file.
@@ -65,7 +66,7 @@ class XmlNCSSReporter {
 	 * @param String $ofile
 	 *        	the output filename
 	 */
-	public function XmlNCSSReporter($ofolder = false, $ofile = null) {
+	public function __construct($ofolder = false, $ofile = null) {
 		$this->outputFile = $ofolder . $ofile;
 		if (!$this->outputFile) {
 			$this->outputFile = "php://output";

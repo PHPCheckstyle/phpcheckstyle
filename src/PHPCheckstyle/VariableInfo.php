@@ -1,4 +1,5 @@
 <?php
+namespace PHPCheckstyle;
 
 /**
  * Info about a variable in the code.

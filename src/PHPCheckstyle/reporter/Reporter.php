@@ -1,4 +1,5 @@
 <?php
+namespace PHPCheckstyle\Reporter;
 
 /**
  * Abstract base class for any type of report generators
@@ -24,7 +25,7 @@ abstract class Reporter {
 	 * @param $ofile the
 	 *        	output filename
 	 */
-	public function Reporter($ofolder = false, $ofile = "error.txt") {
+	public function __construct($ofolder = false, $ofile = "error.txt") {
 		
 		// creating the folder if it does not already exist.
 		if ($ofolder != false && !file_exists($ofolder)) {

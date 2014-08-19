@@ -1,5 +1,6 @@
 <?php
-require_once PHPCHECKSTYLE_HOME_DIR . "/src/reporter/Reporter.php";
+namespace PHPCheckstyle\Reporter;
+use DomDocument;
 
 /**
  * Writes the errors into an xml file.
@@ -36,7 +37,7 @@ class XmlFormatReporter extends Reporter {
 	 * @param $ofolder the
 	 *        	folder name
 	 */
-	public function XmlFormatReporter($ofolder = false) {
+	public function __construct($ofolder = false) {
 		parent::__construct($ofolder, $this->ofile);
 	}
 

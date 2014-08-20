@@ -24,6 +24,17 @@ more information and documentation
 
 ### Installation with Composer
 
+Add `jbrooksuk/phpcheckstyle` as a requirement to `composer.json`:
+
+```json
+{
+    "require": {
+        "jbrooksuk/phpcheckstyle": "dev-master"
+    }
+}
+```
+
+Update your packages with `composer update` or if installing from fresh, with `composer install`.
 
 ### Manual Installation
 

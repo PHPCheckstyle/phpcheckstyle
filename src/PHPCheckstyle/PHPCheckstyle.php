@@ -93,6 +93,8 @@ define("PHPCHECKSTYLE_USE_STRICT_COMPARE", "Consider using a strict comparison o
 define("PHPCHECKSTYLE_EMPTY_FILE", "The file %s is empty.");
 define("PHPCHECKSTYLE_PHP_TAGS_START_LINE", "PHP tag should be at the beginning of the line.");
 define("PHPCHECKSTYLE_MANDATORY_HEADER", "Mandatory header not found.");
+define("PHPCHECKSTYLE_VARIABLE_NAMING_LENGHT_SHORT", "Variable %s name's lenght is too short.");
+define("PHPCHECKSTYLE_VARIABLE_NAMING_LENGHT_LONG", "Variable %s name's lenght is too long.");
 
 define('T_NEW_LINE', 10000);
 define('T_TAB', 10001);
@@ -2478,10 +2480,13 @@ class PHPCheckstyle {
 	 */
 	private function _processVariable($text) {
 		
-		// Check the variable naming
+		// Check the variable naming convention
 		if (!in_array($text, $this->_systemVariables)) {
 			$this->_checkVariableNaming($text);
 		}
+		
+		// Check the variable name's length
+		$this->_checkVariableNameLength($text);
 		
 		// Check if the variable is not a deprecated system variable
 		$this->_checkDeprecation($text);
@@ -3298,7 +3303,8 @@ class PHPCheckstyle {
 	private function _isActive($check) {
 		
 		// Check if the check is configured
-		$active = $this->_config->getTest($check);
+		$test = $this->_config->getTest($check);
+		$active = !empty($test);
 		
 		$active = $active && !(in_array($check, $this->_functionSuppressWarnings) || in_array($check, $this->_classSuppressWarnings) || in_array($check, $this->_interfaceSuppressWarnings) || in_array($check, $this->_fileSuppressWarnings));
 		
@@ -3369,7 +3375,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Check that the PHP oOpen or Close tag is at the beginning of the line..
+	 * Check that the PHP Open or Close tag is at the beginning of the line..
 	 *
 	 * @param TokenInfo $token        	
 	 */
@@ -3380,6 +3386,42 @@ class PHPCheckstyle {
 			}
 		}
 	}
+	
+	/**
+	 * Check the lenght of a local variable name.
+	 *
+	 * @param String $name
+	 */
+	private function _checkVariableNameLength($name) {
+		if ($this->_isActive('localScopeVariableLength')) {
+			
+			// we remove the $ sign
+			$name = substr($name, 1); 
+
+			// we check for exceptions to the rule
+			$exceptions = $this->_config->getTestExceptions('localScopeVariableLength');
+			if (in_array($name, $exceptions)) {
+				return;
+			}
+			
+			$length = strlen($name);  
+			$min = $this->_config->getTestProperty('localScopeVariableLength', 'minLength');
+			$max = $this->_config->getTestProperty('localScopeVariableLength', 'maxLength');
+
+			// we check the min lenght
+			if (!empty($min) && ($length < $min)) {
+				$msg = sprintf(PHPCHECKSTYLE_VARIABLE_NAMING_LENGHT_SHORT, $name);
+				$this->_writeError('localScopeVariableLength', $msg);
+			}
+			
+			// we check the max lenght
+			if (!empty($max) && ($length > $max)) {
+				$msg = sprintf(PHPCHECKSTYLE_VARIABLE_NAMING_LENGHT_LONG, $name);
+				$this->_writeError('localScopeVariableLength', $msg);
+			}
+		}
+	}
+	
 	
 	/**
 	 * Extract a package name from the filename.

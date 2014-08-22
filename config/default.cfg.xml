@@ -1,52 +1,52 @@
 <!-- somewhat inspired by java checkstyle -->
 <phpcheckstyle-configuration>
 
- 	<test name="phpException" level="error"/>
+    <test name="phpException" level="error"/>
 
-	<!-- *********************************************************  -->
-	<!-- These functions are not tested for naming                  -->
-	<!-- cf http://www.php.net/manual/en/language.oop5.magic.php    -->
-	<!-- *********************************************************  -->	
-	<config name="specialFunctions">
-		<configItem value="__construct"/>
-		<configItem value="__destruct"/>
-		<configItem value="__call"/>
-		<configItem value="__get"/>
-		<configItem value="__set"/>
-		<configItem value="__isset"/>
-		<configItem value="__unset"/>
-		<configItem value="__sleep"/>
-		<configItem value="__wakeup"/>
-		<configItem value="__toString"/>
-		<configItem value="__set_state"/>
-		<configItem value="__clone"/>
-		<configItem value="__autoload"/>
-		<configItem value="__invoke"/>
-		<configItem value="__callStatic"/>
-	</config>
-	
-	<!-- *********************************************************  -->
-	<!-- These variables are not tested for naming                  -->
-	<!-- *********************************************************  -->
-	<config name="systemVariables">
-		<configItem value="$this"/>
-		<configItem value="$_GET"/>
-		<configItem value="$_POST"/>
-		<configItem value="$_FILES"/>
-		<configItem value="$_COOKIE"/>
-		<configItem value="$_SESSION"/>
-		<configItem value="$_ENV"/>
-		<configItem value="$_SERVER"/>
-		<configItem value="$_REQUEST"/>
-		<configItem value="$HTTP_GET_VARS"/>
-		<configItem value="$HTTP_POST_VARS"/>
-		<configItem value="$HTTP_COOKIE_VARS"/>
-		<configItem value="$HTTP_SERVER_VARS"/>
-		<configItem value="$HTTP_ENV_VARS"/>
-		<configItem value="$HTTP_SESSION_VARS"/>
-	</config>
+    <!-- *********************************************************  -->
+    <!-- These functions are not tested for naming                  -->
+    <!-- cf http://www.php.net/manual/en/language.oop5.magic.php    -->
+    <!-- *********************************************************  --> 
+    <config name="specialFunctions">
+        <configItem value="__construct"/>
+        <configItem value="__destruct"/>
+        <configItem value="__call"/>
+        <configItem value="__get"/>
+        <configItem value="__set"/>
+        <configItem value="__isset"/>
+        <configItem value="__unset"/>
+        <configItem value="__sleep"/>
+        <configItem value="__wakeup"/>
+        <configItem value="__toString"/>
+        <configItem value="__set_state"/>
+        <configItem value="__clone"/>
+        <configItem value="__autoload"/>
+        <configItem value="__invoke"/>
+        <configItem value="__callStatic"/>
+    </config>
+    
+    <!-- *********************************************************  -->
+    <!-- These variables are not tested for naming                  -->
+    <!-- *********************************************************  -->
+    <config name="systemVariables">
+        <configItem value="$this"/>
+        <configItem value="$_GET"/>
+        <configItem value="$_POST"/>
+        <configItem value="$_FILES"/>
+        <configItem value="$_COOKIE"/>
+        <configItem value="$_SESSION"/>
+        <configItem value="$_ENV"/>
+        <configItem value="$_SERVER"/>
+        <configItem value="$_REQUEST"/>
+        <configItem value="$HTTP_GET_VARS"/>
+        <configItem value="$HTTP_POST_VARS"/>
+        <configItem value="$HTTP_COOKIE_VARS"/>
+        <configItem value="$HTTP_SERVER_VARS"/>
+        <configItem value="$HTTP_ENV_VARS"/>
+        <configItem value="$HTTP_SESSION_VARS"/>
+    </config>
 
-	<!--  ****************  -->
+    <!--  ****************  -->
     <!--        Naming      -->
     <!--  ****************  -->
     
@@ -82,10 +82,20 @@
     <test name="interfaceNaming" regexp="/^[A-Z][a-zA-Z0-9_]*$/" level="error"/>
     
     <!-- File Naming -->
-     <test name="fileNaming" regexp="/^[a-zA-Z][a-zA-Z0-9._]*$/" level="error"/>
+    <test name="fileNaming" regexp="/^[a-zA-Z][a-zA-Z0-9._]*$/" level="error"/>
+        
+    <!-- Short variable names --> 
+    <test name="localScopeVariableLength">
+        <property name="minLength" value="2" />
+        <property name="maxLength" value="30" />
+        <exception value="i"/>  <!-- For iterators -->
+        <exception value="j"/>
+        <exception value="k"/>
+        <exception value="e"/> <!-- for exception $e -->
+    </test>
     
     
-	<!--  ****************  -->
+    <!--  ****************  -->
     <!--      PHP Tags      -->
     <!--  ****************  -->    
     
@@ -107,7 +117,7 @@
     <!--      Comments      -->
     <!--  ****************  -->    
     
-	<!-- Check if some C style comments are used (#) -->    
+    <!-- Check if some C style comments are used (#) -->    
     <test name="noShellComments"/>
     
     <!-- Tests that every function and class is immediately preceded by a docblock. A property "excludePrivateMembers" can be set if you want to disable docblocks for private member functions. -->
@@ -120,16 +130,16 @@
     </test>
     
         
-	<!-- Check for the presence of a mandatory header (licence for exemple) -->
-	<!-- Does not take into account spaces, tabs and returns -->    
-	<!-- Does not check that the content is a the beginning of the file -->
-    <test name="mandatoryHeader">
-    	<property name="header" value="
+    <!-- Check for the presence of a mandatory header (licence for exemple) -->
+    <!-- Does not take into account spaces, tabs and returns -->    
+    <!-- Does not check that the content is a the beginning of the file -->
+    <!-- <test name="mandatoryHeader">
+        <property name="header" value="
 /**
  * Mandatory Header.
  * 
 "/>
-    </test>
+    </test> -->
     
     <!--  ****************  -->
     <!--    Indentation     -->
@@ -137,8 +147,8 @@
              
     <!-- Tests to make sure that a line does not contain the tab character. -->
     <test name="indentation">  <!-- noTabs -->
-    	<property name="type" value="tabs"/> <!-- tabs or spaces -->
-    	<property name="number" value="4"/> <!-- number of spaces if type = spaces -->
+        <property name="type" value="tabs"/> <!-- tabs or spaces -->
+        <property name="number" value="4"/> <!-- number of spaces if type = spaces -->
     </test>
     
     <!-- Check the position of the open curly brace in a control structure (if) -->
@@ -159,12 +169,12 @@
         <property name="position" value="sl"/>
     </test>
     
-	<!-- Check the position of the else -->
-	<!-- sl = same line -->
+    <!-- Check the position of the else -->
+    <!-- sl = same line -->
     <!-- nl = new line -->
     <test name="controlStructElse">
-	 	<property name="position" value="sl"/>
-	</test>
+        <property name="position" value="sl"/>
+    </test>
     
     
     <!--  ****************  -->
@@ -179,7 +189,7 @@
    
     <!-- Check that there is no space after a function name in a function call -->
     <test name="noSpaceAfterFunctionName" level="info"></test>
-	 
+     
     
     <!-- Check for the (required) presence of a white space after some tokens : "," "}" "-" -->
     <test name="checkWhiteSpaceAfter"> 
@@ -187,7 +197,7 @@
     
     <!-- Check for the (required) presence of a white space before some tokens : "{" "-" -->
     <test name="checkWhiteSpaceBefore">
-    	<exception value=":"/>  <!-- Because of the switch/case --> 
+        <exception value=":"/>  <!-- Because of the switch/case --> 
     </test> 
     
         
@@ -220,8 +230,8 @@
     </test>
     
     <!-- Check Cyclomatic Complexity -->
-	<!-- see http://www.aivosto.com/project/help/pm-complexity.html -->
- 	<test name="cyclomaticComplexity">
+    <!-- see http://www.aivosto.com/project/help/pm-complexity.html -->
+    <test name="cyclomaticComplexity">
         <!-- Level raising a warning -->
         <property name="warningLevel" value="10"/>
         <!-- Level raising an error -->
@@ -236,46 +246,46 @@
     <!-- Check for prohibited functions -->
     <!-- @see http://www.php.net/manual/en/indexes.php -->
     <test name="checkProhibitedFunctions">
-    	<item value="echo"/>
-    	<item value="system"/>
-    	<item value="print_r"/>
-    	<item value="var_dump"/>
-    	<item value="dl"/>
-    	<item value="define_syslog_variables"/>    	
-    	<item value="set_magic_quotes_runtime"/>
-    	<item value="magic_quotes_runtime"/>
-    	<item value="sql_regcase "/>    	
-    	<item value="exec"/>
-    	<item value="passthru"/>
-    	<item value="delete"/>
-    	<item value="unlink"/>
-    	<item value="phpinfo"/>
-    	<item value="die"/>
-    	<!-- <item value="copy"/>  -->
-    	<!-- <item value="fwrite"/>  -->
+        <item value="echo"/>
+        <item value="system"/>
+        <item value="print_r"/>
+        <item value="var_dump"/>
+        <item value="dl"/>
+        <item value="define_syslog_variables"/>     
+        <item value="set_magic_quotes_runtime"/>
+        <item value="magic_quotes_runtime"/>
+        <item value="sql_regcase "/>        
+        <item value="exec"/>
+        <item value="passthru"/>
+        <item value="delete"/>
+        <item value="unlink"/>
+        <item value="phpinfo"/>
+        <item value="die"/>
+        <!-- <item value="copy"/>  -->
+        <!-- <item value="fwrite"/>  -->
     </test>
     
     <!-- Check for prohibited tokens -->
     <!-- @see http://www.php.net/manual/en/tokens.php -->
     <test name="checkProhibitedTokens">
-    	<item value="T_BAD_CHARACTER"/>
-    	<item value="T_DECLARE"/>
-    	<item value="T_ENDDECLARE"/>
-    	<item value="T_ENDFOR"/>
-    	<item value="T_ENDFOREACH"/>
-    	<item value="T_ENDIF"/>
-    	<item value="T_ENDSWITCH"/>
-    	<item value="T_ENDWHILE"/>
-    	<item value="T_HALT_COMPILER"/>
-    	<item value="T_OLD_FUNCTION"/>
-    	<item value="T_PRINT"/>
-    	
-    	<!--  Same thing as the noShortPhpCodeTag rule -->
-    	<!-- <item value="T_OPEN_TAG_WITH_ECHO"/> -->
-    	
-    	<!-- <item value="T_INLINE_HTML"/> -->
-    	<!-- <item value="T_ECHO"/>  -->
-    	
+        <item value="T_BAD_CHARACTER"/>
+        <item value="T_DECLARE"/>
+        <item value="T_ENDDECLARE"/>
+        <item value="T_ENDFOR"/>
+        <item value="T_ENDFOREACH"/>
+        <item value="T_ENDIF"/>
+        <item value="T_ENDSWITCH"/>
+        <item value="T_ENDWHILE"/>
+        <item value="T_HALT_COMPILER"/>
+        <item value="T_OLD_FUNCTION"/>
+        <item value="T_PRINT"/>
+        
+        <!--  Same thing as the noShortPhpCodeTag rule -->
+        <!-- <item value="T_OPEN_TAG_WITH_ECHO"/> -->
+        
+        <!-- <item value="T_INLINE_HTML"/> -->
+        <!-- <item value="T_ECHO"/>  -->
+        
     </test>
     
         
@@ -288,9 +298,9 @@
     
      <!-- Check for silenced errors before function calls (@function) -->
     <test name="checkSilencedError">
-    	<exception value="rename"/> <!-- Exceptions to this rule -->
-    	<exception value="mkdir"/>
-    	<exception value="chmod"/>
+        <exception value="rename"/> <!-- Exceptions to this rule -->
+        <exception value="mkdir"/>
+        <exception value="chmod"/>
     </test>
     
     <!-- Check for encapsed variables inside a String ("$a") -->
@@ -310,7 +320,7 @@
     
     <!-- Check empty block like if ($a) {} -->
     <test name="checkEmptyBlock">
-     	<!--  <exception value="catch"/>  -->
+        <!--  <exception value="catch"/>  -->
     </test>
     
     <!-- Check empty statement ( ;; ) -->
@@ -343,7 +353,7 @@
     With the exception of for iterators, all variable incrementation or decrementation should occur in their own toplevel statement to increase readability.  
     -->
     <test name="checkUnaryOperator">
-   		<exception value="for"/>
+        <exception value="for"/>
     </test>
     
     <!--
@@ -351,7 +361,7 @@
     With the exception of for iterators, all assignments should occur in their own toplevel statement to increase readability.  
     -->
     <test name="checkInnerAssignment">
-    	<exception value="for"/>
+        <exception value="for"/>
     </test>
     
         
@@ -398,41 +408,41 @@
     
     <!-- Replace deprecated methods -->
     <test name="checkDeprecation">
-    	<deprecated old="call_user_method" new="call_user_func" version="4.1"/>
-    	<deprecated old="call_user_method_array" new="call_user_func_array" version="4.1"/>
-    	<deprecated old="define_syslog_variables" new="none" version="5.4"/>
-    	<deprecated old="dl" new="extension_loaded" version="5.3"/>
-    	<deprecated old="ereg" new="preg_match('@'.$pattern.'@', $string)"  version="5.3"/>
-    	<deprecated old="eregi" new="preg_match('@'.$pattern.'@i', $string)"  version="5.3"/>
-    	<deprecated old="ereg_replace" new="preg_replace('@'.$pattern.'@', $string)" version="5.3"/>
-    	<deprecated old="eregi_replace" new="preg_replace('@'.$pattern.'@i', $string)" version="5.3"/>
-    	<deprecated old="import_request_variables" new="none" version="5.4"/>
-    	<deprecated old="magic_quotes_runtime" new="none" version="5.3"/>
-    	<deprecated old="set_magic_quotes_runtime" new="none" version="5.3"/>
-    	<deprecated old="mcrypt_generic_end" new="mcrypt_generic_deinit" version="5.4"/>
-    	<deprecated old="mysql_list_dbs" new="none" version="5.4"/>
-    	<deprecated old="mysql_db_query" new="mysql_select_db and mysql_query" version="5.3"/>
-    	<deprecated old="mysql_escape_string" new="mysql_real_escape_string" version="5.3"/>
-    	<deprecated old="mysqli_bind_param" new="mysqli_stmt_bind_param" version="5.4"/>
-    	<deprecated old="mysqli_bind_result" new="mysqli_stmt_bind_result" version="5.4"/>
-    	<deprecated old="mysqli_client_encoding" new="mysqli_character_set_name" version="5.4"/>
-    	<deprecated old="mysqli_fetch" new="mysqli_stmt_fetch" version="5.4"/>
-    	<deprecated old="mysqli_param_count" new="mysqli_stmt_param_count" version="5.4"/>
-    	<deprecated old="mysqli_get_metadata" new="mysqli_stmt_result_metadata" version="5.4"/>
-    	<deprecated old="mysqli_send_long_data" new=" mysqli_stmt_send_long_data" version="5.4"/>
-    	<deprecated old="session_register" new="$_SESSION" version="5.3"/>
-    	<deprecated old="session_unregister" new="$_SESSION" version="5.3"/>
-    	<deprecated old="session_is_registered" new="$_SESSION" version="5.3"/>
-    	<deprecated old="set_socket_blocking" new="stream_set_blocking" version="5.3"/>
-    	<deprecated old="split" new="explode($pattern, $string) or preg_split('@'.$pattern.'@', $string)" version="5.3"/>
-    	<deprecated old="spliti" new="preg_split('@'.$pattern.'@i', $string)" version="5.3"/>
-    	<deprecated old="sql_regcase" new="none" version="5.3"/>
-    	<deprecated old="$HTTP_GET_VARS" new="$_GET" version="5.3"/>
-    	<deprecated old="$HTTP_POST_VARS" new="$_POST" version="5.3"/>
-    	<deprecated old="$HTTP_COOKIE_VARS" new="$_COOKIE" version="5.3"/>
-    	<deprecated old="$HTTP_SERVER_VARS" new="$_SERVER" version="5.3"/>
-    	<deprecated old="$HTTP_ENV_VARS" new="$_ENV" version="5.3"/>
-    	<deprecated old="$HTTP_SESSION_VARS" new="$_SESSION" version="5.3"/>
+        <deprecated old="call_user_method" new="call_user_func" version="4.1"/>
+        <deprecated old="call_user_method_array" new="call_user_func_array" version="4.1"/>
+        <deprecated old="define_syslog_variables" new="none" version="5.4"/>
+        <deprecated old="dl" new="extension_loaded" version="5.3"/>
+        <deprecated old="ereg" new="preg_match('@'.$pattern.'@', $string)"  version="5.3"/>
+        <deprecated old="eregi" new="preg_match('@'.$pattern.'@i', $string)"  version="5.3"/>
+        <deprecated old="ereg_replace" new="preg_replace('@'.$pattern.'@', $string)" version="5.3"/>
+        <deprecated old="eregi_replace" new="preg_replace('@'.$pattern.'@i', $string)" version="5.3"/>
+        <deprecated old="import_request_variables" new="none" version="5.4"/>
+        <deprecated old="magic_quotes_runtime" new="none" version="5.3"/>
+        <deprecated old="set_magic_quotes_runtime" new="none" version="5.3"/>
+        <deprecated old="mcrypt_generic_end" new="mcrypt_generic_deinit" version="5.4"/>
+        <deprecated old="mysql_list_dbs" new="none" version="5.4"/>
+        <deprecated old="mysql_db_query" new="mysql_select_db and mysql_query" version="5.3"/>
+        <deprecated old="mysql_escape_string" new="mysql_real_escape_string" version="5.3"/>
+        <deprecated old="mysqli_bind_param" new="mysqli_stmt_bind_param" version="5.4"/>
+        <deprecated old="mysqli_bind_result" new="mysqli_stmt_bind_result" version="5.4"/>
+        <deprecated old="mysqli_client_encoding" new="mysqli_character_set_name" version="5.4"/>
+        <deprecated old="mysqli_fetch" new="mysqli_stmt_fetch" version="5.4"/>
+        <deprecated old="mysqli_param_count" new="mysqli_stmt_param_count" version="5.4"/>
+        <deprecated old="mysqli_get_metadata" new="mysqli_stmt_result_metadata" version="5.4"/>
+        <deprecated old="mysqli_send_long_data" new=" mysqli_stmt_send_long_data" version="5.4"/>
+        <deprecated old="session_register" new="$_SESSION" version="5.3"/>
+        <deprecated old="session_unregister" new="$_SESSION" version="5.3"/>
+        <deprecated old="session_is_registered" new="$_SESSION" version="5.3"/>
+        <deprecated old="set_socket_blocking" new="stream_set_blocking" version="5.3"/>
+        <deprecated old="split" new="explode($pattern, $string) or preg_split('@'.$pattern.'@', $string)" version="5.3"/>
+        <deprecated old="spliti" new="preg_split('@'.$pattern.'@i', $string)" version="5.3"/>
+        <deprecated old="sql_regcase" new="none" version="5.3"/>
+        <deprecated old="$HTTP_GET_VARS" new="$_GET" version="5.3"/>
+        <deprecated old="$HTTP_POST_VARS" new="$_POST" version="5.3"/>
+        <deprecated old="$HTTP_COOKIE_VARS" new="$_COOKIE" version="5.3"/>
+        <deprecated old="$HTTP_SERVER_VARS" new="$_SERVER" version="5.3"/>
+        <deprecated old="$HTTP_ENV_VARS" new="$_ENV" version="5.3"/>
+        <deprecated old="$HTTP_SESSION_VARS" new="$_SESSION" version="5.3"/>
     </test>
     
     <!--  *******************  -->
@@ -449,26 +459,26 @@
     
     <!-- Replace deprecated methods -->
     <test name="checkAliases">
-    	<alias old="chop" new="rtrim()"/>
-    	<alias old="close" new="closedir()"/>
-    	<alias old="die" new="exit()"/>
-    	<alias old="dir" new="getdir()"/>
-    	<alias old="doubleval" new="floatval()"/>
-    	<alias old="fputs" new="fwrite()"/>
-    	<alias old="ini_alter" new="ini_set()"/>
-    	<alias old="is_double" new="is_float()"/>
-    	<alias old="is_integer" new="is_int()"/>
-    	<alias old="is_long" new="is_int()"/>
-    	<alias old="is_real" new="is_float()"/>
-    	<alias old="is_writeable" new="is_writable()"/>
-    	<alias old="join" new="implode()"/>
-    	<alias old="key_exists" new="array_key_exists()"/>
-    	<alias old="magic_quotes_runtime" new="set_magic_quotes_runtime()"/>
-    	<alias old="pos" new="current()"/>
-    	<alias old="rewind" new="rewinddir()"/>
-    	<alias old="show_source" new="highlight_file()"/>
-    	<alias old="sizeof" new="count()"/>
-    	<alias old="strchr" new="strstr()"/>
+        <alias old="chop" new="rtrim()"/>
+        <alias old="close" new="closedir()"/>
+        <alias old="die" new="exit()"/>
+        <alias old="dir" new="getdir()"/>
+        <alias old="doubleval" new="floatval()"/>
+        <alias old="fputs" new="fwrite()"/>
+        <alias old="ini_alter" new="ini_set()"/>
+        <alias old="is_double" new="is_float()"/>
+        <alias old="is_integer" new="is_int()"/>
+        <alias old="is_long" new="is_int()"/>
+        <alias old="is_real" new="is_float()"/>
+        <alias old="is_writeable" new="is_writable()"/>
+        <alias old="join" new="implode()"/>
+        <alias old="key_exists" new="array_key_exists()"/>
+        <alias old="magic_quotes_runtime" new="set_magic_quotes_runtime()"/>
+        <alias old="pos" new="current()"/>
+        <alias old="rewind" new="rewinddir()"/>
+        <alias old="show_source" new="highlight_file()"/>
+        <alias old="sizeof" new="count()"/>
+        <alias old="strchr" new="strstr()"/>
     </test>
     
 </phpcheckstyle-configuration>

@@ -434,14 +434,16 @@ class PHPCheckstyle {
 	 * @return boolean
 	 */
 	public function customErrorHandler($errno, $errstr) {
-		$check = 'phpException';
-		$level = $this->_config->getTestLevel($check);
-		if ($level == null) {
-			$level = "warning";
+		if ($this->_isActive('phpException')) {
+			$check = 'phpException';
+			$level = $this->_config->getTestLevel($check);
+			if ($level == null) {
+				$level = "warning";
+			}
+			$message = sprintf(PHPCHECKSTYLE_PHP_EXPCEPTION, $errstr);
+			
+			$this->_reporter->writeError($this->lineNumber, $check, $message, $level);	
 		}
-		$message = sprintf(PHPCHECKSTYLE_PHP_EXPCEPTION, $errstr);
-		
-		$this->_reporter->writeError($this->lineNumber, $check, $message, $level);
 		
 		/* Don't execute PHP internal error handler */
 		return false;

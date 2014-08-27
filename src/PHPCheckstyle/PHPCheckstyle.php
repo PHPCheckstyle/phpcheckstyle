@@ -102,6 +102,14 @@ class PHPCheckstyle {
 	// Language for messages
 	private $lang;
 	private $messages = array();
+
+	// Files to ignore
+	private $ignoredFiles = array(
+		".", // Directory link
+		"..", // Directory link
+		".svn", // SVN directory
+		".git*", // Accounts for .git, .gitignore .gitmodules etc
+	);
 	
 	// variables used while processing control structure
 	private $_csLeftParenthesis = 0; // Left brackets opened in control statement or function statement
@@ -672,15 +680,10 @@ class PHPCheckstyle {
 			$root = opendir($src);
 			if ($root) {
 				while ($file = readdir($root)) {
-					
-					// We ignore the current and parent directory links
-					if ($file == "." || $file == "..") {
+					if($this->_inArray($file, $this->ignoredFiles)) {
 						continue;
 					}
-					// We ignore the subversion directories
-					if ($file == ".svn") {
-						continue;
-					}
+
 					$fullPath = $src . "/" . $file;
 					$isExcluded = false;
 					foreach ($excludes as $patternExcluded) {
@@ -3400,6 +3403,7 @@ class PHPCheckstyle {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Returns the message, for the language chosen.
 	 * 
 	 * @param String $message the message to return
@@ -3448,6 +3452,22 @@ class PHPCheckstyle {
 		}
 
 		throw new Exception($errstr, $errno);
+	}
+
+	/*
+	 * Checks if a string is in an array, but with wildcards.
+	 *
+	 * @param String $needle the string to search for
+	 * @param Array $haystack the array to look in
+	 * @return boolean
+	 */
+	private function _inArray($needle, $haystack) {
+		foreach($haystack as $strand) {
+			if(fnmatch($strand, $needle)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 }

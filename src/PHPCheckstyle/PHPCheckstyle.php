@@ -9,10 +9,6 @@ if (!defined("T_ML_COMMENT")) {
 	define("T_ML_COMMENT", T_COMMENT);
 }
 
-if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
-	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__) . "/..");
-}
-
 define("SAME_LINE", "sl");
 define("NEW_LINE", "nl");
 define("ERROR", "error");
@@ -122,10 +118,6 @@ define('T_SQUARE_BRACKET_CLOSE', 10022); // ]
 define('T_AROBAS', 10023); // @
 define('T_QUOTE', 10024); // " (only detected before and after a T_ENCAPSED_AND_WHITESPACE) otherwise should be included in T_CONSTANT_ENCAPSED_STRING
 define('T_UNKNOWN', -1);
-
-if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
-	define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__) . "/..");
-}
 
 define("SHORT_OPEN_TAG", "<?");
 define("OPEN_TAG", "<?php");

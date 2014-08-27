@@ -3250,7 +3250,6 @@ class PHPCheckstyle {
 	 * @return a boolean
 	 */
 	private function _isActive($check) {
-		
 		// Check if the check is configured
 		$test = $this->_config->getTest($check);
 		$active = !empty($test);

@@ -871,9 +871,16 @@ class PHPCheckstyle {
 				break;
 			
 			case T_LOGICAL_AND:
+				if ($this->_isActive('useBooleanOperators')) {
+					$this->_writeError('useBooleanOperators', $this->_getMessage("USE_BOOLEAN_OPERATORS_AND"));
+				}
+				$this->_checkWhiteSpaceBefore($token->text);
+				$this->_checkWhiteSpaceAfter($token->text);
+				break;
+
 			case T_LOGICAL_OR:
 				if ($this->_isActive('useBooleanOperators')) {
-					$this->_writeError('useBooleanOperators', $this->_getMessage("USE_BOOLEAN_OPERATORS"));
+					$this->_writeError('useBooleanOperators', $this->_getMessage("USE_BOOLEAN_OPERATORS_OR"));
 				}
 				$this->_checkWhiteSpaceBefore($token->text);
 				$this->_checkWhiteSpaceAfter($token->text);

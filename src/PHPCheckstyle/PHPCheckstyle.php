@@ -851,6 +851,11 @@ class PHPCheckstyle {
 				$this->_processCatch();
 				$this->_processControlStatement($token);
 				break;
+
+			case T_FINALLY:
+				$this->_processFinally();
+				$this->_processControlStatement($token);
+				break;
 			
 			case T_WHITESPACE:
 			case T_TAB:
@@ -2586,6 +2591,19 @@ class PHPCheckstyle {
 		
 		// We consider that all preview "Throws" are catched (this may be wrong)
 		$this->_functionThrows = false;
+	}
+
+	/**
+	 * Process the finally token.
+	 *
+	 * This function is launched when the current token is T_FINALLY
+	 */
+	private function _processFinally() {
+		
+		// We consider that all preview "Throws" are caught
+		$this->_functionThrows = false;
+
+		$this->_checkUnusedCode('FINALLY');
 	}
 
 	/**

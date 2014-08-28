@@ -39,6 +39,13 @@ class Tokenizer {
 	private $tokens;
 
 	/**
+	 * The array of "new" tokens.
+	 * 
+	 * @var Array
+	 */
+	private $newTokens = array();
+
+	/**
 	 * Position of the index in the current file.
 	 * 
 	 * @var Integer
@@ -84,7 +91,6 @@ class Tokenizer {
 	public function tokenize($filename) {
 		
 		// Read the file
-		$contents = "";
 		if (filesize($filename)) {
 			$fp = fopen($filename, "rb");
 			$this->content = fread($fp, filesize($filename));
@@ -275,6 +281,7 @@ class Tokenizer {
 	public function reset() {
 		$this->index = 0;
 		$this->tokens = array();
+		$this->newTokens = array();
 		$this->tokenNumber = 0;
 		$this->lineNumber = 1;
 	}
@@ -294,11 +301,7 @@ class Tokenizer {
 		$result = false;
 		if ($token->id == $id) {
 			if ($text) {
-				if ($token->text == $text) {
-					$result = true;
-				} else {
-					$result = false;
-				}
+				$result = $token->text == $text;
 			} else {
 				$result = true;
 			}
@@ -423,9 +426,7 @@ class Tokenizer {
 	 *        	The token text
 	 * @return an array of tokens
 	 */
-	private function _identifyTokens($tokenText, $tokenID) {
-		$newTokens = array();
-		
+	private function _identifyTokens($tokenText, $tokenID) {		
 		// Split the data up by newlines
 		// To correctly handle T_NEW_LINE inside comments and HTML
 		$splitData = preg_split('#(\r\n|\n|\r)#', $tokenText, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
@@ -525,11 +526,11 @@ class Tokenizer {
 					default:
 				}
 			}
-			
-			$newTokens[] = $tokenInfo;
+
+			$this->newTokens[] = $tokenInfo;
 		}
 		
-		return $newTokens;
+		return $this->newTokens;
 	}
 
 	/**
@@ -539,7 +540,7 @@ class Tokenizer {
 	 *
 	 * @param String $source
 	 *        	The source code to analyse
-	 * @return an array of tokens
+	 * @return array
 	 */
 	private function _getAllTokens($source) {
 		$newTokens = array();
@@ -577,13 +578,13 @@ class Tokenizer {
 					
 					// Parse the beginning of the text
 					$beforeText = substr($tokenText, 0, $startPos);
-					$newTokens = array_merge($newTokens, $this->_identifyTokens($beforeText, $tokenID));
+					$this->_identifyTokens($beforeText, $tokenID);
 					
 					// The open tag
 					$openTag = new TokenInfo();
 					$openTag->id = T_OPEN_TAG;
 					$openTag->text = SHORT_OPEN_TAG;
-					$this->tokenNumber + 1;
+					$this->tokenNumber++;
 					$openTag->position = $this->tokenNumber;
 					$openTag->line = $this->lineNumber;
 					$newTokens[] = $openTag;
@@ -601,7 +602,7 @@ class Tokenizer {
 					$closeTag = new TokenInfo();
 					$closeTag->id = T_CLOSE_TAG;
 					$closeTag->text = CLOSE_TAG;
-					$this->tokenNumber + 1;
+					$this->tokenNumber++;
 					$closeTag->position = $this->tokenNumber;
 					$closeTag->line = $this->lineNumber;
 					$newTokens[] = $closeTag;
@@ -615,10 +616,10 @@ class Tokenizer {
 			}
 			
 			// Identify the tokens
-			$newTokens = array_merge($newTokens, $this->_identifyTokens($tokenText, $tokenID));
+			$this->_identifyTokens($tokenText, $tokenID);
 		}
-		
-		return $newTokens;
+
+		return $this->newTokens;
 	}
 
 	/**
@@ -671,4 +672,5 @@ class Tokenizer {
 		}
 		return false;
 	}
+
 }

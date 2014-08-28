@@ -600,19 +600,16 @@ class PHPCheckstyle {
 		$this->_resetValues();
 		
 		// Try to detect the type of file in a MVC framework
-		if (stripos($filename, 'view') !== false || stripos($filename, 'layouts') !== false) {
-			$this->_isView = true;
-		}
-		if (stripos($filename, 'model') !== false) {
-			$this->_isModel = true;
-		}
-		if (stripos($filename, 'controller') !== false) {
-			$this->_isController = true;
-		}
-		if (stripos($filename, 'class') !== false) {
-			// simple simple data objects
-			$this->_isClass = true;
-		}
+        if (stripos($filename, 'view') !== false || stripos($filename, 'layouts') !== false) {
+            $this->_isView = true;
+        } elseif (stripos($filename, 'model') !== false) {
+            $this->_isModel = true;
+        } elseif (stripos($filename, 'controller') !== false) {
+            $this->_isController = true;
+        } elseif (stripos($filename, 'class') !== false) {
+            // simple simple data objects
+            $this->_isClass = true;
+        }
 		
 		// Store the file name
 		$this->_currentFilename = $filename;

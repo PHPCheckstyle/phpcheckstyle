@@ -3454,7 +3454,7 @@ class PHPCheckstyle {
 		throw new Exception($errstr, $errno);
 	}
 
-	/*
+	/**
 	 * Checks if a string is in an array, but with wildcards.
 	 *
 	 * @param String $needle the string to search for

@@ -43,6 +43,14 @@ define('T_AROBAS', 10023); // @
 define('T_QUOTE', 10024); // " (only detected before and after a T_ENCAPSED_AND_WHITESPACE) otherwise should be included in T_CONSTANT_ENCAPSED_STRING
 define('T_UNKNOWN', -1);
 
+// PHP 5.3 parsing with an older version
+if (!defined('T_FINALLY')) { define('T_FINALLY', 10025); }
+if (!defined('T_CALLABLE')) { define('T_CALLABLE', 10026); }
+if (!defined('T_TRAIT')) { define('T_TRAIT', 10027); }
+if (!defined('T_TRAIT_C')) { define('T_TRAIT_C', 10028); }
+if (!defined('T_INSTEADOF')) { define('T_INSTEADOF', 10029); }
+if (!defined('T_YIELD')) { define('T_YIELD', 10030); }
+
 define("SHORT_OPEN_TAG", "<?");
 define("OPEN_TAG", "<?php");
 define("CLOSE_TAG", "?>");

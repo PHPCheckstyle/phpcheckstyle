@@ -108,7 +108,7 @@ class PHPCheckstyle {
 	);
 
 	// Language for messages
-	private $lang = 'en-gb';
+	private $lang;
 	private $messages = array();
 	
 	// variables used while processing control structure
@@ -352,7 +352,7 @@ class PHPCheckstyle {
 		$this->_replacements = $this->_config->getTestReplacements('checkReplacements');
 
 		// Set the default language file
-		$this->setLang('en-gb');
+		$this->setLang('en-us');
 	}
 
 	/**
@@ -361,7 +361,7 @@ class PHPCheckstyle {
 	 * @param String $lang
 	 * @return void
 	 */
-	public function setLang($lang = 'en-gb') {
+	public function setLang($lang = 'en-us') {
 		$this->lang = $lang;
 
 		try {

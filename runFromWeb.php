@@ -23,7 +23,7 @@ else {
 $formats = explode(',', $options['format']);
 $sources = explode(',', $sourceDir);
 
-// @TODO: Make this an includeable file
+// TODO: Make this an includeable file
 $configFile = array(
 	'indentation' => array(
 		"type" => "spaces",

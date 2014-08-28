@@ -11,10 +11,6 @@ class CheckArrayStyleConfig extends CheckStyleConfig {
 	// Array that contains the loaded checks configuration
 	public $myConfig = array();
 
-	private $currentTest = false;
-
-	private $currentConfig = false;
-
 	/**
 	 * Constructor.
 	 *
@@ -51,9 +47,9 @@ class CheckArrayStyleConfig extends CheckStyleConfig {
 	 * @return array the list of items for this config.
 	 */
 	public function getConfigItems($config) {
-		if(isset($this->myConfig[$config])) {
+		if (isset($this->myConfig[$config])) {
 			return $this->myConfig[$config];
-		}else{
+		} else {
 			return array();
 		}
 	}

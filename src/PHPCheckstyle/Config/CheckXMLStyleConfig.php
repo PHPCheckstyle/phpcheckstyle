@@ -71,7 +71,9 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 		$data = fread($fp, 4096);
 		while ($data) {
 			if (!xml_parse($this->xmlParser, $data, feof($fp))) {
-				$msg = sprintf("Warning: XML error: %s at line %d", xml_error_string(xml_get_error_code($this->xmlParser)), xml_get_current_line_number($this->xmlParser));
+				$errorString = xml_error_string(xml_get_error_code($this->xmlParser));
+				$errorLineNo = xml_get_current_line_number($this->xmlParser);
+				$msg = sprintf("Warning: XML error: %s at line %d", $errorString, $errorLineNo);
 				echo $msg;
 				$this->myConfig = array();
 			}

@@ -89,17 +89,17 @@ class XmlFormatReporter extends Reporter {
 	 *        	the severity level
 	 */
 	public function writeError($line, $check, $message, $level = WARNING) {
-		$e = $this->document->createElement("error");
-		$e->setAttribute("line", $line);
-		$e->setAttribute("column", "1");
-		$e->setAttribute("severity", $level);
-		$e->setAttribute("message", $message);
-		$e->setAttribute("source", $check);
+		$errEl = $this->document->createElement("error");
+		$errEl->setAttribute("line", $line);
+		$errEl->setAttribute("column", "1");
+		$errEl->setAttribute("severity", $level);
+		$errEl->setAttribute("message", $message);
+		$errEl->setAttribute("source", $check);
 		
 		if (empty($this->currentElement)) {
 			$this->_startNewElement("");
 		}
-		$this->currentElement->appendChild($e);
+		$this->currentElement->appendChild($errEl);
 	}
 
 	protected function _initXml() {
@@ -109,14 +109,14 @@ class XmlFormatReporter extends Reporter {
 		$this->document->appendChild($this->root);
 	}
 
-	protected function _startNewElement($f) {
+	protected function _startNewElement($fileEl) {
 		$this->currentElement = $this->document->createElement("file");
 		
 		// remove the "./" at the beginning ot the path in case of relative path
-		if (substr($f, 0, 2) == './') {
-			$f = substr($f, 2);
+		if (substr($fileEl, 0, 2) == './') {
+			$fileEl = substr($fileEl, 2);
 		}
-		$this->currentElement->setAttribute("name", $f);
+		$this->currentElement->setAttribute("name", $fileEl);
 	}
 
 	protected function getDocument() {

@@ -10,7 +10,6 @@ namespace PHPCheckstyle\Reporter;
  * ================================
  */
 class ConsoleReporter extends Reporter {
-
 	/**
 	 *
 	 * @see Reporter::writeError Tab the line and write the error message
@@ -23,6 +22,7 @@ class ConsoleReporter extends Reporter {
 	 *        	the text to log
 	 * @param String $level
 	 *        	the severity level
+	 * @SuppressWarnings
 	 */
 	public function writeError($line, $check, $message, $level = WARNING) {
 		echo $this->currentPhpFile . " " . $level . " Line:" . $line . " - " . $message . "\n";

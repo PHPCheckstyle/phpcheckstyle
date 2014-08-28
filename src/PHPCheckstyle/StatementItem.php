@@ -12,7 +12,6 @@ namespace PHPCheckstyle;
  * @SuppressWarnings checkUnusedVariables
  */
 class StatementItem {
-	
 	// The statement type.
 	// CLASS
 	// FUNCTION
@@ -41,13 +40,13 @@ class StatementItem {
 	var $switchHasDefault = false; // indicate that the switch instruction has a case "default" set.
 	var $caseHasBreak = false; // indicate that the current case has a break instruction
 	var $caseStartLine = 0; // start line of the currently processed case
-	                        
+
 	// For DO / WHILE statements
 	var $afterDoStatement = false; // indicate that we have met a DO statement (which will be described in another StatementItem, but it will be closed when we meet the WHILE).
-	                               
+
 	// For heredoc blocks
 	var $inHeredoc = false; // used to desactivate the encapsedVariable rule inside a heredoc block
-	                        
+
 	// Flag indicating the the statement block is not sourrounded by {}
 	var $noCurly = false;
 }

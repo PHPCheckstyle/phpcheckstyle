@@ -561,9 +561,10 @@ class Tokenizer {
 		
 		// Check each token and transform into an Object
 		foreach ($tokens as $token) {
+			$isTokenArray = is_array($token);
 			
-			$tokenID = is_array($token) ? $token[0] : T_UNKNOWN;
-			$tokenText = is_array($token) ? $token[1] : $token;
+			$tokenID = $isTokenArray ? $token[0] : T_UNKNOWN;
+			$tokenText = $isTokenArray ? $token[1] : $token;
 			
 			// Manage T_OPEN_TAG when php.ini setting short_open_tag is Off.
 			if ($this->shortOpenTagOff && $tokenID == T_INLINE_HTML) {

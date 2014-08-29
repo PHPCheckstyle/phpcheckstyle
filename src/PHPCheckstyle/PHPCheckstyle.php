@@ -3124,16 +3124,18 @@ class PHPCheckstyle {
 			if ($pos !== false) {
 				$suppressedCheck = trim(substr($subToken, $pos + strlen("@SuppressWarnings")));
 				$supprArray = explode(' ', $suppressedCheck);
-				$suppressedCheck = trim($supprArray[0]);
-				// Store the suppressed warning in the corresponding array
-				if ($token == T_CLASS) {
-					$this->_classSuppressWarnings[] = $suppressedCheck;
-				} elseif ($token == T_INTERFACE) {
-					$this->_interfaceSuppressWarnings[] = $suppressedCheck;
-				} elseif ($token == T_FUNCTION) {
-					$this->_functionSuppressWarnings[] = $suppressedCheck;
-				} elseif ($token == T_FILE) {
-					$this->_fileSuppressWarnings[] = $suppressedCheck;
+				foreach($supprArray as $supprCheck) {
+					$suppressedCheck = trim($supprCheck);
+					// Store the suppressed warning in the corresponding array
+					if ($token == T_CLASS) {
+						$this->_classSuppressWarnings[] = $suppressedCheck;
+					} elseif ($token == T_INTERFACE) {
+						$this->_interfaceSuppressWarnings[] = $suppressedCheck;
+					} elseif ($token == T_FUNCTION) {
+						$this->_functionSuppressWarnings[] = $suppressedCheck;
+					} elseif ($token == T_FILE) {
+						$this->_fileSuppressWarnings[] = $suppressedCheck;
+					}
 				}
 			}
 			

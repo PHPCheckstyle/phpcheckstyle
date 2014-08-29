@@ -22,14 +22,6 @@ namespace PHPCheckstyle\Reporter;
 class XmlConsoleFormatReporter extends XmlFormatReporter {
 
 	/**
-	 * Constructor; calls parent's constructor
-	 *
-	 * @param $ofolder the
-	 *        	folder name
-	 */
-	public function __construct() {}
-
-	/**
 	 *
 	 * @see Reporter::start add the last element to the tree and save the DOM tree to the
 	 *      xml file

@@ -87,6 +87,7 @@ use PHPCheckstyle\Reporter\XmlNCSSReporter;
  * Does most of the processing.
  *
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
+ * @SuppressWarnings checkUnusedPrivateFunctions functionMaxParameters
  */
 class PHPCheckstyle {
 	// The class used to export the result
@@ -748,7 +749,8 @@ class PHPCheckstyle {
 	 * 
 	 * @see http://www.php.net/manual/en/tokens.php
 	 *
-	 * @param TokenInfo $token        	
+	 * @param TokenInfo $token
+	 * @SuppressWarnings switchCaseNeedBreak functionLength cyclomaticComplexity
 	 */
 	private function _processToken($token) {
 		// Debug

@@ -340,15 +340,16 @@ class XmlNCSSReporter {
 
 	/**
 	 * Create the DOM for a line of a table
+	 * @SuppressWarnings functionMaxParameters
 	 */
-	private function _createDOMLine($a, $b, $c, $d, $e, $f) {
+	private function _createDOMLine($a1, $b1, $c1, $d1, $e1, $f1) {
 		$line = $this->document->createElement("tr");
-		$cola = $this->document->createElement("td", $a);
-		$colb = $this->document->createElement("td", $b);
-		$colc = $this->document->createElement("td", $c);
-		$cold = $this->document->createElement("td", $d);
-		$cole = $this->document->createElement("td", $e);
-		$colf = $this->document->createElement("td", $f);
+		$cola = $this->document->createElement("td", $a1);
+		$colb = $this->document->createElement("td", $b1);
+		$colc = $this->document->createElement("td", $c1);
+		$cold = $this->document->createElement("td", $d1);
+		$cole = $this->document->createElement("td", $e1);
+		$colf = $this->document->createElement("td", $f1);
 		
 		$line->appendChild($cola);
 		$line->appendChild($colb);

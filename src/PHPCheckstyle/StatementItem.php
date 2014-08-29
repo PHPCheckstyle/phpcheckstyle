@@ -42,7 +42,8 @@ class StatementItem {
 	var $caseStartLine = 0; // start line of the currently processed case
 
 	// For DO / WHILE statements
-	var $afterDoStatement = false; // indicate that we have met a DO statement (which will be described in another StatementItem, but it will be closed when we meet the WHILE).
+	// indicate that we have met a DO statement (which will be described in another StatementItem, but it will be closed when we meet the WHILE).
+	var $afterDoStatement = false;
 
 	// For heredoc blocks
 	var $inHeredoc = false; // used to desactivate the encapsedVariable rule inside a heredoc block

@@ -148,8 +148,8 @@ class PHPCheckstyle {
 
 	private $_inString = false; // We are inside a string (only happens with T_ENCAPSED_AND_WHITESPACE)
 	private $_inArrayStatement = false; // We are in a array statement
-	private $_inClassStatement = false; // Wa are in a class statement (declaration)
-	private $_inInterfaceStatement = false; // Wa are in an interface statement (declaration)
+	private $_inClassStatement = false; // We are in a class statement (declaration)
+	private $_inInterfaceStatement = false; // We are in an interface statement (declaration)
 	private $_inFunctionStatement = false; // We are in a function statement (declaration)
 	private $_inFuncCall = false; // We are in a function call
 	private $_inFunction = false; // We are inside a function
@@ -647,7 +647,7 @@ class PHPCheckstyle {
 		$this->_checkUnusedVariables();
 		
 		if ($this->_ncssFileClasses > 0 || $this->_ncssFileInterfaces > 0) {
-			// Test the file name, only if it contains a class or onterface
+			// Test the file name, only if it contains a class or interface
 			$this->_checkFileNaming();
 		}
 		
@@ -841,7 +841,7 @@ class PHPCheckstyle {
 				break;
 
 			// beginning of a function definition
-			// check also for existance of docblock
+			// check also for existence of docblock
 			case T_FUNCTION:
 				$this->_processFunctionStatement();
 				break;
@@ -1101,7 +1101,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Launched when a ( sign is encoutered.
+	 * Launched when a ( sign is encountered.
 	 */
 	private function _processParenthesisOpen() {
 		// the only issue with "(" is generally whether there should be space after it or not
@@ -1115,7 +1115,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Launched when a ) sign is encoutered.
+	 * Launched when a ) sign is encountered.
 	 */
 	private function _processParenthesisClose() {
 		// Decrease the number of opened brackets
@@ -1144,7 +1144,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Launched when a minus sign is encoutered.
+	 * Launched when a minus sign is encountered.
 	 *
 	 * @param TokenInfo $token
 	 *        	the current token
@@ -1162,7 +1162,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Launched when a semicolon is encoutered.
+	 * Launched when a semicolon is encountered.
 	 *
 	 * @param TokenInfo $token
 	 *        	the current token
@@ -1181,7 +1181,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Launched when an opening brace is encoutered.
+	 * Launched when an opening brace is encountered.
 	 *
 	 * @param TokenInfo $token
 	 *        	the current token
@@ -1231,7 +1231,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Launched when a closing brace is encoutered.
+	 * Launched when a closing brace is encountered.
 	 *
 	 * @param TokenInfo $token
 	 *        	the current token
@@ -1239,7 +1239,7 @@ class PHPCheckstyle {
 	private function _processBracesClose($token) {
 		// signifies the end of a block
 		// currently tests whether this token resides on a new line.
-		// This test is desactivated when in a view
+		// This test is deactivated when in a view
 		if ($this->_isActive('controlCloseCurly') && !($this->_isView) && !($this->_inString)) {
 			$previousToken = $this->tokenizer->peekPrvsValidToken();
 			if ($previousToken->line == $token->line && $previousToken->id !== T_BRACES_OPEN) {
@@ -1515,7 +1515,7 @@ class PHPCheckstyle {
 			// Add the function name to the list of used functions
 			$this->_usedFunctions[$text] = $text;
 			
-			// Check if the function call is made on an objet of if it's a base PHP function.
+			// Check if the function call is made on an object of if it's a base PHP function.
 			$isObjectCall = $this->tokenizer->checkPreviousToken(T_OBJECT_OPERATOR);
 			
 			if (!$isObjectCall) {
@@ -2155,7 +2155,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Check if the case statement of a swtich/case a a break instruction.
+	 * Check if the case statement of a switch/case a a break instruction.
 	 *
 	 * This function is launched at the start of each case.
 	 */
@@ -2420,7 +2420,7 @@ class PHPCheckstyle {
 	 * Dead code after a return or a throw TOKEN.
 	 *
 	 * @param String $endToken
-	 *        	The anme of the end token (RETURN or THROW)
+	 *        	The name of the end token (RETURN or THROW)
 	 */
 	private function _checkUnusedCode($endToken) {
 		if ($this->_isActive('checkUnusedCode')) {
@@ -2572,7 +2572,7 @@ class PHPCheckstyle {
 	 * This function is launched when the current token is T_CATCH
 	 */
 	private function _processCatch() {
-		// We consider that all preview "Throws" are catched (this may be wrong)
+		// We consider that all preview "Throws" are caught (this may be wrong)
 		$this->_functionThrows = false;
 	}
 
@@ -2639,7 +2639,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Check for the abscence of a white space before the text.
+	 * Check for the absence of a white space before the text.
 	 *
 	 * @param String $text
 	 *        	The text of the token to test
@@ -2674,7 +2674,7 @@ class PHPCheckstyle {
 			if (empty($exceptions) || !in_array($text, $exceptions)) {
 				
 				if (!$this->tokenizer->checkNextToken(T_WHITESPACE)) {
-					// In case of new line or a php closing tag it's OK
+					// In case of new line or a PHP closing tag it's OK
 					if (!($this->tokenizer->checkNextToken(T_NEW_LINE) || $this->tokenizer->checkNextToken(T_CLOSE_TAG))) {
 						$msg = $this->_getMessage('SPACE_AFTER_TOKEN', $text);
 						$this->_writeError('checkWhiteSpaceAfter', $msg);
@@ -2685,7 +2685,7 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Check for the abscence of a white space after the text.
+	 * Check for the absence of a white space after the text.
 	 *
 	 * @param String $text
 	 *        	The text of the token to test
@@ -2763,7 +2763,7 @@ class PHPCheckstyle {
 	/**
 	 * Checks for presence of tab in the whitespace character string.
 	 *
-	 * Launched when T_WHITESPACE or T_TAB is met at the begining of a line.
+	 * Launched when T_WHITESPACE or T_TAB is met at the beginning of a line.
 	 *
 	 * @param String $whitespaceString
 	 *        	the whitespace string used for indentation
@@ -2797,7 +2797,7 @@ class PHPCheckstyle {
 	/**
 	 * Check the indentation level.
 	 *
-	 * Launched when T_WHITESPACE is met at the begining of a line.
+	 * Launched when T_WHITESPACE is met at the beginning of a line.
 	 *
 	 * @param String $whitespaceString
 	 *        	the whitespace string used for indentation
@@ -2849,7 +2849,7 @@ class PHPCheckstyle {
 				}
 			}
 			
-			// the indentation is almost free if it is a multiligne array
+			// the indentation is almost free if it is a multi line array
 			if ($this->tokenizer->checkNextToken(T_CONSTANT_ENCAPSED_STRING) || $this->tokenizer->checkNextToken(T_OBJECT_OPERATOR) || $this->tokenizer->checkNextToken(T_ARRAY) || $this->tokenizer->checkNextToken(T_NEW)) {
 				if (($expectedIndentation + 2) > $indentation) {
 					$msg = $this->_getMessage('INDENTATION_LEVEL_MORE', $expectedIndentation, $indentation);
@@ -3091,7 +3091,7 @@ class PHPCheckstyle {
 			$docTokenPosition --;
 			
 			if ($docTokenPosition == 0) {
-				break; // special case for begining of the file
+				break; // special case for beginning of the file
 			}
 		}
 		

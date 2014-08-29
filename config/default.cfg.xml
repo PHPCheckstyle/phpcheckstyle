@@ -72,7 +72,7 @@
     <!-- old = old style (constructor = name of the class) -->
     <!-- new = "__construct()" -->    
     <test name="constructorNaming">
-        <property name="naming" value="old"/>
+        <property name="naming" value="new"/>
     </test>
     
     <!-- Check Class Naming -->

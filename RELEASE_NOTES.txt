@@ -1,6 +1,16 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+Version 0.14.0
+--------------
+* PSR-0 Compliance (thanks to James Brooks).
+* new Array Reporter (thanks to James Brooks).
+* Allow an array of configuration values to be passed through, rather than XML (thanks to James Brooks).
+* Better detection of package names for NCSS report (filename by default, namespace if present).
+* new Check : "mandatoryHeader" to verify the presence of a header for each file.
+* new Check : "localScopeVariableLength" to verify the length of the variable names.
+   NOTE : This may generate lots of new warnings. 
+
 Version 0.13.2
 --------------
 * Change in the default configurations : White spaces are required before and after the concatenation operator ".".

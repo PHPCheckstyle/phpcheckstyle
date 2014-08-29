@@ -19,7 +19,10 @@
     "autoload": {
         "psr-0": {
             "PHPCheckstyle\\": "src/"
-        }
+        },
+        "files": [
+            "src/PHPCheckstyle/_Constants.php"
+        ]
     }
    
 }

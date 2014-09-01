@@ -25,6 +25,6 @@ class ConsoleReporter extends Reporter {
 	 * @SuppressWarnings
 	 */
 	public function writeError($line, $check, $message, $level = WARNING) {
-		echo $this->currentPhpFile . " " . $level . " Line:" . $line . " - " . $message . "\n";
+		echo "File \"" . $this->currentPhpFile . "\"" . " " . $level . ", line " . $line . " - " . $message . "\n";
 	}
 }

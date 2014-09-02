@@ -124,6 +124,7 @@ class PHPCheckstyle {
 	private $_docblocNbReturns = 0; // Number of @return in the docblock of a function
 	private $_docblocNbThrows = 0; // Number of @throw in the docblock of a function
 	private $_cyclomaticComplexity = 0;
+	private $_npathComplexity = 0;
 
 	private $_fileSuppressWarnings = array(); // List of warnings to ignore for this file
 	private $_classSuppressWarnings = array(); // List of warnings to ignore for this class
@@ -724,26 +725,31 @@ class PHPCheckstyle {
 			case T_FOREACH:
 				$this->_processControlStatement($token);
 				$this->_cyclomaticComplexity ++;
+				$this->_npathComplexity ++;
 				break;
 
 			case T_SWITCH:
 				$this->_processSwitchStart();
 				$this->_processControlStatement($token);
 				$this->_cyclomaticComplexity ++;
+				$this->_npathComplexity ++;
 				break;
 
 			case T_ELSE:
 				// We don't increment the cyclomatic complexity for the last else
 				$this->_processControlStatement($token);
+				$this->_npathComplexity ++;
 				break;
 
 			case T_CASE:
 				$this->_processSwitchCase();
 				$this->_cyclomaticComplexity ++;
+				$this->_npathComplexity ++;
 				break;
 
 			case T_DEFAULT:
 				$this->_processSwitchDefault();
+				$this->_npathComplexity ++;
 				break;
 
 			case T_BREAK:
@@ -752,16 +758,19 @@ class PHPCheckstyle {
 
 			case T_TRY:
 				$this->_processControlStatement($token);
+				$this->_npathComplexity ++;
 				break;
 
 			case T_CATCH:
 				$this->_processCatch();
 				$this->_processControlStatement($token);
+				$this->_npathComplexity ++;
 				break;
 
 			case T_FINALLY:
 				$this->_processFinally();
 				$this->_processControlStatement($token);
+				$this->_npathComplexity ++;
 				break;
 
 			case T_WHITESPACE:
@@ -1722,6 +1731,7 @@ class PHPCheckstyle {
 	private function _processFunctionStart() {
 		$this->_inFunction = true;
 		$this->_cyclomaticComplexity = 1;
+		$this->_npathComplexity = 0;
 		$this->_functionLevel = $this->statementStack->count();
 		$this->_justAfterFuncStmt = false;
 		
@@ -1757,7 +1767,6 @@ class PHPCheckstyle {
 	 */
 	private function _checkCyclomaticComplexity() {
 		if ($this->_isActive('cyclomaticComplexity')) {
-			
 			$warningLevel = $this->_config->getTestProperty('cyclomaticComplexity', 'warningLevel');
 			$errorLevel = $this->_config->getTestProperty('cyclomaticComplexity', 'errorLevel');
 			$msg = $this->_getMessage('CYCLOMATIC_COMPLEXITY', $this->_currentFunctionName, $this->_cyclomaticComplexity, $warningLevel);
@@ -1767,6 +1776,26 @@ class PHPCheckstyle {
 				$this->_reporter->writeError($this->_functionStartLine, 'cyclomaticComplexity', $msg, WARNING);
 			} else if ($this->_cyclomaticComplexity > $errorLevel) {
 				$this->_reporter->writeError($this->_functionStartLine, 'cyclomaticComplexity', $msg, ERROR);
+			}
+		}
+	}
+
+	/**
+	 * Check the NPath complexity of a function.
+	 * 
+	 * Called by _processFunctionStop()
+	 */
+	private function _checkNPathComplexity() {
+		if ($this->_isActive('npathComplexity')) {
+			$warningLevel = $this->_config->getTestProperty('npathComplexity', 'warningLevel');
+			$errorLevel = $this->_config->getTestProperty('npathComplexity', 'errorLevel');
+			$msg = $this->_getMessage('NPATH_COMPLEXITY', $this->_currentFunctionName, $this->_npathComplexity, $warningLevel);
+			
+			// Direct call to the reporter to allow different error levels for a single test.
+			if ($this->_npathComplexity > $warningLevel) {
+				$this->_reporter->writeError($this->_functionStartLine, 'npathComplexity', $msg, WARNING);
+			} else if ($this->_npathComplexity > $errorLevel) {
+				$this->_reporter->writeError($this->_functionStartLine, 'npathComplexity', $msg, ERROR);
 			}
 		}
 	}
@@ -1848,6 +1877,9 @@ class PHPCheckstyle {
 									
 		// Check the cyclomatic complexity
 		$this->_checkCyclomaticComplexity();
+
+		// Check the NPath Complexity
+		$this->_checkNPathComplexity();
 		
 		// Check the docblock content
 		$this->_checkDocBlockParameters();

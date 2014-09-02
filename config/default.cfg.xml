@@ -237,6 +237,14 @@
         <!-- Level raising an error -->
         <property name="errorLevel" value="20"/>
     </test>
+
+    <!-- Check NPath Complexity -->
+    <test name="npathComplexity">
+        <!-- Level raising a warning -->
+        <property name="warningLevel" value="100"/>
+        <!-- Level raising an error -->
+        <property name="errorLevel" value="200"/>
+    </test>
     
     <!--  ****************  -->
     <!--      Prohibited    -->

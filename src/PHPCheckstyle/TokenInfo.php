@@ -66,84 +66,38 @@ class TokenInfo {
 	 * @return String the name of the token
 	 */
 	public function getName() {
-		switch ($this->id) {
-			case T_NEW_LINE:
-				$result = 'T_NEW_LINE';
-				break;
-			case T_TAB:
-				$result = 'T_TAB';
-				break;
-			case T_SEMICOLON:
-				$result = 'T_SEMICOLON';
-				break;
-			case T_BRACES_OPEN:
-				$result = 'T_BRACES_OPEN';
-				break;
-			case T_BRACES_CLOSE:
-				$result = 'T_BRACES_CLOSE';
-				break;
-			case T_PARENTHESIS_OPEN:
-				$result = 'T_PARENTHESIS_OPEN';
-				break;
-			case T_PARENTHESIS_CLOSE:
-				$result = 'T_PARENTHESIS_CLOSE';
-				break;
-			case T_COMMA:
-				$result = 'T_COMMA';
-				break;
-			case T_EQUAL:
-				$result = 'T_EQUAL';
-				break;
-			case T_CONCAT:
-				$result = 'T_CONCAT';
-				break;
-			case T_COLON:
-				$result = 'T_COLON';
-				break;
-			case T_MINUS:
-				$result = 'T_MINUS';
-				break;
-			case T_PLUS:
-				$result = 'T_PLUS';
-				break;
-			case T_IS_GREATER:
-				$result = 'T_IS_GREATER';
-				break;
-			case T_IS_SMALLER:
-				$result = 'T_IS_SMALLER';
-				break;
-			case T_MULTIPLY:
-				$result = 'T_MULTIPLY';
-				break;
-			case T_DIVIDE:
-				$result = 'T_DIVIDE';
-				break;
-			case T_QUESTION_MARK:
-				$result = 'T_QUESTION_MARK';
-				break;
-			case T_MODULO:
-				$result = 'T_MODULO';
-				break;
-			case T_EXCLAMATION_MARK:
-				$result = 'T_EXCLAMATION_MARK';
-				break;
-			case T_AMPERSAND:
-				$result = 'T_AMPERSAND';
-				break;
-			case T_SQUARE_BRACKET_OPEN:
-				$result = 'T_SQUARE_BRACKET_OPEN';
-				break;
-			case T_SQUARE_BRACKET_CLOSE:
-				$result = 'T_SQUARE_BRACKET_CLOSE';
-				break;
-			case T_AROBAS:
-				$result = 'T_AROBAS';
-				break;
-			case T_UNKNOWN:
-				$result = 'T_UNKNOWN';
-				break;
-			default:
-				$result = token_name($this->id);
+		$tagNames = array(
+			T_NEW_LINE             => 'T_NEW_LINE',
+			T_TAB                  => 'T_TAB',
+			T_SEMICOLON            => 'T_SEMICOLON',
+			T_BRACES_OPEN          => 'T_BRACES_OPEN',
+			T_BRACES_CLOSE         => 'T_BRACES_CLOSE',
+			T_PARENTHESIS_OPEN     => 'T_PARENTHESIS_OPEN',
+			T_PARENTHESIS_CLOSE    => 'T_PARENTHESIS_CLOSE',
+			T_COMMA                => 'T_COMMA',
+			T_EQUAL                => 'T_EQUAL',
+			T_CONCAT               => 'T_CONCAT',
+			T_COLON                => 'T_COLON',
+			T_MINUS                => 'T_MINUS',
+			T_PLUS                 => 'T_PLUS',
+			T_IS_GREATER           => 'T_IS_GREATER',
+			T_IS_SMALLER           => 'T_IS_SMALLER',
+			T_MULTIPLY             => 'T_MULTIPLY',
+			T_DIVIDE               => 'T_DIVIDE',
+			T_QUESTION_MARK        => 'T_QUESTION_MARK',
+			T_MODULO               => 'T_MODULO',
+			T_EXCLAMATION_MARK     => 'T_EXCLAMATION_MARK',
+			T_AMPERSAND            => 'T_AMPERSAND',
+			T_SQUARE_BRACKET_OPEN  => 'T_SQUARE_BRACKET_OPEN',
+			T_SQUARE_BRACKET_CLOSE => 'T_SQUARE_BRACKET_CLOSE',
+			T_AROBAS               => 'T_AROBAS',
+			T_UNKNOWN              => 'T_UNKNOWN',
+		);
+
+		if (isset($tagNames[$this->id])) {
+			$result = $tagNames[$this->id];
+		} else {
+			$result = token_name($this->id);
 		}
 		
 		return $result;

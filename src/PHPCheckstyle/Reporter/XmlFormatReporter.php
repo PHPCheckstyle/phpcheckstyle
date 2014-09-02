@@ -47,7 +47,7 @@ class XmlFormatReporter extends Reporter {
 	 *     
 	 */
 	public function start() {
-		$this->_initXml();
+		$this->initXml();
 	}
 
 	/**
@@ -57,7 +57,7 @@ class XmlFormatReporter extends Reporter {
 	 *     
 	 */
 	public function stop() {
-		$this->_endCurrentElement();
+		$this->endCurrentElement();
 		$this->document->save($this->outputFile);
 	}
 
@@ -71,8 +71,8 @@ class XmlFormatReporter extends Reporter {
 	 */
 	public function currentlyProcessing($phpFile) {
 		parent::currentlyProcessing($phpFile);
-		$this->_endCurrentElement();
-		$this->_startNewElement($phpFile);
+		$this->endCurrentElement();
+		$this->startNewElement($phpFile);
 	}
 
 	/**
@@ -97,33 +97,43 @@ class XmlFormatReporter extends Reporter {
 		$errEl->setAttribute("source", $check);
 		
 		if (empty($this->currentElement)) {
-			$this->_startNewElement("");
+			$this->startNewElement("");
 		}
 		$this->currentElement->appendChild($errEl);
 	}
 
-	protected function _initXml() {
+	protected function initXml() {
 		$this->document = new DomDocument("1.0");
 		$this->root = $this->document->createElement('checkstyle');
 		$this->root->setAttribute("version", "1.0.0");
 		$this->document->appendChild($this->root);
 	}
 
-	protected function _startNewElement($fileEl) {
+	/**
+	 * Creates a new file element.
+	 * 
+	 * @param string file
+	 */
+	protected function startNewElement($fileEl) {
 		$this->currentElement = $this->document->createElement("file");
 		
 		// remove the "./" at the beginning ot the path in case of relative path
-		if (substr($fileEl, 0, 2) == './') {
+		if (substr($fileEl, 0, 2) === './') {
 			$fileEl = substr($fileEl, 2);
 		}
 		$this->currentElement->setAttribute("name", $fileEl);
 	}
 
+	/**
+	 * Returns the document.
+	 * 
+	 * @return DomDocument object
+	 */
 	protected function getDocument() {
 		return $this->document;
 	}
 
-	protected function _endCurrentElement() {
+	protected function endCurrentElement() {
 		if ($this->currentElement) {
 			$this->root->appendChild($this->currentElement);
 		}

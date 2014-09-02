@@ -1,6 +1,12 @@
 <?php 
 namespace PHPCheckstyle\Config;
 
+/**
+ * Abstract class model for the configuration checkers.
+ * 
+ * @author James Brooks <jbrooksuk@me.com>
+ * @SuppressWarnings docBlocks
+ */
 abstract class CheckStyleConfig {
 	abstract public function getTestItems($test);
 	abstract public function getConfigItems($config);

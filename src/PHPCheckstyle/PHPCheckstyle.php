@@ -21,6 +21,7 @@ use PHPCheckstyle\Reporter\XmlNCSSReporter;
  * Does most of the processing.
  *
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
+ * @SuppressWarnings checkUnusedPrivateFunctions functionMaxParameters
  */
 class PHPCheckstyle {
 	// The class used to export the result
@@ -682,7 +683,8 @@ class PHPCheckstyle {
 	 * 
 	 * @see http://www.php.net/manual/en/tokens.php
 	 *
-	 * @param TokenInfo $token        	
+	 * @param TokenInfo $token
+	 * @SuppressWarnings switchCaseNeedBreak functionLength cyclomaticComplexity
 	 */
 	private function _processToken($token) {
 		// Debug
@@ -3058,16 +3060,18 @@ class PHPCheckstyle {
 			if ($pos !== false) {
 				$suppressedCheck = trim(substr($subToken, $pos + strlen("@SuppressWarnings")));
 				$supprArray = explode(' ', $suppressedCheck);
-				$suppressedCheck = trim($supprArray[0]);
-				// Store the suppressed warning in the corresponding array
-				if ($token == T_CLASS) {
-					$this->_classSuppressWarnings[] = $suppressedCheck;
-				} elseif ($token == T_INTERFACE) {
-					$this->_interfaceSuppressWarnings[] = $suppressedCheck;
-				} elseif ($token == T_FUNCTION) {
-					$this->_functionSuppressWarnings[] = $suppressedCheck;
-				} elseif ($token == T_FILE) {
-					$this->_fileSuppressWarnings[] = $suppressedCheck;
+				foreach($supprArray as $supprCheck) {
+					$suppressedCheck = trim($supprCheck);
+					// Store the suppressed warning in the corresponding array
+					if ($token == T_CLASS) {
+						$this->_classSuppressWarnings[] = $suppressedCheck;
+					} elseif ($token == T_INTERFACE) {
+						$this->_interfaceSuppressWarnings[] = $suppressedCheck;
+					} elseif ($token == T_FUNCTION) {
+						$this->_functionSuppressWarnings[] = $suppressedCheck;
+					} elseif ($token == T_FILE) {
+						$this->_fileSuppressWarnings[] = $suppressedCheck;
+					}
 				}
 			}
 			

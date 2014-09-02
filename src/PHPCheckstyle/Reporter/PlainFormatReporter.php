@@ -71,6 +71,7 @@ class PlainFormatReporter extends Reporter {
 	 *        	the text
 	 * @param String $level
 	 *        	the severity level
+	 * @SuppressWarnings checkUnusedFunctionParameters
 	 */
 	public function writeError($line, $check, $message, $level = WARNING) {
 		$msg = "\t" . $level . " Line:" . $line . ": " . $message . PHP_EOL;

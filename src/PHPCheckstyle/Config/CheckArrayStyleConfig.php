@@ -89,7 +89,7 @@ class CheckArrayStyleConfig extends CheckStyleConfig {
 			$ret = $this->myConfig[$test]['level'];
 		}
 		
-		if ($ret != ERROR && $ret != IGNORE && $ret != INFO && $ret != WARNING) {
+		if ($ret !== ERROR && $ret !== IGNORE && $ret !== INFO && $ret !== WARNING) {
 			echo "Invalid level for test " . $test . " : " . $ret;
 			$ret = WARNING;
 		}

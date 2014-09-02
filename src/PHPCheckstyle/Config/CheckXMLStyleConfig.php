@@ -5,6 +5,7 @@ namespace PHPCheckstyle\Config;
  * Loads the test configuration.
  *
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
+ * @SuppressWarnings checkUnusedPrivateFunctions
  */
 class CheckXMLStyleConfig extends CheckStyleConfig {
 	
@@ -143,7 +144,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 			$ret = $this->myConfig[$test]['level'];
 		}
 		
-		if ($ret != ERROR && $ret != IGNORE && $ret != INFO && $ret != WARNING) {
+		if ($ret !== ERROR && $ret !== IGNORE && $ret !== INFO && $ret !== WARNING) {
 			echo "Invalid level for test " . $test . " : " . $ret;
 			$ret = WARNING;
 		}
@@ -248,6 +249,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 	 *        	name of element
 	 * @param Attributes $attrs
 	 *        	list of attributes of the element
+	 * @SuppressWarnings cyclomaticComplexity checkUnusedFunctionParameters
 	 */
 	private function _startElement($parser, $elem, $attrs) {
 		switch ($elem) {
@@ -341,19 +343,19 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 
 	/**
 	 * SAX function indicating end of element
-	 * Currenlty we dont need to do anything here
+	 * Currently we dont need to do anything here
 	 *
-	 * @param Parser $parser        	
-	 * @param String $name        	
+	 * @param Parser $parser
+	 * @param String $name	
 	 */
 	private function _endElement($parser, $name) {}
 
 	/**
 	 * SAX function for processing CDATA
-	 * Currenlty we dont need to do anything here
+	 * Currently we dont need to do anything here
 	 *
-	 * @param Parser $parser        	
-	 * @param String $name        	
+	 * @param Parser $parser
+	 * @param String $name
 	 */
 	private function _gotCdata($parser, $name) {}
 }

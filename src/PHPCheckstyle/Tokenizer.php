@@ -67,16 +67,30 @@ class Tokenizer {
 	private $tokenNumber = 0;
 
 	/**
+	 * List of tokens that should be ignored by the Tokenizer.
+	 * 
+	 * @var Array
+	 */
+	private $ignoreTokens;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		
 		// Detect the php.ini settings
-		$this->shortOpenTagOff = (ini_get('short_open_tag') == false);
+		$this->shortOpenTagOff = (ini_get('short_open_tag') === false);
 		
 		/*if ($this->shortOpenTagOff) {
 			echo "Warning : The short_open_tag value of your php.ini setting is off, you may want to activate it for correct code analysis";
 		}*/
+
+		$this->ignoreTokens = array(
+			T_WHITESPACE  => true,
+			T_TAB         => true,
+			T_COMMENT     => true,
+			T_ML_COMMENT  => true,
+			T_DOC_COMMENT => true,
+		);
 		
 		$this->reset();
 	}
@@ -89,7 +103,6 @@ class Tokenizer {
 	 *        	the line where the token is found
 	 */
 	public function tokenize($filename) {
-		
 		// Read the file
 		if (filesize($filename)) {
 			$fp = fopen($filename, "rb");
@@ -214,23 +227,23 @@ class Tokenizer {
 	 * @return TokenInfo the info about the token found
 	 */
 	public function peekNextValidToken($startPos = null, $stopOnNewLine = false) {
-		
 		// define the start position
 		$pos = $this->getCurrentPosition() + 1; // defaut position for the search
-		if ($startPos != null) {
+		if ($startPos !== null) {
 			$pos = $startPos; // if defined, set the start position
 		}
 		
 		// search for the next valid token
 		$token = null;
 		$nbTokens = count($this->tokens);
+
 		while ($pos < $nbTokens) {
 			$token = $this->tokens[$pos];
 			$pos ++;
 			
-			if ($token->id == T_WHITESPACE || $token->id == T_TAB || $token->id == T_COMMENT || $token->id == T_ML_COMMENT || $token->id == T_DOC_COMMENT) {
+			if (isset($this->ignoreTokens[$token->id])) {
 				continue;
-			} else if ($token->id == T_NEW_LINE) {
+			} else if ($token->id === T_NEW_LINE) {
 				if ($stopOnNewLine) {
 					break;
 				} else {
@@ -259,9 +272,9 @@ class Tokenizer {
 			$token = $this->tokens[$pos];
 			$pos --;
 			
-			if ($token->id == T_WHITESPACE || $token->id == T_TAB || $token->id == T_COMMENT || $token->id == T_ML_COMMENT || $token->id == T_DOC_COMMENT) {
+			if (isset($this->ignoreTokens[$token->id])) {
 				continue;
-			} else if ($token->id == T_NEW_LINE) {
+			} else if ($token->id === T_NEW_LINE) {
 				continue;
 			} else {
 				break;
@@ -299,9 +312,9 @@ class Tokenizer {
 	 */
 	public function checkToken($token, $id, $text = false) {
 		$result = false;
-		if ($token->id == $id) {
+		if ($token->id === $id) {
 			if ($text) {
-				$result = $token->text == $text;
+				$result = $token->text === $text;
 			} else {
 				$result = true;
 			}
@@ -375,7 +388,7 @@ class Tokenizer {
 	 * @return Integer the position, null if not found
 	 */
 	public function findNextStringPosition($text, $apos = null) {
-		if ($apos == null) {
+		if ($apos === null) {
 			$pos = $this->getCurrentPosition();
 		} else {
 			$pos = $apos;
@@ -386,7 +399,7 @@ class Tokenizer {
 		while ($pos < $nbTokens) {
 			$token = $this->tokens[$pos];
 			
-			if ($text == $token->text) {
+			if ($text === $token->text) {
 				return $pos;
 			}
 			
@@ -541,6 +554,7 @@ class Tokenizer {
 	 * @param String $source
 	 *        	The source code to analyse
 	 * @return array
+	 * @SuppressWarnings checkUnusedVariables
 	 */
 	private function _getAllTokens($source) {
 		$newTokens = array();
@@ -548,7 +562,7 @@ class Tokenizer {
 		// Ugly trick
 		// Reset the error array by calling an undefined variable
 		set_error_handler('var_dump', 0);
-		@$errorGetLastResetUndefinedVariable;
+		@$errLastResetUndefinedVar;
 		restore_error_handler();
 		
 		// Get the tokens
@@ -587,7 +601,7 @@ class Tokenizer {
 					$this->tokenNumber++;
 					$openTag->position = $this->tokenNumber;
 					$openTag->line = $this->lineNumber;
-					$newTokens[] = $openTag;
+					$this->newTokens[] = $openTag;
 					
 					// Tokenize the content
 					$inlineText = substr($tokenText, $startPos + strlen(SHORT_OPEN_TAG), $endPos - $startPos);
@@ -596,7 +610,7 @@ class Tokenizer {
 					$inline = $this->_getAllTokens(OPEN_TAG . " " . $inlineText);
 					
 					array_shift($inline); // remove <?php
-					$newTokens = array_merge($newTokens, $inline);
+					$this->_identifyTokens($newTokens, $inline);
 					
 					// Add the close tag
 					$closeTag = new TokenInfo();
@@ -605,7 +619,7 @@ class Tokenizer {
 					$this->tokenNumber++;
 					$closeTag->position = $this->tokenNumber;
 					$closeTag->line = $this->lineNumber;
-					$newTokens[] = $closeTag;
+					$this->newTokens[] = $closeTag;
 					
 					// text = the remaining text
 					$tokenText = substr($tokenText, $endPos + strlen(SHORT_OPEN_TAG));
@@ -629,7 +643,6 @@ class Tokenizer {
 	 * @return Integer $closing position
 	 */
 	public function findClosingParenthesisPosition($startPos) {
-		
 		// Find the opening parenthesis after current position
 		$pos = $this->findNextStringPosition('(', $startPos);
 		$parenthesisCount = 1;

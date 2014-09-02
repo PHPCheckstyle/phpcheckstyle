@@ -50,9 +50,10 @@ class StatementStack {
 	 */
 	function getStackDump() {
 		$dump = "";
+		$stackTypes = array("FUNCTION", "INTERFACE", "CLASS");
 		foreach ($this->statements as $item) {
 			$dump .= $item->type;
-			if ($item->type == "FUNCTION" || $item->type == "INTERFACE" || $item->type == "CLASS") {
+			if (in_array($item->type, $stackTypes)) {
 				$dump .= "(" . $item->name . ")";
 			}
 			$dump .= " -> ";

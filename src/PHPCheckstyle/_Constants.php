@@ -14,6 +14,8 @@
 	define("IGNORE", "ignore");
 	define("INFO", "info");
 	define("WARNING", "warning"); 
+	define("SINGLE_QUOTE", 'single');
+	define("DOUBLE_QUOTE", 'double');
 
 	define('T_NEW_LINE', 10000);
 	define('T_TAB', 10001);

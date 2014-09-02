@@ -1035,6 +1035,14 @@ class PHPCheckstyle {
 				$this->_inArrayStatement = false;
 				break;
 			case T_QUOTE:
+				if ($this->_isActive('preferQuotes')) {
+					$style = $this->_config->getTestProperty('preferQuotes', 'type');
+					if ($style === SINGLE_QUOTE && $token->text === '"') {
+						$this->_writeError('preferQuotes', $this->_getMessage("PREFER_SINGLE_QUOTES"));
+					} elseif ($style === DOUBLE_QUOTE && $token->text === "'") {
+						$this->_writeError('preferQuotes', $this->_getMessage("PREFER_DOUBLE_QUOTES"));
+					}
+				}
 				$this->_inString = !$this->_inString;
 				break;
 			default:

@@ -10,6 +10,8 @@ $options['format'] = "array"; // default format
 $sourceDir = $_POST['sourceDir'];
 $resultDir = $_POST['resultDir'];
 $configFile = $_POST['configFile'];
+$lange = $_POST['lang'];
+
 
 if ($_POST['excludeFile']!="") {
 	$expFile = explode(',', $_POST['excludeFile']);
@@ -33,6 +35,9 @@ $configFile = array(
 
 // Launch PHPCheckstyle
 $style = new PHPCheckstyle\PHPCheckstyle($formats, $resultDir, $configFile, null, false, true);
+if (file_exists(__DIR__ . '/src/PHPCheckstyle/Lang/' . $options['lang'] . '.ini')) {
+	$style->setLang($options['lang']);
+}
 $style->processFiles($sources, $options['exclude']);
 
 echo "<pre>".print_r($style->_reporter->reporters[0]->outputFile, TRUE)."</pre>";

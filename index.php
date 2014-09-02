@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>PHPCheckstyle Web Interface</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	</head>
 	
 	<body>
@@ -30,6 +31,16 @@
 	<tr>
 		<td>Exclude Files or Directories <span style="color:red">*</span></td>
 		<td><input type="text" id="excludeFile" name ="excludeFile" value=""></input></td>
+	</tr>
+	
+	<tr>
+		<td>Language</td>
+		<td>
+			<input type="select" id="lang" name ="lang">
+				<option value="en-us">English</option>
+	  			<option value="fr-fr">Français</option>
+			</input>
+		</td>
 	</tr>
 	
 	</table>

@@ -1,12 +1,13 @@
 #!/usr/bin/php
 <?php
+
 /**
- *  CLI file to run the PHPCheckstyle
- *  
- *  @version 1.12.0
+ * CLI file to run the PHPCheckstyle
+ *
+ * @version 1.12.0
  */
 function usage() {
-	echo "Usage: ".$_SERVER['argv'][0]." <options>\n";
+	echo "Usage: " . $_SERVER['argv'][0] . " <options>\n";
 	echo "\n";
 	echo "    Options: \n";
 	echo "       --src          Root of the source directory tree or a file (can be repeated for multiple sources).\n";
@@ -17,9 +18,10 @@ function usage() {
 	echo "       --debug        [Optional] Add some debug logs (warning, very verbose)'.\n";
 	echo "       --linecount    [Optional] Generate a report on the number of lines of code (JavaNCSS format)'.\n";
 	echo "       --progress     [Optional] Prints a message noting the file and every line that is covered by PHPCheckStyle.\n";
+	echo "       --lang  	    [Optional] Language file to use for the result (en-us by default).\n";
 	echo "       --quiet  	    [Optional] Quiet mode.\n";
 	echo "       --help         Display this usage information.\n";
-	exit;
+	exit();
 }
 
 // default values
@@ -30,68 +32,85 @@ $options['outdir'] = "./style-report"; // default ouput directory
 $options['config'] = "default.cfg.xml";
 $options['debug'] = false;
 $options['progress'] = false;
+$options['lang'] = 'en_us';
 $options['quiet'] = false;
 $lineCountFile = null;
 
 // loop through user input
-for ($i = 1; $i < $_SERVER["argc"]; $i++) {
+for ($i = 1; $i < $_SERVER["argc"]; $i ++) {
 	switch ($_SERVER["argv"][$i]) {
 		case "--src":
 			$i++;
 			$options['src'][] = $_SERVER['argv'][$i];
 			break;
-
+		
 		case "--outdir":
 			$i++;
 			$options['outdir'] = $_SERVER['argv'][$i];
 			break;
-
+		
 		case "--exclude":
 			$i++;
 			$options['exclude'][] = $_SERVER['argv'][$i];
 			break;
-
+		
 		case "--format":
 			$i++;
 			$options['format'] = $_SERVER['argv'][$i];
 			break;
-
+		
+		case "--lang":
+			$i++;
+			$options['lang'] = $_SERVER['argv'][$i];
+			break;
+		
 		case "--config":
 			$i++;
 			$options['config'] = $_SERVER['argv'][$i];
 			break;
-
+		
 		case "--debug":
 			$options['debug'] = true;
 			break;
+			
 		case "--linecount":
 			$options['linecount'] = true;
 			break;
-
+		
 		case "--progress":
 			$options['progress'] = true;
 			break;
-
+		
 		case "--quiet":
 			$options['quiet'] = true;
 			break;
-
+		
 		case "--help":
 			usage();
 			break;
+			
 		default:
 			usage();
-		break;
+			break;
 	}
 }
 
 define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__));
+// require_once PHPCHECKSTYLE_HOME_DIR."/src/PHPCheckstyle.php";
 require_once "vendor/autoload.php";
 
 // check for valid format and set the output file name
 // right now the output file name is not configurable, only
 // the output directory is configurable (from command line)
-$knownFormats = array('html', 'html_console', 'console', 'text', 'xml', 'xml_console');
+$knownFormats = array(
+	'html',
+	'html_console',
+	'console',
+	'text',
+	'xml',
+	'xml_console',
+	'array'
+);
 $formats = explode(',', $options['format']);
 $unknownFormats = array_diff($formats, $knownFormats);
 if (!empty($unknownFormats)) {
@@ -110,6 +129,11 @@ if (!empty($options['linecount'])) {
 }
 
 $style = new PHPCheckstyle\PHPCheckstyle($formats, $options['outdir'], $options['config'], $lineCountFile, $options['debug'], $options['progress']);
+
+if (file_exists(__DIR__ . '/src/PHPCheckstyle/Lang/' . $options['lang'] . '.ini')) {
+	$style->setLang($options['lang']);
+}
+
 $style->processFiles($options['src'], $options['exclude']);
 
 if (!$options['quiet']) {

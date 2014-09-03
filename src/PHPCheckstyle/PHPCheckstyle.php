@@ -2846,13 +2846,14 @@ class PHPCheckstyle {
 	}
 
 	/**
-	 * Process a TO DO comment.
+	 * Process a TODO comment.
 	 *
-	 * @param String $text
-	 *        	the text.
+	 * @param Token $token
+	 *        	the doc token.
 	 */
-	private function _processTODO($text) {
+	private function _processTODO($token) {
 		if ($this->_isActive('showTODOs')) {
+			$text = $token->text;
 			$todoStr = stripos($text, 'TODO');
 			if ($todoStr !== FALSE) {
 				
@@ -2872,7 +2873,7 @@ class PHPCheckstyle {
 				$todoMsg = trim($todoMsg);
 				
 				$msg = $this->_getMessage('TODO', $todoMsg);
-				$this->_writeError('showTODOs', $msg);
+				$this->_writeError('showTODOs', $msg, $token->line);
 			}
 		}
 	}
@@ -2927,7 +2928,7 @@ class PHPCheckstyle {
 		}
 		
 		// Check if the comment contains a TO DO
-		$this->_processTODO($token->text);
+		$this->_processTODO($token);
 	}
 
 	/**

@@ -131,9 +131,6 @@ class XmlNCSSReporter {
 	 *        	the number of multi-line comments
 	 */
 	public function writeFileCount($packageName, $classes, $interfaces, $functions, $ncss, $javadocs, $javadocLines, $singleCommentLines, $multiCommentLines) {
-			
-		
-		echo "packageName : " . $packageName . PHP_EOL;
 		
 		if ($this->lastPackageName === $packageName) {
 			

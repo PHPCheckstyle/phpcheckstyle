@@ -175,7 +175,13 @@
     <test name="controlStructElse">
         <property name="position" value="sl"/>
     </test>
-    
+
+    <!--  ****************  -->
+    <!--      Quotes        -->
+    <!--  ****************  --> 
+    <test name="preferQuotes">
+        <property name="type" value="single"/>
+    </test>
     
     <!--  ****************  -->
     <!--      Spaces        -->

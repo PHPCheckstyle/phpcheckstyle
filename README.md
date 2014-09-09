@@ -24,12 +24,12 @@ more information and documentation
 
 ### Installation with Composer
 
-Add `jbrooksuk/phpcheckstyle` as a requirement to `composer.json`:
+Add `phpcheckstyle/phpcheckstyle` as a requirement to `composer.json`:
 
 ```json
 {
     "require": {
-        "jbrooksuk/phpcheckstyle": "dev-master"
+        "phpcheckstyle/phpcheckstyle": "dev-master"
     }
 }
 ```

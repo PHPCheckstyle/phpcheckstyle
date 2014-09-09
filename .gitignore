@@ -2,3 +2,5 @@
 composer.lock
 vendor/
 checkstyle_resultncss.xml
+.project
+.models

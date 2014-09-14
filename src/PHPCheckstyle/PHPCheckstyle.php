@@ -2202,6 +2202,11 @@ class PHPCheckstyle {
 	 * Process a class declaration statement.
 	 */
 	private function _processClassStatement() {
+		$isAfterScopeResolutionOperator = $this->tokenizer->checkPreviousToken(T_DOUBLE_COLON);
+		if ($isAfterScopeResolutionOperator) {
+			return;
+		}
+
 		// Check PHPDoc presence
 		$this->_checkDocExists(T_CLASS);
 		

@@ -7,55 +7,55 @@
 
 	<body>
 
-	<h1><img src="./html/images/Logo_phpcheckstyle.png"/>&nbsp;PHPCheckstyle</h1>
+		<h1><img src="./html/images/Logo_phpcheckstyle.png"/>&nbsp;PHPCheckstyle</h1>
 
-	<form name="myform" action="runFromWeb.php" method="POST">
+		<form name="myform" action="runFromWeb.php" method="POST">
 
-	<table>
+			<table>
 
-	<tr>
-		<td>File(s) to analyse <span style="color:red">*</span></td>
-		<td><input type="text" id="sourceDir" name="sourceDir" value="./test"></input></td>
-	</tr>
+				<tr>
+					<td>File(s) to analyse <span style="color:red">*</span></td>
+					<td><input type="text" id="sourceDir" name="sourceDir" value="./test"></input></td>
+				</tr>
 
-	<tr>
-		<td>Destination directory</td>
-		<td><input type="text" id="resultDir" name ="resultDir" value="./checkstyle_result"></input></td>
-	</tr>
+				<tr>
+					<td>Destination directory</td>
+					<td><input type="text" id="resultDir" name ="resultDir" value="./checkstyle_result"></input></td>
+				</tr>
 
-	<tr>
-		<td>Configuration file</td>
-		<td><input type="text" id="configFile" name ="configFile" value="default.cfg.xml"></input></td>
-	</tr>
+				<tr>
+					<td>Configuration file</td>
+					<td><input type="text" id="configFile" name ="configFile" value="default.cfg.xml"></input></td>
+				</tr>
 
-	<tr>
-		<td>Exclude Files or Directories <span style="color:red">*</span></td>
-		<td><input type="text" id="excludeFile" name ="excludeFile" value=""></input></td>
-	</tr>
+				<tr>
+					<td>Exclude Files or Directories <span style="color:red">*</span></td>
+					<td><input type="text" id="excludeFile" name ="excludeFile" value=""></input></td>
+				</tr>
 
-	<tr>
-		<td>Language</td>
-		<td>
-			<input type="select" id="lang" name ="lang">
-				<option value="en-us">English</option>
-	  			<option value="fr-fr">Français</option>
-			</input>
-		</td>
-	</tr>
+				<tr>
+					<td>Language</td>
+					<td>
+						<input type="select" id="lang" name ="lang">
+							<option value="en-us">English</option>
+							<option value="fr-fr">Français</option>
+						</input>
+					</td>
+				</tr>
 
-	</table>
+			</table>
 
-	<br/>
-	<br/>
+			<br/>
+			<br/>
 
-	<input type="submit" value="Run"></input>
+			<input type="submit" value="Run"></input>
 
-	<br/>
-	<br/>
+			<br/>
+			<br/>
 
-	</form>
+		</form>
 
-	<i><span style="color:red">*</span> Multiple filenames or directory names can be added, comma separated.</i>
+		<i><span style="color:red">*</span> Multiple filenames or directory names can be added, comma separated.</i>
 
 	</body>
 

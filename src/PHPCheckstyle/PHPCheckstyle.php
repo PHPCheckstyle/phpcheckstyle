@@ -78,8 +78,8 @@ class PHPCheckstyle {
 	private $_isLineStart = true; // Start of a line (just after a return)
 
 	// Indicate if we are in a control statement declaration (for, if, while, ...)
-	                              // The control statement starts just after the statement token
-	                              // and stops at the closing of the parenthesis or the new line if no parenthesis is used
+	// The control statement starts just after the statement token
+	// and stops at the closing of the parenthesis or the new line if no parenthesis is used
 	private $_inControlStatement = false;
 
 	private $_inString = false; // We are inside a string (only happens with T_ENCAPSED_AND_WHITESPACE)
@@ -1085,7 +1085,7 @@ class PHPCheckstyle {
 			$this->_checkWhiteSpaceBefore($token->text);
 		}
 		// We allow some '-' signs to skip the the space afterwards for negative numbers
-		if (!($this->tokenizer->checkNextToken(T_LNUMBER) || 		// float number
+		if (!($this->tokenizer->checkNextToken(T_LNUMBER) || // float number
 		$this->tokenizer->checkNextToken(T_DNUMBER))) {
 			// integer
 			$this->_checkWhiteSpaceAfter($token->text);

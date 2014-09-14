@@ -18,8 +18,8 @@ function usage() {
 	echo "       --debug        [Optional] Add some debug logs (warning, very verbose)'.\n";
 	echo "       --linecount    [Optional] Generate a report on the number of lines of code (JavaNCSS format)'.\n";
 	echo "       --progress     [Optional] Prints a message noting the file and every line that is covered by PHPCheckStyle.\n";
-	echo "       --lang  	    [Optional] Language file to use for the result (en-us by default).\n";
-	echo "       --quiet  	    [Optional] Quiet mode.\n";
+	echo "       --lang         [Optional] Language file to use for the result (en-us by default).\n";
+	echo "       --quiet        [Optional] Quiet mode.\n";
 	echo "       --help         Display this usage information.\n";
 	exit();
 }

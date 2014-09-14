@@ -4,7 +4,7 @@ namespace PHPCheckstyle;
 /**
  * Statement stack class.
  * This object is used to store the current stack of nested statements.
- * 
+ *
  * @package classes
  */
 class StatementStack {
@@ -28,7 +28,7 @@ class StatementStack {
 	/**
 	 * Add a statement to the stack.
 	 *
-	 * @param StatementItem $item        	
+	 * @param StatementItem $item
 	 */
 	function push($item) {
 		array_push($this->statements, $item);
@@ -58,7 +58,7 @@ class StatementStack {
 			}
 			$dump .= " -> ";
 		}
-		
+
 		return $dump;
 	}
 

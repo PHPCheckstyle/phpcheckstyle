@@ -1,4 +1,4 @@
-<?php 
+<?php
 define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__));
 
 require_once "vendor/autoload.php";

@@ -4,7 +4,7 @@ use DomDocument;
 
 /**
  * Writes the errors into an xml file.
- * 
+ *
  * Format:
  * ================================
  * <checkstyle>
@@ -30,7 +30,7 @@ class XmlFormatReporter extends Reporter {
 	private $currentElement = false;
 
 	private $ofile = "/style-report.xml"; // The output file name
-	
+
 	/**
 	 * Constructor; calls parent's constructor
 	 *
@@ -44,7 +44,7 @@ class XmlFormatReporter extends Reporter {
 	/**
 	 *
 	 * @see Reporter::start create the document root (<phpcheckstyle>)
-	 *     
+	 *
 	 */
 	public function start() {
 		$this->initXml();
@@ -54,7 +54,7 @@ class XmlFormatReporter extends Reporter {
 	 *
 	 * @see Reporter::start add the last element to the tree and save the DOM tree to the
 	 *      xml file
-	 *     
+	 *
 	 */
 	public function stop() {
 		$this->endCurrentElement();
@@ -65,7 +65,7 @@ class XmlFormatReporter extends Reporter {
 	 *
 	 * @see Reporter::currentlyProcessing add the previous element to the tree and start a new element
 	 *      for the new file
-	 *     
+	 *
 	 * @param $phpFile the
 	 *        	file currently processed
 	 */
@@ -78,7 +78,7 @@ class XmlFormatReporter extends Reporter {
 	/**
 	 *
 	 * @see Reporter::writeError creates a <error> element for the current doc element
-	 *     
+	 *
 	 * @param Integer $line
 	 *        	the line number
 	 * @param String $check
@@ -95,7 +95,7 @@ class XmlFormatReporter extends Reporter {
 		$errEl->setAttribute("severity", $level);
 		$errEl->setAttribute("message", $message);
 		$errEl->setAttribute("source", $check);
-		
+
 		if (empty($this->currentElement)) {
 			$this->startNewElement("");
 		}
@@ -111,12 +111,12 @@ class XmlFormatReporter extends Reporter {
 
 	/**
 	 * Creates a new file element.
-	 * 
+	 *
 	 * @param string file
 	 */
 	protected function startNewElement($fileEl) {
 		$this->currentElement = $this->document->createElement("file");
-		
+
 		// remove the "./" at the beginning ot the path in case of relative path
 		if (substr($fileEl, 0, 2) === './') {
 			$fileEl = substr($fileEl, 2);
@@ -126,7 +126,7 @@ class XmlFormatReporter extends Reporter {
 
 	/**
 	 * Returns the document.
-	 * 
+	 *
 	 * @return DomDocument object
 	 */
 	protected function getDocument() {

@@ -13,17 +13,17 @@ use \Exception;
  *
  * @see http://www.php.net/manual/en/tokens.php
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
- *        
+ *
  */
 class Tokenizer {
 
 	/**
 	 * Indicate if the "short_open_tag" is off.
-	 * 
+	 *
 	 * @var Boolean
 	 */
 	private $shortOpenTagOff = false;
-	
+
 	/**
 	 * The file content.
 	 *
@@ -33,42 +33,42 @@ class Tokenizer {
 
 	/**
 	 * The array of tokens in a file.
-	 * 
+	 *
 	 * @var Array[TokenInfo]
 	 */
 	private $tokens;
 
 	/**
 	 * The array of "new" tokens.
-	 * 
+	 *
 	 * @var Array
 	 */
 	private $newTokens = array();
 
 	/**
 	 * Position of the index in the current file.
-	 * 
+	 *
 	 * @var Integer
 	 */
 	private $index = 0;
 
 	/**
 	 * Number of lines in the file.
-	 * 
+	 *
 	 * @var Integer
 	 */
 	private $lineNumber = 1;
 
 	/**
 	 * Number of tokens in the file.
-	 * 
+	 *
 	 * @var Integer
 	 */
 	private $tokenNumber = 0;
 
 	/**
 	 * List of tokens that should be ignored by the Tokenizer.
-	 * 
+	 *
 	 * @var Array
 	 */
 	private $ignoreTokens;
@@ -79,7 +79,7 @@ class Tokenizer {
 	public function __construct() {
 		// Detect the php.ini settings
 		$this->shortOpenTagOff = (ini_get('short_open_tag') === false);
-		
+
 		/*if ($this->shortOpenTagOff) {
 			echo "Warning : The short_open_tag value of your php.ini setting is off, you may want to activate it for correct code analysis";
 		}*/
@@ -91,7 +91,7 @@ class Tokenizer {
 			T_ML_COMMENT  => true,
 			T_DOC_COMMENT => true,
 		);
-		
+
 		$this->reset();
 	}
 
@@ -134,10 +134,10 @@ class Tokenizer {
 	 */
 	public function getNextToken() {
 		if ($this->index < (count($this->tokens) - 1)) {
-			
+
 			// Increment the index
 			$this->index ++;
-			
+
 			// Return the new token
 			return $this->tokens[$this->index];
 		} else {
@@ -232,7 +232,7 @@ class Tokenizer {
 		if ($startPos !== null) {
 			$pos = $startPos; // if defined, set the start position
 		}
-		
+
 		// search for the next valid token
 		$token = null;
 		$nbTokens = count($this->tokens);
@@ -240,7 +240,7 @@ class Tokenizer {
 		while ($pos < $nbTokens) {
 			$token = $this->tokens[$pos];
 			$pos ++;
-			
+
 			if (isset($this->ignoreTokens[$token->id])) {
 				continue;
 			} else if ($token->id === T_NEW_LINE) {
@@ -253,7 +253,7 @@ class Tokenizer {
 				break;
 			}
 		}
-		
+
 		return $token;
 	}
 
@@ -265,13 +265,13 @@ class Tokenizer {
 	 */
 	public function peekPrvsValidToken() {
 		$pos = $this->index - 1;
-		
+
 		$token = null;
 		while ($pos > 0) {
-			
+
 			$token = $this->tokens[$pos];
 			$pos --;
-			
+
 			if (isset($this->ignoreTokens[$token->id])) {
 				continue;
 			} else if ($token->id === T_NEW_LINE) {
@@ -280,7 +280,7 @@ class Tokenizer {
 				break;
 			}
 		}
-		
+
 		return $token;
 	}
 
@@ -394,18 +394,18 @@ class Tokenizer {
 			$pos = $apos;
 		}
 		$pos += 1; // Start from the token following the current position
-		
+
 		$nbTokens = count($this->tokens);
 		while ($pos < $nbTokens) {
 			$token = $this->tokens[$pos];
-			
+
 			if ($text === $token->text) {
 				return $pos;
 			}
-			
+
 			$pos ++;
 		}
-		
+
 		return null;
 	}
 
@@ -422,7 +422,7 @@ class Tokenizer {
 	 */
 	public function checkNextValidToken($id, $text = false, $startPos = null) {
 		$tokenInfo = $this->peekNextValidToken($startPos);
-		
+
 		if ($tokenInfo != null) {
 			return $this->checkToken($tokenInfo, $id, $text);
 		} else {
@@ -439,17 +439,17 @@ class Tokenizer {
 	 *        	The token text
 	 * @return an array of tokens
 	 */
-	private function _identifyTokens($tokenText, $tokenID) {		
+	private function _identifyTokens($tokenText, $tokenID) {
 		// Split the data up by newlines
 		// To correctly handle T_NEW_LINE inside comments and HTML
 		$splitData = preg_split('#(\r\n|\n|\r)#', $tokenText, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 		foreach ($splitData as $data) {
-			
+
 			$tokenInfo = new TokenInfo();
 			$tokenInfo->text = $data;
 			$tokenInfo->position = $this->tokenNumber;
 			$tokenInfo->line = $this->lineNumber;
-			
+
 			if ($data == "\r\n" || $data == "\n" || $data == "\r") {
 				// This is a new line token
 				$tokenInfo->id = T_NEW_LINE;
@@ -461,9 +461,9 @@ class Tokenizer {
 				// Any other token
 				$tokenInfo->id = $tokenID;
 			}
-			
+
 			$this->tokenNumber ++;
-			
+
 			// Added detections
 			if ($tokenInfo->id == T_UNKNOWN) {
 				switch ($tokenInfo->text) {
@@ -542,7 +542,7 @@ class Tokenizer {
 
 			$this->newTokens[] = $tokenInfo;
 		}
-		
+
 		return $this->newTokens;
 	}
 
@@ -558,42 +558,42 @@ class Tokenizer {
 	 */
 	private function _getAllTokens($source) {
 		$newTokens = array();
-		
+
 		// Ugly trick
 		// Reset the error array by calling an undefined variable
 		set_error_handler('var_dump', 0);
 		@$errLastResetUndefinedVar;
 		restore_error_handler();
-		
+
 		// Get the tokens
 		$tokens = @token_get_all($source);
-		
+
 		// Check for parsing errors
 		$parsingErrors = error_get_last();
 		if (!empty($parsingErrors) && $parsingErrors["type"] == 128) {
 			throw new Exception($parsingErrors["message"]);
 		}
-		
+
 		// Check each token and transform into an Object
 		foreach ($tokens as $token) {
 			$isTokenArray = is_array($token);
-			
+
 			$tokenID = $isTokenArray ? $token[0] : T_UNKNOWN;
 			$tokenText = $isTokenArray ? $token[1] : $token;
-			
+
 			// Manage T_OPEN_TAG when php.ini setting short_open_tag is Off.
 			if ($this->shortOpenTagOff && $tokenID == T_INLINE_HTML) {
-				
+
 				$startPos = strpos($tokenText, SHORT_OPEN_TAG);
 				$endPos = strpos($tokenText, CLOSE_TAG, $startPos + strlen(SHORT_OPEN_TAG));
-				
+
 				// Extract the content of the short_open_tag
 				while (strlen($tokenText) > 2 && $startPos !== false && $endPos !== false) {
-					
+
 					// Parse the beginning of the text
 					$beforeText = substr($tokenText, 0, $startPos);
 					$this->_identifyTokens($beforeText, $tokenID);
-					
+
 					// The open tag
 					$openTag = new TokenInfo();
 					$openTag->id = T_OPEN_TAG;
@@ -602,16 +602,16 @@ class Tokenizer {
 					$openTag->position = $this->tokenNumber;
 					$openTag->line = $this->lineNumber;
 					$this->newTokens[] = $openTag;
-					
+
 					// Tokenize the content
 					$inlineText = substr($tokenText, $startPos + strlen(SHORT_OPEN_TAG), $endPos - $startPos);
 					$inlineText = substr($inlineText, 0, -strlen(CLOSE_TAG));
-					
+
 					$inline = $this->_getAllTokens(OPEN_TAG . " " . $inlineText);
-					
+
 					array_shift($inline); // remove <?php
 					$this->_identifyTokens($newTokens, $inline);
-					
+
 					// Add the close tag
 					$closeTag = new TokenInfo();
 					$closeTag->id = T_CLOSE_TAG;
@@ -620,15 +620,15 @@ class Tokenizer {
 					$closeTag->position = $this->tokenNumber;
 					$closeTag->line = $this->lineNumber;
 					$this->newTokens[] = $closeTag;
-					
+
 					// text = the remaining text
 					$tokenText = substr($tokenText, $endPos + strlen(SHORT_OPEN_TAG));
-					
+
 					$startPos = strpos($tokenText, SHORT_OPEN_TAG);
 					$endPos = strpos($tokenText, CLOSE_TAG, $startPos + strlen(SHORT_OPEN_TAG));
 				}
 			}
-			
+
 			// Identify the tokens
 			$this->_identifyTokens($tokenText, $tokenID);
 		}
@@ -639,32 +639,32 @@ class Tokenizer {
 	/**
 	 * Find the position of the closing parenthesis corresponding to the current position opening parenthesis.
 	 *
-	 * @param Integer $startPos        	
+	 * @param Integer $startPos
 	 * @return Integer $closing position
 	 */
 	public function findClosingParenthesisPosition($startPos) {
 		// Find the opening parenthesis after current position
 		$pos = $this->findNextStringPosition('(', $startPos);
 		$parenthesisCount = 1;
-		
+
 		$pos += 1; // Skip the opening parenthesis
-		
+
 		$nbTokens = count($this->tokens);
 		while ($parenthesisCount > 0 && $pos < $nbTokens) {
 			// Look for the next token
 			$token = $this->peekTokenAt($pos);
-			
+
 			// Increment or decrement the parenthesis count
 			if ($token->id == T_PARENTHESIS_OPEN) {
 				$parenthesisCount += 1;
 			} else if ($token->id == T_PARENTHESIS_CLOSE) {
 				$parenthesisCount -= 1;
 			}
-			
+
 			// Increment the position
 			$pos += 1;
 		}
-		
+
 		return $pos - 1;
 	}
 

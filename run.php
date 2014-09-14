@@ -43,52 +43,52 @@ for ($i = 1; $i < $_SERVER["argc"]; $i ++) {
 			$i++;
 			$options['src'][] = $_SERVER['argv'][$i];
 			break;
-		
+
 		case "--outdir":
 			$i++;
 			$options['outdir'] = $_SERVER['argv'][$i];
 			break;
-		
+
 		case "--exclude":
 			$i++;
 			$options['exclude'][] = $_SERVER['argv'][$i];
 			break;
-		
+
 		case "--format":
 			$i++;
 			$options['format'] = $_SERVER['argv'][$i];
 			break;
-		
+
 		case "--lang":
 			$i++;
 			$options['lang'] = $_SERVER['argv'][$i];
 			break;
-		
+
 		case "--config":
 			$i++;
 			$options['config'] = $_SERVER['argv'][$i];
 			break;
-		
+
 		case "--debug":
 			$options['debug'] = true;
 			break;
-			
+
 		case "--linecount":
 			$options['linecount'] = true;
 			break;
-		
+
 		case "--progress":
 			$options['progress'] = true;
 			break;
-		
+
 		case "--quiet":
 			$options['quiet'] = true;
 			break;
-		
+
 		case "--help":
 			usage();
 			break;
-			
+
 		default:
 			usage();
 			break;

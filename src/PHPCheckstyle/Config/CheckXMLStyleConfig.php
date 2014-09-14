@@ -8,10 +8,10 @@ namespace PHPCheckstyle\Config;
  * @SuppressWarnings checkUnusedPrivateFunctions
  */
 class CheckXMLStyleConfig extends CheckStyleConfig {
-	
+
 	// The configuration file
 	private $file;
-	
+
 	// Array that contains the loaded checks configuration
 	public $myConfig = array();
 
@@ -28,20 +28,20 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 	 *        	The path of the config file
 	 */
 	public function __construct($configFile) {
-		
+
 		// If the path is a valid file we use it as is
 		if (is_file($configFile)) {
 			$this->file = $configFile;
 		} else {
 			// Otherwise we look in the config directory
 			$this->file = PHPCHECKSTYLE_HOME_DIR . "/config/" . $configFile;
-			
+
 			if (!is_file($this->file)) {
 				echo "Config file not found : " . $configFile;
 				exit(0);
 			}
 		}
-		
+
 		$this->xmlParser = xml_parser_create();
 		xml_set_object($this->xmlParser, $this);
 		xml_set_element_handler($this->xmlParser, "_startElement", "_endElement");
@@ -68,7 +68,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 		if (!$fp) {
 			throw new Exception("Could not open XML input file");
 		}
-		
+
 		$data = fread($fp, 4096);
 		while ($data) {
 			if (!xml_parse($this->xmlParser, $data, feof($fp))) {
@@ -78,7 +78,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 				echo $msg;
 				$this->myConfig = array();
 			}
-			
+
 			$data = fread($fp, 4096);
 		}
 	}
@@ -143,12 +143,12 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig) && array_key_exists('level', $this->myConfig[$test])) {
 			$ret = $this->myConfig[$test]['level'];
 		}
-		
+
 		if ($ret !== ERROR && $ret !== IGNORE && $ret !== INFO && $ret !== WARNING) {
 			echo "Invalid level for test " . $test . " : " . $ret;
 			$ret = WARNING;
 		}
-		
+
 		return $ret;
 	}
 
@@ -165,7 +165,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig) && array_key_exists('regexp', $this->myConfig[$test])) {
 			$ret = $this->myConfig[$test]['regexp'];
 		}
-		
+
 		return $ret;
 	}
 
@@ -182,7 +182,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig)) {
 			$ret = $this->myConfig[$test];
 		}
-		
+
 		return $ret;
 	}
 
@@ -199,7 +199,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig)) {
 			$ret = $this->myConfig[$test];
 		}
-		
+
 		return $ret;
 	}
 
@@ -216,7 +216,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig)) {
 			$ret = $this->myConfig[$test];
 		}
-		
+
 		return $ret;
 	}
 
@@ -253,32 +253,32 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 	 */
 	private function _startElement($parser, $elem, $attrs) {
 		switch ($elem) {
-			
+
 			// Case of a configuration property
 			case 'CONFIG':
 				$this->currentConfig = strtolower($attrs['NAME']);
 				$this->myConfig[$this->currentConfig] = array();
 				break;
-			
+
 			// Case of a configuration property item
 			case 'CONFIGITEM':
 				$this->myConfig[$this->currentConfig][] = $attrs['VALUE'];
 				break;
-			
+
 			// Case of a test rule
 			case 'TEST':
 				$this->currentTest = strtolower($attrs['NAME']);
 				$this->myConfig[$this->currentTest] = array();
-				
+
 				if (isset($attrs['LEVEL'])) {
 					$this->myConfig[$this->currentTest]['level'] = $attrs['LEVEL'];
 				}
-				
+
 				if (isset($attrs['REGEXP'])) {
 					$this->myConfig[$this->currentTest]['regexp'] = $attrs['REGEXP'];
 				}
 				break;
-			
+
 			// Case of a propertie of a rule (name / value)
 			case 'PROPERTY':
 				$pname = $attrs['NAME'];
@@ -288,21 +288,21 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 				}
 				$this->myConfig[$this->currentTest][strtolower($pname)] = $pval;
 				break;
-			
+
 			// Case of a item of a list of values of a rule
 			case 'ITEM':
 				if (isset($attrs['VALUE'])) {
 					$this->myConfig[$this->currentTest]['item'][] = $attrs['VALUE'];
 				}
 				break;
-			
+
 			// Case of an exception to a rule
 			case 'EXCEPTION':
 				if (isset($attrs['VALUE'])) {
 					$this->myConfig[$this->currentTest]['exception'][] = $attrs['VALUE'];
 				}
 				break;
-			
+
 			// Case of a deprecated function
 			case 'DEPRECATED':
 				if (isset($attrs['OLD'])) {
@@ -315,7 +315,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['version'] = $attrs['VERSION'];
 				}
 				break;
-			
+
 			// Case of an alias function
 			case 'ALIAS':
 				if (isset($attrs['OLD'])) {
@@ -325,7 +325,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
 				}
 				break;
-			
+
 			// Case of a replacement
 			case 'REPLACEMENT':
 				if (isset($attrs['OLD'])) {
@@ -335,7 +335,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 					$this->myConfig[$this->currentTest][strtolower($attrs['OLD'])]['new'] = $attrs['NEW'];
 				}
 				break;
-			
+
 			default:
 				break;
 		}
@@ -346,7 +346,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 	 * Currently we dont need to do anything here
 	 *
 	 * @param Parser $parser
-	 * @param String $name	
+	 * @param String $name
 	 */
 	private function _endElement($parser, $name) {}
 

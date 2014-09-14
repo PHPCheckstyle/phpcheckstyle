@@ -7,7 +7,7 @@ namespace PHPCheckstyle\Config;
  * @author James Brooks <jbrooksuk@me.com>
  */
 class CheckArrayStyleConfig extends CheckStyleConfig {
-	
+
 	// Array that contains the loaded checks configuration
 	public $myConfig = array();
 
@@ -18,7 +18,7 @@ class CheckArrayStyleConfig extends CheckStyleConfig {
 	 *        	The path of the config file
 	 */
 	public function __construct($configArray) {
-		
+
 		// If the path is a valid file we use it as is
 		if (is_array($configArray)) {
 			$this->myConfig = $configArray;
@@ -88,12 +88,12 @@ class CheckArrayStyleConfig extends CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig) && array_key_exists('level', $this->myConfig[$test])) {
 			$ret = $this->myConfig[$test]['level'];
 		}
-		
+
 		if ($ret !== ERROR && $ret !== IGNORE && $ret !== INFO && $ret !== WARNING) {
 			echo "Invalid level for test " . $test . " : " . $ret;
 			$ret = WARNING;
 		}
-		
+
 		return $ret;
 	}
 
@@ -109,7 +109,7 @@ class CheckArrayStyleConfig extends CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig) && array_key_exists('regexp', $this->myConfig[$test])) {
 			$ret = $this->myConfig[$test]['regexp'];
 		}
-		
+
 		return $ret;
 	}
 
@@ -125,7 +125,7 @@ class CheckArrayStyleConfig extends CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig)) {
 			$ret = $this->myConfig[$test];
 		}
-		
+
 		return $ret;
 	}
 
@@ -141,7 +141,7 @@ class CheckArrayStyleConfig extends CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig)) {
 			$ret = $this->myConfig[$test];
 		}
-		
+
 		return $ret;
 	}
 
@@ -157,7 +157,7 @@ class CheckArrayStyleConfig extends CheckStyleConfig {
 		if (array_key_exists($test, $this->myConfig)) {
 			$ret = $this->myConfig[$test];
 		}
-		
+
 		return $ret;
 	}
 

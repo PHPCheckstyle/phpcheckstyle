@@ -15,7 +15,7 @@ class ArrayReporter extends Reporter {
 	/**
 	 *
 	 * @see Reporter::writeError Tab the line and write the error message
-	 *     
+	 *
 	 * @param Integer $line
 	 *        	the line number
 	 * @param String $check

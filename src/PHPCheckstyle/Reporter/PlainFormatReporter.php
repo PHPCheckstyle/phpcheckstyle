@@ -19,7 +19,7 @@ namespace PHPCheckstyle\Reporter;
 class PlainFormatReporter extends Reporter {
 
 	private $ofile = "/style-report.txt"; // The output file name
-	
+
 	/**
 	 * Constructor; calls parent's constructor
 	 *
@@ -33,7 +33,7 @@ class PlainFormatReporter extends Reporter {
 	/**
 	 *
 	 * @see Reporter::start make sure that the file is opened
-	 *     
+	 *
 	 */
 	public function start() {
 		$this->_ensureFileOpen();
@@ -50,7 +50,7 @@ class PlainFormatReporter extends Reporter {
 	/**
 	 *
 	 * @see Reporter::stop Add a new line with the new file name
-	 *     
+	 *
 	 * @param $phpFile the
 	 *        	file currently processed
 	 */
@@ -62,7 +62,7 @@ class PlainFormatReporter extends Reporter {
 	/**
 	 *
 	 * @see Reporter::writeError Tab the line and write the error message
-	 *     
+	 *
 	 * @param Integer $line
 	 *        	the line number
 	 * @param String $check

@@ -5,7 +5,7 @@ namespace PHPCheckstyle\Reporter;
  * Class used to handle multiple reporters.
  */
 class Reporters {
-	
+
 	// The list of registered reporters.
 	public $reporters = array();
 

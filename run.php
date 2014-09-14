@@ -7,20 +7,47 @@
  * @version 1.12.0
  */
 function usage() {
+	$options = array(
+		"--src" =>
+			"Root of the source directory tree or a file (can be repeated for multiple sources).",
+
+		"--exclude" =>
+			"[Optional] A directory or file that needs to be excluded (can be repeated for multiple exclusions).",
+
+		"--format" =>
+			"[Optional] Output format (html/text/xml/xml_console/console/html_console). Defaults to 'html'.",
+
+		"--outdir" =>
+			"[Optional] Report Directory. Defaults to './style-report'.",
+
+		"--config" =>
+			"[Optional] The name of the config file'.",
+
+		"--debug" =>
+			"[Optional] Add some debug logs (warning, very verbose)'.",
+
+		"--linecount" =>
+			"[Optional] Generate a report on the number of lines of code (JavaNCSS format)'.",
+
+		"--progress" =>
+			"[Optional] Prints a message noting the file and every line that is covered by PHPCheckStyle.",
+
+		"--lang" =>
+			"[Optional] Language file to use for the result (en-us by default).",
+
+		"--quiet" =>
+			"[Optional] Quiet mode.",
+
+		"--help" =>
+			"Display this usage information.",
+	);
+
 	echo "Usage: " . $_SERVER['argv'][0] . " <options>\n";
 	echo "\n";
 	echo "    Options: \n";
-	echo "       --src          Root of the source directory tree or a file (can be repeated for multiple sources).\n";
-	echo "       --exclude      [Optional] A directory or file that needs to be excluded (can be repeated for multiple exclusions).\n";
-	echo "       --format       [Optional] Output format (html/text/xml/xml_console/console/html_console). Defaults to 'html'.\n";
-	echo "       --outdir       [Optional] Report Directory. Defaults to './style-report'.\n";
-	echo "       --config       [Optional] The name of the config file'.\n";
-	echo "       --debug        [Optional] Add some debug logs (warning, very verbose)'.\n";
-	echo "       --linecount    [Optional] Generate a report on the number of lines of code (JavaNCSS format)'.\n";
-	echo "       --progress     [Optional] Prints a message noting the file and every line that is covered by PHPCheckStyle.\n";
-	echo "       --lang         [Optional] Language file to use for the result (en-us by default).\n";
-	echo "       --quiet        [Optional] Quiet mode.\n";
-	echo "       --help         Display this usage information.\n";
+	foreach ($options as $option => $description) {
+		echo "       " . str_pad($option, 16, " ") . $description . "\n";
+	}
 	exit();
 }
 
@@ -119,7 +146,7 @@ if (!empty($unknownFormats)) {
 }
 
 // check that source directory is specified and is valid
-if ($options['src'] == false) {
+if (!$options['src']) {
 	echo "\nPlease specify a source directory/file using --src option.\n\n";
 	usage();
 }

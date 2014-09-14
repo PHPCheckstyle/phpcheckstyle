@@ -1,4 +1,4 @@
-<?php 
+<?php
 define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__));
 
 require_once "vendor/autoload.php";
@@ -13,11 +13,10 @@ $configFile = $_POST['configFile'];
 $lange = $_POST['lang'];
 
 
-if ($_POST['excludeFile']!="") {
+if ($_POST['excludeFile']) {
 	$expFile = explode(',', $_POST['excludeFile']);
 	$options['exclude'] = $expFile;
-}
-else {
+} else {
 	$options['exclude'] = array();
 }
 
@@ -40,11 +39,8 @@ if (file_exists(__DIR__ . '/src/PHPCheckstyle/Lang/' . $options['lang'] . '.ini'
 }
 $style->processFiles($sources, $options['exclude']);
 
-echo "<pre>".print_r($style->_reporter->reporters[0]->outputFile, TRUE)."</pre>";
+echo "<pre>" . print_r($style->_reporter->reporters[0]->outputFile, TRUE) . "</pre>";
 
 echo "Reporting Completed.</BR></BR>";
 
-echo 'Display Results : <a href="'.$resultDir.'">'.$resultDir.'</a>';
-
-
-?>
+echo 'Display Results : <a href="' . $resultDir . '">' . $resultDir . '</a>';

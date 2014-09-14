@@ -25,7 +25,7 @@ class XmlConsoleFormatReporter extends XmlFormatReporter {
 	 *
 	 * @see Reporter::start add the last element to the tree and save the DOM tree to the
 	 *      xml file
-	 *     
+	 *
 	 */
 	public function stop() {
 		$this->_endCurrentElement();

@@ -8,7 +8,7 @@ namespace PHPCheckstyle;
  *
  * @package classes
  *          @SuppressWarnings checkUnusedVariables
- *         
+ *
  */
 class TokenInfo {
 
@@ -50,12 +50,12 @@ class TokenInfo {
 		$result .= "line : " . $this->line;
 		$result .= ", pos : " . $this->position;
 		$result .= ", id : " . $this->getName($this->id);
-		
+
 		// Rename some special chars
 		$text = str_replace("\r\n", "\\r\\n", $this->text);
 		$text = str_replace("\r", "\\r", $text);
 		$text = str_replace("\n", "\\n", $text);
-		
+
 		$result .= ", text : " . $text;
 		return $result;
 	}
@@ -99,7 +99,7 @@ class TokenInfo {
 		} else {
 			$result = token_name($this->id);
 		}
-		
+
 		return $result;
 	}
 }

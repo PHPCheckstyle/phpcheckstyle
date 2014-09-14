@@ -21,7 +21,7 @@ class HTMLFormatReporter extends Reporter {
 	private $writeMode = 'w'; // "write" - ensures a new file is created.
 	private $ofile = "/index.html"; // The output file name
 	private $ofolder; // The output folder
-	
+
 	/**
 	 * Constructor; calls parent's constructor
 	 *
@@ -48,10 +48,10 @@ class HTMLFormatReporter extends Reporter {
 	public function stop() {
 		// Call a last time the currentlyProcessing function for the last file in memory
 		$this->currentlyProcessing('');
-		
+
 		// Write the HTML header
 		$this->writeFragment($this->_readTemplate("header"));
-		
+
 		// Write the summary
 		$summaryTmpl = $this->_readTemplate("summary");
 		$values = array();
@@ -59,19 +59,19 @@ class HTMLFormatReporter extends Reporter {
 		$values['%%nb_files_error%%'] = $this->nbfilesError;
 		$values['%%nb_total_errors%%'] = $this->nbErrors;
 		$this->writeFragment($this->_fillTemplate($summaryTmpl, $values));
-		
+
 		// Write the list of files
 		$this->writeFragment($this->_readTemplate("files"));
 		$this->writeFragment($this->files);
 		$this->writeFragment($this->_readTemplate("files_foot"));
-		
+
 		// Write the detail of the checks
 		$this->writeFragment($this->_readTemplate("detail"));
 		$this->writeFragment($this->detail);
-		
+
 		// Write the footer
 		$this->writeFragment($this->_readTemplate("footer"));
-		
+
 		// Copy the CSS file
 		copy(PHPCHECKSTYLE_HOME_DIR . "/html/css/global.css", $this->ofolder . "/global.css");
 		copy(PHPCHECKSTYLE_HOME_DIR . "/html/images/Logo_phpcheckstyle.png", $this->ofolder . "/Logo_phpcheckstyle.png");
@@ -85,10 +85,10 @@ class HTMLFormatReporter extends Reporter {
 	 */
 	protected function writeFragment($fragment) {
 		$fileHandle = fopen($this->outputFile, $this->writeMode);
-		
+
 		fwrite($fileHandle, $fragment);
 		fclose($fileHandle);
-		
+
 		// appends to the file initially created with $writeMode = "w"
 		$this->writeMode = 'a';
 	}
@@ -104,7 +104,7 @@ class HTMLFormatReporter extends Reporter {
 		$handle = fopen($filename, "r");
 		$contents = fread($handle, filesize($filename));
 		fclose($handle);
-		
+
 		return $contents;
 	}
 
@@ -120,25 +120,25 @@ class HTMLFormatReporter extends Reporter {
 		foreach ($values as $key => $value) {
 			$template = str_replace($key, $value, $template);
 		}
-		
+
 		return $template;
 	}
 
 	/**
 	 *
 	 * @see Reporter::currentlyProcessing Process a new PHP file.
-	 *     
+	 *
 	 * @param $phpFile the
 	 *        	file currently processed
 	 */
 	public function currentlyProcessing($phpFile) {
-		
+
 		// Update the counters
 		$this->nbfiles ++;
-		
+
 		// If the previous file contained errors
 		if ($this->fileErrors != 0) {
-			
+
 			// Add the previous file to the summary
 			if ($this->previousFile != '') {
 				$fileBody = $this->_readTemplate("files_body");
@@ -148,7 +148,7 @@ class HTMLFormatReporter extends Reporter {
 				$fileBody = $this->_fillTemplate($fileBody, $values);
 				$this->files .= $fileBody;
 			}
-			
+
 			// Add the previous file to the details
 			$detailHead = $this->_readTemplate("detail_head");
 			$values = array();
@@ -158,7 +158,7 @@ class HTMLFormatReporter extends Reporter {
 			$this->detail .= $this->fileDetail;
 			$this->detail .= $this->_readTemplate("detail_foot");
 		}
-		
+
 		$this->previousFile = $phpFile;
 		$this->fileDetail = '';
 		$this->fileErrors = 0;
@@ -168,7 +168,7 @@ class HTMLFormatReporter extends Reporter {
 	/**
 	 *
 	 * @see Reporter::writeError Write a new check error.
-	 *     
+	 *
 	 * @param Integer $line
 	 *        	the line number
 	 * @param String $check
@@ -179,7 +179,7 @@ class HTMLFormatReporter extends Reporter {
 	 *        	the severity level
 	 */
 	public function writeError($line, $check, $message, $level = WARNING) {
-		
+
 		// Update the counters
 		$this->nbErrors ++;
 		$this->fileErrors ++;
@@ -187,7 +187,7 @@ class HTMLFormatReporter extends Reporter {
 			$this->nbfilesError ++;
 			$this->fileInError = true;
 		}
-		
+
 		// Add the check to the details
 		$detail = $this->_readTemplate("detail_body");
 		$values = array();

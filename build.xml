@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<!-- ====================================================================== 
+<!-- ======================================================================
 
      Project: PHPCheckStyle
-     
+
      Ant Build script for PHPCheckstyle - A Static Analysis tool for PHP.
 
 
-	 Available targets: (Run with Ant -f build.xml)
-	 ``````````````````
-	 package			: Packages PHPcheckstyle in a zip file for release.
-	 phpcheckstyle		: Run PHPcheckstyle.
+     Available targets: (Run with Ant -f build.xml)
+     ``````````````````
+     package			: Packages PHPcheckstyle in a zip file for release.
+     phpcheckstyle		: Run PHPcheckstyle.
 
      ====================================================================== -->
 
@@ -19,9 +19,9 @@
             Static Analysis tool for PHP.
     </description>
 
-	<!-- ================================= 
-          target: init      
-          	Initializes variables.        
+	<!-- =================================
+          target: init
+          	Initializes variables.
          ================================= -->
 	<target name="_init">
 		<property name="build.dir" value="build" />
@@ -36,17 +36,17 @@
 
 	</target>
 
-	<!-- ================================= 
+	<!-- =================================
           target: clean
-          	Deletes the output folder.              
+          	Deletes the output folder.
          ================================= -->
 	<target name="_clean" depends="_init">
 		<delete dir="${build.dir}" />
 	</target>
 
-	<!-- ================================= 
+	<!-- =================================
           target: prepare
-          	creates a new build folder.              
+          	creates a new build folder.
          ================================= -->
 	<target name="_prepare" depends="_clean">
 		<mkdir dir="${build.dir}" />
@@ -79,10 +79,10 @@
 	</target>
 
 
-	<!-- ================================= 
+	<!-- =================================
           target: package
-          Packages PHPcheckstyle in a zip file for release.     
-          @author : Justin   
+          Packages PHPcheckstyle in a zip file for release.
+          @author : Justin
          ================================= -->
 	<target name="package" depends="_copy" description="Packages PHPcheckstyle in a zip file for release">
 		<zip destfile="${dist.dir}/${phpcheckstyle.name}" basedir="${tmp.dir}"/>

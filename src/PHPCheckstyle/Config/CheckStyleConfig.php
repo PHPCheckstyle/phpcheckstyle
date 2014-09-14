@@ -1,9 +1,9 @@
-<?php 
+<?php
 namespace PHPCheckstyle\Config;
 
 /**
  * Abstract class model for the configuration checkers.
- * 
+ *
  * @author James Brooks <jbrooksuk@me.com>
  * @SuppressWarnings docBlocks
  */

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 	if (!defined("PHPCHECKSTYLE_HOME_DIR")) {
 		define("PHPCHECKSTYLE_HOME_DIR", dirname(__FILE__) . "/..");
@@ -13,7 +13,7 @@
 	define("ERROR", "error");
 	define("IGNORE", "ignore");
 	define("INFO", "info");
-	define("WARNING", "warning"); 
+	define("WARNING", "warning");
 	define("SINGLE_QUOTE", 'single');
 	define("DOUBLE_QUOTE", 'double');
 
@@ -45,23 +45,23 @@
 	define('T_UNKNOWN', -1);
 
 	// PHP 5.3 parsing with an older version
-	if (!defined('T_FINALLY')) { 
-		define('T_FINALLY', 10025); 
+	if (!defined('T_FINALLY')) {
+		define('T_FINALLY', 10025);
 	}
-	if (!defined('T_CALLABLE')) { 
-		define('T_CALLABLE', 10026); 
+	if (!defined('T_CALLABLE')) {
+		define('T_CALLABLE', 10026);
 	}
-	if (!defined('T_TRAIT')) { 
-		define('T_TRAIT', 10027); 
+	if (!defined('T_TRAIT')) {
+		define('T_TRAIT', 10027);
 	}
-	if (!defined('T_TRAIT_C')) { 
-		define('T_TRAIT_C', 10028); 
+	if (!defined('T_TRAIT_C')) {
+		define('T_TRAIT_C', 10028);
 	}
-	if (!defined('T_INSTEADOF')) { 
-		define('T_INSTEADOF', 10029); 
+	if (!defined('T_INSTEADOF')) {
+		define('T_INSTEADOF', 10029);
 	}
-	if (!defined('T_YIELD')) { 
-		define('T_YIELD', 10030); 
+	if (!defined('T_YIELD')) {
+		define('T_YIELD', 10030);
 	}
 
 	define("SHORT_OPEN_TAG", "<?");

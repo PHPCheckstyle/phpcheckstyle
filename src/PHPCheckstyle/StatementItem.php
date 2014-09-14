@@ -5,7 +5,7 @@ namespace PHPCheckstyle;
  * Statement Item class.
  *
  * This object is stored in the "_branchingStack" array to keep track of nested statements.
- * 
+ *
  * Inspired by http://www.phpcompiler.org/doc/latest/grammar.html
  *
  * @package classes
@@ -26,16 +26,16 @@ class StatementItem {
 	// DO
 	// WHILE
 	var $type = null;
-	
+
 	// The statement name
 	var $name = null;
-	
+
 	// The begin line of the statement in the file
 	var $line;
-	
+
 	// For FUNCTION statements
 	var $visibility;
-	
+
 	// For SWITCH / CASE statements
 	var $switchHasDefault = false; // indicate that the switch instruction has a case "default" set.
 	var $caseHasBreak = false; // indicate that the current case has a break instruction

@@ -9,7 +9,7 @@ namespace PHPCheckstyle\Reporter;
  * @author Hari Kodungallur <hkodungallur@spikesource.com>
  */
 abstract class Reporter {
-	
+
 	public $outputFile;
 
 	protected $currentPhpFile;
@@ -26,15 +26,15 @@ abstract class Reporter {
 	 *        	output filename
 	 */
 	public function __construct($ofolder = false, $ofile = "error.txt") {
-		
+
 		// creating the folder if it does not already exist.
 		if ($ofolder != false && !file_exists($ofolder)) {
 			mkdir($ofolder, 0755, true);
 		}
-		
+
 		// setting the output file to default.
 		$this->outputFile = $ofolder . $ofile;
-		
+
 		if (!($this->outputFile)) {
 			$this->outputFile = "php://output";
 		}

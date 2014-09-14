@@ -90,11 +90,9 @@
 	<!-- File Naming -->
 	<test name="fileNaming" regexp="/^[a-zA-Z][a-zA-Z0-9._]*$/" level="error" />
 
-
 	<!-- **************** -->
 	<!-- PHP Tags -->
 	<!-- **************** -->
-
 
 	<!-- Test if a short php code open tag is used (<? instead of <?php ). -->
 	<test name="noShortPhpCodeTag" />
@@ -108,7 +106,6 @@
 
 	<!-- PHP tags (start and stop) should be at the beginning of a line -->
     <!--  <test name="phpTagsStartLine" /> -->
-
 
 	<!-- **************** -->
 	<!-- Comments -->
@@ -137,7 +134,6 @@
 		<property name="number" value="4"/>
 	</test>
 
-
 	<!-- Check the position of the open curly brace in a control structure (if) -->
 	<!-- sl = same line -->
 	<!-- nl = new line -->
@@ -146,8 +142,7 @@
 	</test>
 
 	<!-- Check the position of the close curly brace -->
-	<test name="controlCloseCurly" level="info">
-	</test>
+	<test name="controlCloseCurly" level="info"/>
 
 	<!-- Check the position of the open curly brace after a function -->
 	<!-- sl = same line -->
@@ -163,24 +158,23 @@
 		<property name="position" value="sl" />
 	</test>
 
-
 	<!-- **************** -->
 	<!-- Spaces -->
 	<!-- **************** -->
 
-	<!-- Tests that the control statements ("if", "else", "while", "for", etc.)
-		are followed by a space before the opening parenthesis. PEAR standard stipulates
-		this to distinguish it from function calls. -->
+	<!--
+	Tests that the control statements ("if", "else", "while", "for", etc.)
+	are followed by a space before the opening parenthesis. PEAR standard stipulates
+	this to distinguish it from function calls.
+	-->
 	<test name="spaceAfterControlStmt" />
 
 	<!-- Check that there is no space after a function name in a function call -->
 	<test name="noSpaceAfterFunctionName" level="info"></test>
 
-
 	<!-- Check for the (required) presence of a white space after some tokens
 		: "," "}" "-" -->
-	<test name="checkWhiteSpaceAfter">
-	</test>
+	<test name="checkWhiteSpaceAfter"/>
 
 	<!-- Check for the (required) presence of a white space before some tokens
 		: "{" "-" -->
@@ -188,15 +182,12 @@
 		<exception value=":" />  <!-- Because of the switch/case -->
 	</test>
 
-
 	<!-- Check that there is no space before before some tokens : "," ";" ")"
 		"->" -->
-	<test name="noSpaceBeforeToken" level="info">
-	</test>
+	<test name="noSpaceBeforeToken" level="info"/>
 
 	<!-- Check that there is no space after some tokens : "!" "(" "->" -->
-	<test name="noSpaceAfterToken" level="info">
-	</test>
+	<test name="noSpaceAfterToken" level="info"/>
 
 	<!-- **************** -->
 	<!-- Metrics -->
@@ -231,7 +222,6 @@
 	<!-- **************** -->
 	<!-- Prohibited -->
 	<!-- **************** -->
-
 
 	<!-- Check for prohibited functions -->
 	<!-- @see http://www.php.net/manual/en/indexes.php -->
@@ -278,7 +268,6 @@
 
 	</test>
 
-
 	<!-- **************** -->
 	<!-- Other -->
 	<!-- **************** -->
@@ -297,15 +286,12 @@
 	<!-- <test name="encapsedVariablesInsideString"> </test> -->
 
 	<!-- Avoid passing parameters by reference -->
-	<test name="avoidPassingReferences">
-	</test>
+	<test name="avoidPassingReferences"/>
 
-	<test name="showTODOs">
-	</test>
+	<test name="showTODOs"/>
 
 	<!-- Use boolean operators (&&) instead of logical operators (AND) -->
-	<test name="useBooleanOperators">
-	</test>
+	<test name="useBooleanOperators"/>
 
 	<!-- Check empty block like if ($a) {} -->
 	<test name="checkEmptyBlock">
@@ -313,29 +299,23 @@
 	</test>
 
 	<!-- Check empty statement ( ;; ) -->
-	<test name="checkEmptyStatement">
-	</test>
+	<test name="checkEmptyStatement"/>
 
 	<!-- Check for the presence of heredoc -->
-	<test name="checkHeredoc">
-	</test>
+	<test name="checkHeredoc"/>
 
 	<!-- Check for braces around code blocs (if, else, elseif, do, while, for,
 		foreach) -->
-	<test name="needBraces">
-	</test>
+	<test name="needBraces"/>
 
 	<!-- Switch need a default value -->
-	<test name="switchNeedDefault">
-	</test>
+	<test name="switchNeedDefault"/>
 
 	<!-- Switch case should have a break -->
 	<!-- <test name="switchCaseNeedBreak"> </test> -->
 
 	<!-- Switch default value should be at the end -->
-	<test name="switchDefaultOrder">
-	</test>
-
+	<test name="switchDefaultOrder"/>
 
 	<!-- Avoid using unary operators (++) inside a control statement With the
 		exception of for iterators, all variable incrementation or decrementation
@@ -351,11 +331,8 @@
 		<exception value="for" />
 	</test>
 
-
 	<!-- Only one class declaration per PHP file -->
-	<test name="oneClassPerFile">
-	</test>
-
+	<test name="oneClassPerFile"/>
 
 	<!-- **************** -->
 	<!-- Unused -->
@@ -363,31 +340,26 @@
 
 	<!-- Detect unused private functions (detecting unused public ones is more
 		difficult) -->
-	<test name="checkUnusedPrivateFunctions">
-	</test>
+	<test name="checkUnusedPrivateFunctions"/>
 
 	<!-- Detect unused variables -->
-	<test name="checkUnusedVariables">
-	</test>
+	<test name="checkUnusedVariables"/>
 
 	<!-- Detect unused function parameters -->
-	<test name="checkUnusedFunctionParameters">
-	</test>
+	<test name="checkUnusedFunctionParameters"/>
 
 	<!-- Detect unused code (after return or throw) -->
-	<test name="checkUnusedCode">
-	</test>
+	<test name="checkUnusedCode"/>
 
-     <!-- Detect empty files -->
-    <test name="checkEmptyFile"/>
+	<!-- Detect empty files -->
+	<test name="checkEmptyFile"/>
 
 	<!-- ******************* -->
 	<!-- Optimisation -->
 	<!-- ******************* -->
 
 	<!-- Avoid using a count/sizeof function inside a loop -->
-	<test name="functionInsideLoop">
-	</test>
+	<test name="functionInsideLoop"/>
 
 	<!-- ******************* -->
 	<!-- Deprecation -->
@@ -465,7 +437,7 @@
 
 	<!-- Use only strict comparison -->
 	<!-- see : http://me.veekun.com/blog/2012/04/09/php-a-fractal-of-bad-design/ -->
-	 <test name="strictCompare" />
+	<test name="strictCompare" />
 
 	<!-- ******************* -->
 	<!-- PHP Aliases -->
@@ -496,13 +468,13 @@
 	</test>
 
 	<!--  *********************************************  -->
-    <!--      Replacements for Zend Framework            -->
-    <!--  *********************************************  -->
+	<!--      Replacements for Zend Framework            -->
+	<!--  *********************************************  -->
 
-    <!-- Replace  methods -->
-    <test name="checkReplacements">
-    	<replacement old="$_POST" new="$this->getRequest()->getPost()"/>
-    	<replacement old="$_GET" new="$this->getRequest()->getParam()"/>
-    </test>
+	<!-- Replace  methods -->
+	<test name="checkReplacements">
+		<replacement old="$_POST" new="$this->getRequest()->getPost()"/>
+		<replacement old="$_GET" new="$this->getRequest()->getParam()"/>
+	</test>
 
 </phpcheckstyle-configuration>

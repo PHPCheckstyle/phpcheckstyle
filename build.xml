@@ -6,10 +6,10 @@
      Ant Build script for PHPCheckstyle - A Static Analysis tool for PHP.
 
 
-	 Available targets: (Run with Ant -f build.xml)
-	 ``````````````````
-	 package			: Packages PHPcheckstyle in a zip file for release.
-	 phpcheckstyle		: Run PHPcheckstyle.
+     Available targets: (Run with Ant -f build.xml)
+     ``````````````````
+     package			: Packages PHPcheckstyle in a zip file for release.
+     phpcheckstyle		: Run PHPcheckstyle.
 
      ====================================================================== -->
 

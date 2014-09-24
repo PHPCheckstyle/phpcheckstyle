@@ -58,6 +58,7 @@ class HTMLFormatReporter extends Reporter {
 		$values['%%nb_files%%'] = $this->nbfiles - 1;
 		$values['%%nb_files_error%%'] = $this->nbfilesError;
 		$values['%%nb_total_errors%%'] = $this->nbErrors;
+		$values['%%nb_timestamp%%'] = date('Y-m-d H:i:s');
 		$this->writeFragment($this->_fillTemplate($summaryTmpl, $values));
 
 		// Write the list of files

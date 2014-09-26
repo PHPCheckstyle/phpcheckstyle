@@ -158,16 +158,16 @@
 	are followed by a space before the opening parenthesis.
 	PEAR standard stipulates this to distinguish it from function calls.
 	-->
-	<test name="spaceAfterControlStmt"/>
+	<test name="spaceAfterControlStatement"/>
 
 	<!-- Check that there is no space after a function name in a function call -->
 	<test name="noSpaceAfterFunctionName" level="info"></test>
 
 	<!-- Check for the (required) presence of a white space after some tokens : "," "}" "-" -->
-	<test name="checkWhiteSpaceAfter"/>
+	<test name="whiteSpaceAfter"/>
 
 	<!-- Check for the (required) presence of a white space before some tokens : "{" "-" -->
-	<test name="checkWhiteSpaceBefore">
+	<test name="whiteSpaceBefore">
 		<exception value=":"/>  <!-- Because of the switch/case -->
 	</test>
 
@@ -184,7 +184,7 @@
 	<!-- Check that the lenght of the line doesn't pass the max value -->
 	<test name="lineLength" level="info">
 		<property name="maxLineLength" value="160"/>
-		<property name="checkHTMLLines" value="false"/>
+		<property name="htmlLines" value="false"/>
 	</test>
 
 	<!-- Checks that the lenght (in lines) of a function doesn't pass the max value -->
@@ -212,7 +212,7 @@
 
 	<!-- Check for prohibited functions -->
 	<!-- @see http://www.php.net/manual/en/indexes.php -->
-	<test name="checkProhibitedFunctions">
+	<test name="prohibitedFunctions">
 		<item value="echo"/>
 		<item value="system"/>
 		<item value="print_r"/>
@@ -234,7 +234,7 @@
 
 	<!-- Check for prohibited tokens -->
 	<!-- @see http://www.php.net/manual/en/tokens.php -->
-	<test name="checkProhibitedTokens">
+	<test name="prohibitedTokens">
 		<item value="T_BAD_CHARACTER"/>
 		<item value="T_DECLARE"/>
 		<item value="T_ENDDECLARE"/>
@@ -263,7 +263,7 @@
 	<test name="defaultValuesOrder"/>
 
 	<!-- Check for silenced errors before function calls (@function) -->
-	<test name="checkSilencedError">
+	<test name="silencedError">
 		<exception value="rename"/> <!-- Exceptions to this rule -->
 		<exception value="mkdir"/>
 		<exception value="chmod"/>
@@ -275,21 +275,21 @@
 	<!-- Avoid passing parameters by reference -->
 	<test name="avoidPassingReferences"/>
 
-	<test name="showTODOs"/>
+	<test name="showTodo"/>
 
 	<!-- Use boolean operators (&&) instead of logical operators (AND) -->
 	<test name="useBooleanOperators"/>
 
 	<!-- Check empty block like if ($a) {} -->
-	<test name="checkEmptyBlock">
+	<test name="emptyBlock">
 		<!--  <exception value="catch"/>  -->
 	</test>
 
 	<!-- Check empty statement ( ;; ) -->
-	<test name="checkEmptyStatement"/>
+	<test name="emptyStatement"/>
 
 	<!-- Check for the presence of heredoc -->
-	<test name="checkHeredoc"/>
+	<test name="heredoc"/>
 
 	<!-- Check for braces around code blocs (if, else, elseif, do, while, for, foreach) -->
 	<test name="needBraces"/>
@@ -307,7 +307,7 @@
 	Avoid using unary operators (++) inside a control statement
 	With the exception of for iterators, all variable incrementation or decrementation should occur in their own toplevel statement to increase readability.
 	-->
-	<test name="checkUnaryOperator">
+	<test name="unaryOperator">
 		<exception value="for"/>
 	</test>
 
@@ -315,7 +315,7 @@
 	With inner assignments it is difficult to see all places where a variable is set.
 	With the exception of for iterators, all assignments should occur in their own toplevel statement to increase readability.
 	-->
-	<test name="checkInnerAssignment">
+	<test name="innerAssignment">
 		<exception value="for"/>
 	</test>
 
@@ -323,23 +323,23 @@
 	<test name="oneClassPerFile"/>
 
 	<!-- Detect empty files -->
-	<test name="checkEmptyFile"/>
+	<test name="emptyFile"/>
 
 	<!--  ****************  -->
 	<!--      Unused        -->
 	<!--  ****************  -->
 
 	<!-- Detect unused private functions (detecting unused public ones is more difficult) -->
-	<test name="checkUnusedPrivateFunctions"/>
+	<test name="unusedPrivateFunctions"/>
 
 	<!-- Detect unused variables -->
-	<test name="checkUnusedVariables"/>
+	<test name="unusedVariables"/>
 
 	<!-- Detect unused function parameters -->
-	<test name="checkUnusedFunctionParameters"/>
+	<test name="unusedFunctionParameters"/>
 
 	<!-- Detect unused code (after return or throw) -->
-	<test name="checkUnusedCode"/>
+	<test name="unusedCode"/>
 
 	<!--  *******************  -->
 	<!--      Optimisation     -->
@@ -354,7 +354,7 @@
 	<!--  *******************  -->
 
 	<!-- Replace deprecated methods -->
-	<test name="checkDeprecation">
+	<test name="deprecation">
 		<deprecated old="call_user_method" new="call_user_func" version="4.1"/>
 		<deprecated old="call_user_method_array" new="call_user_func_array" version="4.1"/>
 		<deprecated old="define_syslog_variables" new="none" version="5.4"/>
@@ -405,7 +405,7 @@
 	<!--  *******************  -->
 
 	<!-- Replace deprecated methods -->
-	<test name="checkAliases">
+	<test name="aliases">
 		<alias old="chop" new="rtrim()"/>
 		<alias old="close" new="closedir()"/>
 		<alias old="die" new="exit()"/>

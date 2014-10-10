@@ -69,7 +69,7 @@ abstract class CheckStyleConfig {
 		$test = strtolower($test);
 
 		if (array_key_exists($test, $this->config) && array_key_exists('level', $this->config[$test])) {
-			$ret = $this->config[$test]['level'];
+			$ret = strtolower($this->config[$test]['level']);
 		}
 
 		$invalidLevels = array(ERROR, IGNORE, INFO, WARNING);

@@ -1858,8 +1858,9 @@ class PHPCheckstyle {
 		$exceptions = $this->_config->getTestExceptions('docBlocks');
 
 		// For anonymous functions, we don't check the docblock
-		$isAnonymous = $this->statementStack->getCurrentStackItem()->visibility != 'ANONYMOUS';
+		$isAnonymous = $this->statementStack->getCurrentStackItem()->visibility === 'ANONYMOUS';
 		$isInExceptions = (!empty($exceptions) && in_array($this->_currentFunctionName, $exceptions));
+		
 		if ($this->_isActive('docBlocks') && !$isAnonymous && !$isInExceptions) {
 
 			// If the function is not private and we check the doc

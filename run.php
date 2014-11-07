@@ -59,7 +59,7 @@ $options['outdir'] = "./style-report"; // default ouput directory
 $options['config'] = "default.cfg.xml";
 $options['debug'] = false;
 $options['progress'] = false;
-$options['lang'] = 'en_us';
+$options['lang'] = 'en-us';
 $options['quiet'] = false;
 $lineCountFile = null;
 
@@ -163,8 +163,17 @@ if (file_exists(__DIR__ . '/src/PHPCheckstyle/Lang/' . $options['lang'] . '.ini'
 
 $style->processFiles($options['src'], $options['exclude']);
 
+$errorCounts = $style->getErrorCounts();
+
 if (!$options['quiet']) {
-	echo "\nReporting Completed.\n";
+ 	echo PHP_EOL . "Summary" . PHP_EOL;
+ 	echo "=======" . PHP_EOL . PHP_EOL;
+ 	echo "Errors:   " . $errorCounts[ERROR] . PHP_EOL;
+ 	echo "Ignores:  " . $errorCounts[IGNORE] . PHP_EOL;
+ 	echo "Infos:    " . $errorCounts[INFO] . PHP_EOL;
+ 	echo "Warnings: " . $errorCounts[WARNING] . PHP_EOL;
+ 	echo "=======" . PHP_EOL . PHP_EOL;
+ 	echo "Reporting Completed." . PHP_EOL;
 }
 
 exit(0);

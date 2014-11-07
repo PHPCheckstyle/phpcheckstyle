@@ -92,6 +92,7 @@ class TokenInfo {
 			T_SQUARE_BRACKET_CLOSE => 'T_SQUARE_BRACKET_CLOSE',
 			T_AROBAS               => 'T_AROBAS',
 			T_UNKNOWN              => 'T_UNKNOWN',
+			T_DOLLAR               => 'T_DOLLAR',
 		);
 
 		if (isset($tagNames[$this->id])) {

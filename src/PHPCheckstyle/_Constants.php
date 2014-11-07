@@ -17,6 +17,7 @@
 	define("SINGLE_QUOTE", 'single');
 	define("DOUBLE_QUOTE", 'double');
 
+	define('T_UNKNOWN', -1);
 	define('T_NEW_LINE', 10000);
 	define('T_TAB', 10001);
 	define('T_SEMICOLON', 10002); // ;
@@ -41,9 +42,8 @@
 	define('T_SQUARE_BRACKET_OPEN', 10021); // [
 	define('T_SQUARE_BRACKET_CLOSE', 10022); // ]
 	define('T_AROBAS', 10023); // @
-	define('T_QUOTE', 10024); // " (only detected before and after a T_ENCAPSED_AND_WHITESPACE) otherwise should be included in T_CONSTANT_ENCAPSED_STRING
-	define('T_UNKNOWN', -1);
-
+	define('T_QUOTE', 10024); // " only detected before and after a T_ENCAPSED_AND_WHITESPACE otherwise should be included in T_CONSTANT_ENCAPSED_STRING
+	
 	// PHP 5.3 parsing with an older version
 	if (!defined('T_FINALLY')) {
 		define('T_FINALLY', 10025);
@@ -63,6 +63,8 @@
 	if (!defined('T_YIELD')) {
 		define('T_YIELD', 10030);
 	}
+	define('T_DOLLAR', 10032); // $ detected before a variable in the case of a variable variable ($$a) otherwise should be included in T_VARIABLE
+	
 
 	define("SHORT_OPEN_TAG", "<?");
 	define("OPEN_TAG", "<?php");

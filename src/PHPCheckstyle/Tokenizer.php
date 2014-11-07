@@ -536,6 +536,9 @@ class Tokenizer {
 					case '"':
 						$tokenInfo->id = T_QUOTE;
 						break;
+					case '$':
+						$tokenInfo->id = T_DOLLAR;
+						break;						
 					default:
 				}
 			}

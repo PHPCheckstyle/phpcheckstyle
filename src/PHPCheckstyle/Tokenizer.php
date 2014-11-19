@@ -228,7 +228,7 @@ class Tokenizer {
 	 */
 	public function peekNextValidToken($startPos = null, $stopOnNewLine = false) {
 		// define the start position
-		$pos = $this->getCurrentPosition() + 1; // defaut position for the search
+		$pos = $this->getCurrentPosition() + 1; // default position for the search
 		if ($startPos !== null) {
 			$pos = $startPos; // if defined, set the start position
 		}
@@ -261,10 +261,18 @@ class Tokenizer {
 	 * Peeks at the previous valid token.
 	 * A valid token is one that is neither a whitespace or a comment
 	 *
+	 * @param Integer $startPos a token position (optional). 
 	 * @return TokenInfo the info about the token found
 	 */
-	public function peekPrvsValidToken() {
-		$pos = $this->index - 1;
+	public function peekPrvsValidToken($startPos = null) {
+		
+		if ($startPos === null) {
+			// default position for the search
+			$pos = $this->getCurrentPosition() - 1;
+		} else {
+			// if defined, set the start position
+			$pos = $startPos;
+		}
 
 		$token = null;
 		while ($pos > 0) {

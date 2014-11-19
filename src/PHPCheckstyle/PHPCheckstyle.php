@@ -139,6 +139,8 @@ class PHPCheckstyle {
 
 	private $_functionVisibility = 'PUBLIC'; // PUBLIC, PRIVATE or PROTECTED or ANONYMOUS
 
+	private $_functionStatic = false; // Is the function static
+
 	private $_classLevel = 0; // Level of Nesting of the class
 
 	private $_interfaceLevel = 0; // Level of Nesting of the interface
@@ -226,6 +228,8 @@ class PHPCheckstyle {
 
 	/**
 	 * System variables ($_POST, .
+	 *
+	 *
 	 *
 	 *
 	 *
@@ -568,6 +572,7 @@ class PHPCheckstyle {
 		$this->_functionReturns = false;
 		$this->_functionThrows = false;
 		$this->_functionVisibility = 'PUBLIC';
+		$this->_functionStatic = false;
 		$this->_currentStatement = false;
 		$this->_inClassStatement = false;
 		$this->_inInterfaceStatement = false;
@@ -2059,6 +2064,22 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	}
 
 	/**
+	 * Process a function parameters to detect visibility and staticity.
+	 *
+	 * @param TokenInfo $token
+	 *        	a token
+	 */
+	private function _detectVisibility($token) {
+		if ($this->tokenizer->checkToken($token, T_PRIVATE)) {
+			$this->_functionVisibility = 'PRIVATE';
+		} else if ($this->tokenizer->checkToken($token, T_PROTECTED)) {
+			$this->_functionVisibility = 'PROTECTED';
+		} else if ($this->tokenizer->checkToken($token, T_STATIC)) {
+			$this->_functionStatic = true;
+		}
+	}
+
+	/**
 	 * Process a function declaration statement (the parameters).
 	 */
 	private function _processFunctionStatement() {
@@ -2077,18 +2098,19 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 		$this->_currentStatement = false;
 		$this->_inClassStatement = false;
 		$this->_inInterfaceStatement = false;
-		
-		// Detect the function visibility
 		$this->_functionVisibility = 'PUBLIC';
-		if ($this->tokenizer->checkPreviousValidToken(T_PRIVATE)) {
-			$this->_functionVisibility = 'PRIVATE';
-		} else if ($this->tokenizer->checkPreviousValidToken(T_PROTECTED)) {
-			$this->_functionVisibility = 'PROTECTED';
+		$this->_functionStatic = false;
+		
+		// Detect the visibility (on the token just before the current one).
+		$previousToken = $this->tokenizer->peekPrvsValidToken();
+		$this->_detectVisibility($previousToken);
+		if ($previousToken->position > 1) {
+			$prepreviousToken = $this->tokenizer->peekPrvsValidToken($previousToken->position - 1);
+			$this->_detectVisibility($prepreviousToken);
 		}
 		
 		// Find the function name
 		$currentToken = $this->tokenizer->getCurrentToken();
-		
 		$curlyOpeningDetected = $this->tokenizer->checkNextToken(T_PARENTHESIS_OPEN);
 		$nameDetected = null;
 		while ($currentToken != null && !$curlyOpeningDetected) {
@@ -2656,6 +2678,13 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 					$nextTokenInfo2 = $this->tokenizer->peekNextValidToken($nextTokenInfo->position);
 					
 					if ($this->tokenizer->checkToken($nextTokenInfo2, T_OBJECT_OPERATOR)) {
+						
+						// Detect $this inside a static function.
+						if ($this->_functionStatic) {
+							if ($this->_isActive('thisInStatic')) {
+								$this->_writeError('thisInStatic', $this->_getMessage('THIS_IN_STATIC_FUNCTION'));
+							}
+						}
 						
 						$nextTokenInfo3 = $this->tokenizer->peekNextValidToken($nextTokenInfo2->position + 1);
 						

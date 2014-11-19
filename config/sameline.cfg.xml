@@ -254,6 +254,19 @@
 		<!-- <item value="T_ECHO"/>  -->
 
 	</test>
+	
+
+	<!-- Check Prohibited Keywords -->
+	<test name="checkProhibitedKeywords" level="error">
+		<!-- <item value="FORBIDDEN"/> -->
+		<!-- <item value="your prohibited keyword 2"/> -->
+	</test>
+
+	<!-- Check Prohibited Keywords Regex -->
+	<!-- Note: The regular expression must be correctly escaped -->
+	<test name="checkProhibitedKeywordsRegex" level="error">
+		<!-- <item value="/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/"/> IP ADDRESS -->
+	</test>
 
 	<!--  ****************  -->
 	<!--      Other         -->
@@ -324,6 +337,12 @@
 
 	<!-- Detect empty files -->
 	<test name="checkEmptyFile"/>
+	
+	<!-- Avoid using variable variables -->
+	<test name="variableVariable" />
+	
+	<!-- $this cannot be used in a static function  -->
+	<test name="thisInStatic" level="error"/>
 
 	<!--  ****************  -->
 	<!--      Unused        -->

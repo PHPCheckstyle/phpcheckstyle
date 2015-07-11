@@ -24,7 +24,11 @@ more information and documentation
 
 ### Installation with Composer
 
-Add `phpcheckstyle/phpcheckstyle` as a requirement to `composer.json`:
+```sh
+composer require phpcheckstyle/phpcheckstyle
+```
+
+or Add `phpcheckstyle/phpcheckstyle` as a requirement to `composer.json`:
 
 ```json
 {

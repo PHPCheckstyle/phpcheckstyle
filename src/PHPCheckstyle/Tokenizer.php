@@ -103,13 +103,17 @@ class Tokenizer {
 	 *        	the line where the token is found
 	 */
 	public function tokenize($filename) {
+		
+		$this->tokens = array();
+		
 		// Read the file
 		if (filesize($filename)) {
 			$fp = fopen($filename, "rb");
 			$this->content = fread($fp, filesize($filename));
+			$this->tokens = $this->_getAllTokens($this->content);
 			fclose($fp);
 		}
-		$this->tokens = $this->_getAllTokens($this->content);
+		
 	}
 
 	/**

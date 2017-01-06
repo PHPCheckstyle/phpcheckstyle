@@ -42,7 +42,7 @@ Update your packages with `composer update` or if installing from fresh, with `c
 
 ### Manual Installation
 
-Just unzip the distribution.
+Just download [https://github.com/PHPCheckstyle/phpcheckstyle/archive/master.zip](https://github.com/PHPCheckstyle/phpcheckstyle/archive/master.zip) and unzip the distribution.
 
 ```bash
 $> unzip PhpCheckstyle.zip

@@ -5,3 +5,5 @@ vendor/
 checkstyle_resultncss.xml
 .project
 .models
+.buildpath
+.settings

@@ -9,7 +9,7 @@ source code and reports any deviations from the coding convention.
 The tool uses the PEAR Coding Standards as the default coding convention. 
 But it allows you to configure it to suit your coding standards.
 
-Please visit http://code.google.com/p/phpcheckstyle/ for
+Please visit [https://github.com/PHPCheckstyle/phpcheckstyle/wiki](https://github.com/PHPCheckstyle/phpcheckstyle/wiki) for
 more information and documentation
 
 

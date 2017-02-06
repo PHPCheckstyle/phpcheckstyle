@@ -4,7 +4,6 @@ namespace PHPCheckstyle;
 require_once __DIR__ . "/_Constants.php";
 
 use \Exception;
-use PHPCheckstyle\Config\CheckStyleConfig;
 use PHPCheckstyle\Config\CheckArrayStyleConfig;
 use PHPCheckstyle\Config\CheckXMLStyleConfig;
 use PHPCheckstyle\Reporter\Reporters;
@@ -17,6 +16,7 @@ use PHPCheckstyle\Reporter\PlainFormatReporter;
 use PHPCheckstyle\Reporter\XmlConsoleFormatReporter;
 use PHPCheckstyle\Reporter\XmlFormatReporter;
 use PHPCheckstyle\Reporter\XmlNCSSReporter;
+use PHPCheckstyle\Reporter\NullReporter;
 
 /**
  * Main Class.
@@ -75,78 +75,80 @@ class PHPCheckstyle {
 		"..", // Directory link
 		".svn", // SVN directory
 		".git*"
-	); // Accounts for .git, .gitignore .gitmodules etc
+	);
+ // Accounts for .git, .gitignore .gitmodules etc
 
 	// variables used while processing control structure
-	private $_csLeftParenthesis = 0; // Left brackets opened in control statement or function statement
-
-	private $_fcLeftParenthesis = 0; // Left brackets opened in function call
-
+	private $_csLeftParenthesis = 0;
+ // Left brackets opened in control statement or function statement
+	private $_fcLeftParenthesis = 0;
+ // Left brackets opened in function call
 	private $inDoWhile = false;
 
 	private $token = false;
 
-	private $lineNumber = 0; // Store the current line number
-
-	private $_isLineStart = true; // Start of a line (just after a return)
+	private $lineNumber = 0;
+ // Store the current line number
+	private $_isLineStart = true;
+ // Start of a line (just after a return)
 
 	// Indicate if we are in a control statement declaration (for, if, while, ...)
 	                              // The control statement starts just after the statement token
 	                              // and stops at the closing of the parenthesis or the new line if no parenthesis is used
 	private $_inControlStatement = false;
 
-	private $_inString = false; // We are inside a string (only happens with T_ENCAPSED_AND_WHITESPACE)
-
-	private $_inArrayStatement = false; // We are in a array statement
-
-	private $_inClassStatement = false; // We are in a class statement (declaration)
-
-	private $_inInterfaceStatement = false; // We are in an interface statement (declaration)
-
-	private $_inFunctionStatement = false; // We are in a function statement (declaration)
-
-	private $_inFuncCall = false; // We are in a function call
-
-	private $_inFunction = false; // We are inside a function
-
-	private $_inClass = false; // We are inside a class
-
-	private $_inInterface = false; // We are inside an interface
-
-	private $_privateFunctions = array(); // The list of private functions in the class
-
+	private $_inString = false;
+ // We are inside a string (only happens with T_ENCAPSED_AND_WHITESPACE)
+	private $_inArrayStatement = false;
+ // We are in a array statement
+	private $_inClassStatement = false;
+ // We are in a class statement (declaration)
+	private $_inInterfaceStatement = false;
+ // We are in an interface statement (declaration)
+	private $_inFunctionStatement = false;
+ // We are in a function statement (declaration)
+	private $_inFuncCall = false;
+ // We are in a function call
+	private $_inFunction = false;
+ // We are inside a function
+	private $_inClass = false;
+ // We are inside a class
+	private $_inInterface = false;
+ // We are inside an interface
+	private $_privateFunctions = array();
+ // The list of private functions in the class
 	private $_privateFunctionsStartLines = array();
 
-	private $_functionParameters = array(); // The list of function parameters
-
-	private $_usedFunctions = array(); // The list of functions that are used in the class
-
-	private $_variables = array(); // The variables used. Array of VariableInfo.
-
-	private $_nbFunctionParameters = 0; // Count the number of parameters of the current function
-
-	private $_justAfterFuncStmt = false; // We are just after a control statement (last } )
-
-	private $_justAfterControlStmt = false; // We are just after a function statement (last } )
-
-	private $_functionStartLine = 0; // Starting line of the current function
-
-	private $_switchStartLine = 0; // Starting line of the current switch statement
-
-	private $_functionReturns = false; // Does the function return a value ?
-
-	private $_functionThrows = false; // Does the function throw an exception ?
-
-	private $_functionLevel = 0; // Level of Nesting of the function
-
-	private $_functionVisibility = 'PUBLIC'; // PUBLIC, PRIVATE or PROTECTED or ANONYMOUS
-
-	private $_functionStatic = false; // Is the function static
-
-	private $_classLevel = 0; // Level of Nesting of the class
-
-	private $_interfaceLevel = 0; // Level of Nesting of the interface
-
+	private $_functionParameters = array();
+ // The list of function parameters
+	private $_usedFunctions = array();
+ // The list of functions that are used in the class
+	private $_variables = array();
+ // The variables used. Array of VariableInfo.
+	private $_nbFunctionParameters = 0;
+ // Count the number of parameters of the current function
+	private $_justAfterFuncStmt = false;
+ // We are just after a control statement (last } )
+	private $_justAfterControlStmt = false;
+ // We are just after a function statement (last } )
+	private $_functionStartLine = 0;
+ // Starting line of the current function
+	private $_switchStartLine = 0;
+ // Starting line of the current switch statement
+	private $_functionReturns = false;
+ // Does the function return a value ?
+	private $_functionThrows = false;
+ // Does the function throw an exception ?
+	private $_functionLevel = 0;
+ // Level of Nesting of the function
+	private $_functionVisibility = 'PUBLIC';
+ // PUBLIC, PRIVATE or PROTECTED or ANONYMOUS
+	private $_functionStatic = false;
+ // Is the function static
+	private $_classLevel = 0;
+ // Level of Nesting of the class
+	private $_interfaceLevel = 0;
+ // Level of Nesting of the interface
 	private $_constantDef = false;
 
 	private $_currentClassname = null;
@@ -161,23 +163,24 @@ class PHPCheckstyle {
 
 	private $_currentFunctionName = null;
 
-	private $_docblocNbParams = 0; // Number of @params in the docblock of a function
-
-	private $_docblocNbReturns = 0; // Number of @return in the docblock of a function
-
-	private $_docblocNbThrows = 0; // Number of @throw in the docblock of a function
-
+	private $_docblocNbParams = 0;
+ // Number of @params in the docblock of a function
+	private $_docblocNbReturns = 0;
+ // Number of @return in the docblock of a function
+	private $_docblocNbThrows = 0;
+ // Number of @throw in the docblock of a function
 	private $_cyclomaticComplexity = 0;
 
 	private $_npathComplexity = 0;
 
-	private $_fileSuppressWarnings = array(); // List of warnings to ignore for this file
-
-	private $_classSuppressWarnings = array(); // List of warnings to ignore for this class
-
-	private $_interfaceSuppressWarnings = array(); // List of warnings to ignore for this interface
-
-	private $_functionSuppressWarnings = array(); // List of warnings to ignore for this function
+	private $_fileSuppressWarnings = array();
+ // List of warnings to ignore for this file
+	private $_classSuppressWarnings = array();
+ // List of warnings to ignore for this class
+	private $_interfaceSuppressWarnings = array();
+ // List of warnings to ignore for this interface
+	private $_functionSuppressWarnings = array();
+ // List of warnings to ignore for this function
 
 	// For MVC frameworks
 	private $_isView = false;
@@ -343,6 +346,9 @@ class PHPCheckstyle {
 		if (in_array("array", $formats)) {
 			$this->_reporter->addReporter(new ArrayReporter());
 		}
+		if (in_array("null", $formats)) {
+			$this->_reporter->addReporter(new NullReporter());
+		}
 		if ($linecountfile != null) {
 			$this->_lineCountReporter = new XmlNCSSReporter($outDir, $linecountfile);
 		}
@@ -478,7 +484,7 @@ class PHPCheckstyle {
 	 *        	an array of directories or files that need to be
 	 *        	excluded from processing.
 	 */
-	public function processFiles($sources, $excludes) {
+	public function processFiles($sources, $excludes = array()) {
 		// Start reporting the results
 		$this->_reporter->start();
 
@@ -3020,7 +3026,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 			}
 
 			// the indentation is almost free if it is a multi line array
-			if ($this->tokenizer->checkNextToken(T_CONSTANT_ENCAPSED_STRING) || $this->tokenizer->checkNextToken(T_OBJECT_OPERATOR) || $this->tokenizer->checkNextToken(T_ARRAY) || $this->tokenizer->checkNextToken(T_NEW)) {
+			if ($this->tokenizer->checkNextToken(T_CONSTANT_ENCAPSED_STRING) || $this->tokenizer->checkNextToken(T_OBJECT_OPERATOR) || $this->tokenizer->checkNextToken(T_ARRAY) || $this->tokenizer->checkNextToken(T_SQUARE_BRACKET_OPEN) || $this->tokenizer->checkNextToken(T_NEW)) {
 				if (($expectedIndentation + 2) > $indentation) {
 					$msg = $this->_getMessage('INDENTATION_LEVEL_MORE', $expectedIndentation, $indentation);
 					$this->_writeError('indentationLevel', $msg);

@@ -136,7 +136,8 @@ $knownFormats = array(
 	'text',
 	'xml',
 	'xml_console',
-	'array'
+	'array',
+	'null'
 );
 $formats = explode(',', $options['format']);
 $unknownFormats = array_diff($formats, $knownFormats);

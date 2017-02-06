@@ -47,7 +47,7 @@ class CheckXMLStyleConfig extends CheckStyleConfig {
 	 * Destructor.
 	 */
 	public function __destruct() {
-		if ($this->xmlParser !== null) {
+		if ($this->xmlParser !== null && is_resource($this->xmlParser)) {
 			xml_parser_free($this->xmlParser);
 		}
 	}

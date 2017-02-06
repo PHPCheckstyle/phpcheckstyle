@@ -175,5 +175,5 @@ if (!$options['quiet']) {
  	echo "=======" . PHP_EOL . PHP_EOL;
  	echo "Reporting Completed." . PHP_EOL;
 }
-$exitCode = $errorCounts[ERROR] > 0?1:0; 
+$exitCode = ($errorCounts[ERROR] > 0) ? 1 : 0;
 exit($exitCode);

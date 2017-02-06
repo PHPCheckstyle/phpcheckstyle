@@ -1,6 +1,6 @@
 # PHPCheckstyle
 
-## 1. Overview
+## Overview
 
 PHPCheckstyle is an open-source tool that helps PHP programmers 
 adhere to certain coding conventions. The tools checks the input PHP 
@@ -13,14 +13,14 @@ Please visit [https://github.com/PHPCheckstyle/phpcheckstyle/wiki](https://githu
 more information and documentation
 
 
-## 2. Requirements
+## Requirements
 
 - PHP 5.0 or newer. 
 - Web browser to view the checkstyle report (only for html view)
 - That's all. 
 
 
-## 3. Installation
+## Installation
 
 ### Installation with Composer
 
@@ -52,7 +52,21 @@ This will create a directory called `phpcheckstyle` and expand all
 files in it.
 
 
-## 4. Usage
+### Testing with Vagrant
+
+* install [VirtualBox](https://www.virtualbox.org/)
+* install [Vagrant](https://www.vagrantup.com/)
+* launch `vagrant up`  in the project root directory to start the VM
+
+* In case of problem with the "guest additions", launch :
+ 
+>vagrant plugin install vagrant-vbguest
+
+* to run PHPCheckstyle on itself, type `vagrant provision --provision-with run_phpcheckstyle`
+* to run PHPUnit, type `vagrant provision --provision-with run_phpunit`
+* to log inside the VM, type `vagrant ssh`
+
+## Usage
 
 - Change directory to the PHPCheckstyle installation directory.
 

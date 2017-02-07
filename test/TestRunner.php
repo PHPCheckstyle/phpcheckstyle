@@ -16,6 +16,7 @@ $options['quiet'] = false;
 $lineCountFile = null;
 
 $formats = array('null');
+//$formats = array('console');
 
 require_once PHPCHECKSTYLE_HOME_DIR . "/../vendor/autoload.php";
 

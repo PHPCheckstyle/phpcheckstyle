@@ -5,18 +5,18 @@
  */
 
 class Aliases {
-	
+
 	/**
 	 * Function.
 	 */
-	function test() { 
-		
-		$a = chop('test');   // 1 - replace with rtrim();
-		
-		fputs($a); // 2 - replace with fwrite();
-		
+	function test() {
+
+		$alias = chop('test');   // 1 - replace with rtrim();
+
+		fputs($alias); // 2 - replace with fwrite();
+
 		die(); // 3 - replace with exit();
-		
+
 	}
-	
+
 }

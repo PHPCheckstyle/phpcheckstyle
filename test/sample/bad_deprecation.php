@@ -9,20 +9,20 @@ class Deprecation {
 	/**
 	 * Depretacted functions.
 	 *
-	 * @param String $a
-	 * @param String $b
+	 * @param String $aVarVar
+	 * @param String $bVarVar
 	 */
-	function testDeprecation($a, $b) {
+	function testDeprecation($aVar, $bVar) {
 
-		$a = split(",", $a);  // 1 - checkDeprecation
-		
-		$a = ereg("([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})", $b); // 2
-		
+		$aVar = split(",", $aVar);  // 1 - checkDeprecation
+
+		$aVar = ereg("([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})", $bVar); // 2
+
 		session_register("barney"); // 3
-		
-		$a = mysql_db_query('mysql_database', 'mysql_query'); // 4
-		
-		$a = $HTTP_GET_VARS['var']; // 5
+
+		$aVar = mysql_db_query('mysql_database', 'mysql_query'); // 4
+
+		$aVar = $HTTP_GET_VARS['var']; // 5
 	}
 
 }

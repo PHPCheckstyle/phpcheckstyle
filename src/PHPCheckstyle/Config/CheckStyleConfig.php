@@ -162,4 +162,19 @@ abstract class CheckStyleConfig {
 			return false;
 		}
 	}
+
+	/**
+	 * Change the value of a property
+	 *
+	 * @param String $test name of the test
+	 * @param String $property name of the property
+	 * @param String $value the value.
+	 */
+	public function setTestProperty($test, $property, $value) {
+		$test = strtolower($test);
+		$property = strtolower($property);
+		if (array_key_exists($test, $this->config) && array_key_exists($property, $this->config[$test])) {
+			$this->config[$test][$property] = $value;
+		}
+	}
 }

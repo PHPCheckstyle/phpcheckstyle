@@ -17,7 +17,7 @@ const bad_CONST = "goo";
 // 3 : top level var naming :: PHPCHECKSTYLE_TOPLEVEL_VARIABLE_NAMING
 $XXX = 1;
 
-// 4 : localScopeVariableLength : Variable x names length is too short.
+// 4 : localScopeVariableLength : Variable x name length is too short.
 $x = 1;
 
 //

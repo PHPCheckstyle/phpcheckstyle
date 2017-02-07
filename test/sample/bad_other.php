@@ -1,9 +1,10 @@
 <?php
 /**
  * This file is an exemple of PHP file containing various warnings.
- * This file should generate 2 warnings with the default config.
+ * This file should generate 15 warnings with the default config.
+ *
+ * @SuppressWarnings localScopeVariableLength
  */
-
 class Other {
 
 	/**
@@ -14,11 +15,13 @@ class Other {
 	 * @param String $c
 	 */
 	function testAlCapone($a, $b = "c", $c) {
+		// All arguments with default values must be at the end of the block
 		// 1 - defaultValuesOrder
 
 		$a = @count($c);  // 2 - checkSilencedError
 
 		$c = "this is $a test"; // 3-4 - encapsedVariablesInsideString
+		// Prefer single-quoted strings when you don't need string interpolation
 
 		$b++;
 	}
@@ -47,8 +50,9 @@ class Other {
 EOT;
 
 		if ($a) echo $a; // 11 - needBraces with "if"
-		
+
 		while ($a == true) echo $a; // 12 - needBraces with "while"
+		// Consider using a strict comparison operator instead of ==
 	}
 
 

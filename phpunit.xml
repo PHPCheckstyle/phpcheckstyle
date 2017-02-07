@@ -1,7 +1,18 @@
 <phpunit bootstrap="./test/TestRunner.php" colors="true">
 
 	<testsuite name="PHPUnitTestSuite">
- 		<file>./test/BasicTest.php</file>
+ 		<file>./test/AliasesTest.php</file>
+ 		<file>./test/CommentsTest.php</file>
+ 		<file>./test/DeprecationTest.php</file>
+ 		<file>./test/IndentationTest.php</file>
+ 		<file>./test/NamingTest.php</file>
+ 		<file>./test/OptimizationTest.php</file>
+ 		<file>./test/OtherTest.php</file>
+ 		<file>./test/PHPTagsTest.php</file>
+ 		<file>./test/ProhibitedTest.php</file>
+ 		<file>./test/SpacesTest.php</file>
+ 		<file>./test/StrictCompareTest.php</file> 	
+ 		<file>./test/UnusedTest.php</file> 			
 	</testsuite>
 		
 </phpunit>

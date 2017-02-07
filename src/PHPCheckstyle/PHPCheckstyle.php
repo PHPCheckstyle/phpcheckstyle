@@ -232,22 +232,7 @@ class PHPCheckstyle {
 	private $_replacements = array();
 
 	/**
-	 * System variables ($_POST, .
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 * ..) are not tested for naming.
+	 * System variables ($_POST, etc.) are not tested for naming.
 	 */
 	private $_systemVariables = array();
 
@@ -471,6 +456,15 @@ class PHPCheckstyle {
 	 */
 	public function getErrorCounts() {
 		return $this->errorCounts;
+	}
+
+	/**
+	 * Accessor to the current configuration.
+	 *
+	 * @return CheckStyleConfig
+	 */
+	public function getConfig() {
+		return $this->_config;
 	}
 
 	/**
@@ -942,7 +936,7 @@ class PHPCheckstyle {
 
 				if ($this->_isLineStart) {
 					// If the whitespace is at the start of the line, we check for indentation
-					$this->_checkIndentation($token->text);
+					$this->_checkIndentation($token);
 				}
 				break;
 
@@ -2941,10 +2935,13 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	 *
 	 * Launched when T_WHITESPACE or T_TAB is met at the beginning of a line.
 	 *
-	 * @param String $whitespaceString
-	 *        	the whitespace string used for indentation
+	 * @param TokenInfo $token
+	 *        	the token to check
 	 */
-	private function _checkIndentation($whitespaceString) {
+	private function _checkIndentation($token) {
+
+		$whitespaceString = $token->text;
+
 		if ($this->_isActive('indentation')) {
 			$indentationType = $this->_config->getTestProperty('indentation', 'type');
 
@@ -2952,7 +2949,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 			if (strtolower($indentationType) == 'space' || strtolower($indentationType) == 'spaces') {
 				$tabfound = preg_match("/\t/", $whitespaceString);
 				if ($tabfound) {
-					$this->_writeError('indentation', $this->_getMessage('INDENTATION_TAB'));
+					$this->_writeError('indentation', $this->_getMessage('INDENTATION_TAB'), $token->line);
 				}
 				// Number of spaces used
 				$indentationNumber = $this->_config->getTestProperty('indentation', 'number');
@@ -2964,7 +2961,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 				// If indentation type is tabs, we look for whitespace in the string
 				$whitespacefound = preg_match("/[ ]/", $whitespaceString);
 				if ($whitespacefound) {
-					$this->_writeError('indentation', $this->_getMessage('INDENTATION_WHITESPACE'));
+					$this->_writeError('indentation', $this->_getMessage('INDENTATION_WHITESPACE'), $token->line);
 				}
 			}
 		}
@@ -3026,7 +3023,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 			}
 
 			// the indentation is almost free if it is a multi line array
-			if ($this->tokenizer->checkNextToken(T_CONSTANT_ENCAPSED_STRING) || $this->tokenizer->checkNextToken(T_OBJECT_OPERATOR) || $this->tokenizer->checkNextToken(T_ARRAY) || $this->tokenizer->checkNextToken(T_SQUARE_BRACKET_OPEN) || $this->tokenizer->checkNextToken(T_NEW)) {
+			if ($this->tokenizer->checkNextToken(T_CONSTANT_ENCAPSED_STRING) || $this->tokenizer->checkNextToken(T_OBJECT_OPERATOR) || $this->tokenizer->checkNextToken(T_ARRAY) || $this->tokenizer->checkNextToken(T_NEW)) {
 				if (($expectedIndentation + 2) > $indentation) {
 					$msg = $this->_getMessage('INDENTATION_LEVEL_MORE', $expectedIndentation, $indentation);
 					$this->_writeError('indentationLevel', $msg);

@@ -1476,8 +1476,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 				$texttoTest = substr($texttoTest, 1);
 			}
 			// If the variable is not listed as an exception
-			$exceptions = $this->_config->getTestExceptions($ruleName);
-			if (empty($exceptions) || !in_array($texttoTest, $exceptions)) {
+			if (!$this->_config->isException($ruleName, $texttoTest)) {
 
 				if ($this->_isActive($ruleName)) {
 					// Scoped variable
@@ -1980,14 +1979,11 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	 * Called by _processFunctionStop().
 	 */
 	private function _checkDocBlockParameters() {
-		// List of function names that we don't check
-		$exceptions = $this->_config->getTestExceptions('docBlocks');
 
 		// For anonymous functions, we don't check the docblock
 		$isAnonymous = $this->statementStack->getCurrentStackItem()->visibility === 'ANONYMOUS';
-		$isInExceptions = (!empty($exceptions) && in_array($this->_currentFunctionName, $exceptions));
 
-		if ($this->_isActive('docBlocks') && !$isAnonymous && !$isInExceptions) {
+		if ($this->_isActive('docBlocks') && !$isAnonymous && !$this->_config->isException('docBlocks', $this->_currentFunctionName)) {
 
 			// If the function is not private and we check the doc
 			$isPrivateExcluded = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
@@ -2507,8 +2503,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 		if ($this->_isActive('checkInnerAssignment') && $this->_inControlStatement) {
 
 			// If the control statement is not listed as an exception
-			$exceptions = $this->_config->getTestExceptions('checkInnerAssignment');
-			if (empty($exceptions) || !in_array($this->_currentStatement, $exceptions)) {
+			if (!$this->_config->isException('checkInnerAssignment', $this->_currentStatement)) {
 				$this->_writeError('checkInnerAssignment', $this->_getMessage('INSIDE_ASSIGNMENT'));
 			}
 		}
@@ -2801,9 +2796,8 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	 */
 	private function _checkWhiteSpaceBefore($text) {
 		if ($this->_isActive('checkWhiteSpaceBefore')) {
-			$exceptions = $this->_config->getTestExceptions('checkWhiteSpaceBefore');
 
-			if (empty($exceptions) || !in_array($text, $exceptions)) {
+			if (!$this->_config->isException('checkWhiteSpaceBefore', $text)) {
 
 				if (!$this->tokenizer->checkPreviousToken(T_WHITESPACE)) {
 					$msg = $this->_getMessage('SPACE_BEFORE_TOKEN', $text);
@@ -2821,8 +2815,9 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	 */
 	private function _checkNoWhiteSpaceBefore($text) {
 		if ($this->_isActive('noSpaceBeforeToken')) {
-			$exceptions = $this->_config->getTestExceptions('noSpaceBeforeToken');
-			if (empty($exceptions) || !in_array($text, $exceptions)) {
+
+			if (!$this->_config->isException('noSpaceBeforeToken', $text)) {
+
 				if ($this->tokenizer->checkPreviousToken(T_WHITESPACE)) {
 
 					// To avoid false positives when using a space indentation system,
@@ -2846,8 +2841,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	 */
 	private function _checkWhiteSpaceAfter($text) {
 		if ($this->_isActive('checkWhiteSpaceAfter')) {
-			$exceptions = $this->_config->getTestExceptions('checkWhiteSpaceAfter');
-			if (empty($exceptions) || !in_array($text, $exceptions)) {
+			if (!$this->_config->isException('checkWhiteSpaceAfter', $text)) {
 
 				if (!$this->tokenizer->checkNextToken(T_WHITESPACE)) {
 					// In case of new line or a PHP closing tag it's OK
@@ -2868,8 +2862,8 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	 */
 	private function _checkNoWhiteSpaceAfter($text) {
 		if ($this->_isActive('noSpaceAfterToken')) {
-			$exceptions = $this->_config->getTestExceptions('noSpaceAfterToken');
-			if (empty($exceptions) || !in_array($text, $exceptions)) {
+
+			if (!$this->_config->isException('noSpaceAfterToken', $text)) {
 
 				if ($this->tokenizer->checkNextToken(T_WHITESPACE)) {
 					$msg = $this->_getMessage('NO_SPACE_AFTER_TOKEN', $text);
@@ -2885,9 +2879,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	private function _checkUnaryOperator() {
 		if ($this->_isActive('checkUnaryOperator')) {
 			// If the control statement is not listed as an exception
-			$exceptions = $this->_config->getTestExceptions('checkUnaryOperator');
-
-			if (empty($exceptions) || !in_array($this->_currentStatement, $exceptions) || $this->_inArrayStatement) {
+			if (!$this->_config->isException('checkUnaryOperator', $this->_currentStatement) || $this->_inArrayStatement) {
 				// And if we are currently in a control statement or an array statement
 				if ($this->_inControlStatement || $this->_inArrayStatement) {
 					$this->_writeError('checkUnaryOperator', $this->_getMessage('UNARY_OPERATOR'));
@@ -3336,8 +3328,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	 */
 	private function _checkSilenced($text) {
 		if ($this->_isActive('checkSilencedError')) {
-			$exceptions = $this->_config->getTestExceptions('checkSilencedError');
-			if (empty($exceptions) || !in_array($text, $exceptions)) {
+			if (!$this->_config->isException('checkSilencedError', $text)) {
 				$previousToken = $this->tokenizer->peekPrvsToken();
 				if ($previousToken->id === T_AROBAS) {
 					$this->_writeError('checkSilencedError', $this->_getMessage('SILENCED_ERROR'));
@@ -3606,8 +3597,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 			$name = substr($name, 1);
 
 			// we check for exceptions to the rule
-			$exceptions = $this->_config->getTestExceptions('localScopeVariableLength');
-			if (in_array($name, $exceptions)) {
+			if ($this->_config->isException('localScopeVariableLength', $name)) {
 				return;
 			}
 

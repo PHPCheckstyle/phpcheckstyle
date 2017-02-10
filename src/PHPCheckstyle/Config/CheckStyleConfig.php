@@ -5,11 +5,13 @@ namespace PHPCheckstyle\Config;
  * Abstract class model for the configuration checkers.
  *
  * @author James Brooks <jbrooksuk@me.com>
- * @SuppressWarnings docBlocks
+ *         @SuppressWarnings docBlocks
  */
 abstract class CheckStyleConfig {
+
 	/**
 	 * Stores the check configuration.
+	 *
 	 * @var array
 	 */
 	public $config = array();
@@ -17,7 +19,8 @@ abstract class CheckStyleConfig {
 	/**
 	 * Return a true if the test exist, false otherwise.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return Boolean true if test exists.
 	 */
 	public function getTest($test) {
@@ -27,7 +30,8 @@ abstract class CheckStyleConfig {
 	/**
 	 * Return a list of items associed with a test.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return array the list of items for this test.
 	 */
 	public function getTestItems($test) {
@@ -36,9 +40,10 @@ abstract class CheckStyleConfig {
 	}
 
 	/**
-	 * Return a list of exceptionfor a test.
+	 * Return a list of exception for a test.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return array the list of exceptions for this test.
 	 */
 	public function getTestExceptions($test) {
@@ -49,7 +54,8 @@ abstract class CheckStyleConfig {
 	/**
 	 * Return a list of items associed with a configuration.
 	 *
-	 * @param String $config name of the config
+	 * @param String $config
+	 *        	name of the config
 	 * @return array the list of items for this config.
 	 */
 	public function getConfigItems($config) {
@@ -60,7 +66,8 @@ abstract class CheckStyleConfig {
 	/**
 	 * Return the level of severity of a test.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return the level of severity.
 	 */
 	public function getTestLevel($test) {
@@ -72,7 +79,12 @@ abstract class CheckStyleConfig {
 			$ret = strtolower($this->config[$test]['level']);
 		}
 
-		$invalidLevels = array(ERROR, IGNORE, INFO, WARNING);
+		$invalidLevels = array(
+			ERROR,
+			IGNORE,
+			INFO,
+			WARNING
+		);
 
 		if (!in_array($ret, $invalidLevels)) {
 			echo "Invalid level for test " . $test . " : " . $ret;
@@ -85,7 +97,8 @@ abstract class CheckStyleConfig {
 	/**
 	 * Return the regular expression linked to the test.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return the regular expression.
 	 */
 	public function getTestRegExp($test) {
@@ -101,7 +114,8 @@ abstract class CheckStyleConfig {
 	/**
 	 * Return the list of deprecated method and their replacement.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return the list of depecated values.
 	 */
 	public function getTestDeprecations($test) {
@@ -117,7 +131,8 @@ abstract class CheckStyleConfig {
 	/**
 	 * Return the list of aliases and their replacement.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return the list of replaced values.
 	 */
 	public function getTestAliases($test) {
@@ -133,7 +148,8 @@ abstract class CheckStyleConfig {
 	/**
 	 * Return the list of replacements.
 	 *
-	 * @param String $test name of the test
+	 * @param String $test
+	 *        	name of the test
 	 * @return the list of replaced values.
 	 */
 	public function getTestReplacements($test) {
@@ -149,8 +165,10 @@ abstract class CheckStyleConfig {
 	/**
 	 * Return the value of a property
 	 *
-	 * @param String $test name of the test
-	 * @param String $property name of the property
+	 * @param String $test
+	 *        	name of the test
+	 * @param String $property
+	 *        	name of the property
 	 * @return the value.
 	 */
 	public function getTestProperty($test, $property) {
@@ -166,9 +184,12 @@ abstract class CheckStyleConfig {
 	/**
 	 * Change the value of a property
 	 *
-	 * @param String $test name of the test
-	 * @param String $property name of the property
-	 * @param String $value the value.
+	 * @param String $test
+	 *        	name of the test
+	 * @param String $property
+	 *        	name of the property
+	 * @param String $value
+	 *        	the value.
 	 */
 	public function setTestProperty($test, $property, $value) {
 		$test = strtolower($test);
@@ -176,5 +197,19 @@ abstract class CheckStyleConfig {
 		if (array_key_exists($test, $this->config) && array_key_exists($property, $this->config[$test])) {
 			$this->config[$test][$property] = $value;
 		}
+	}
+
+	/**
+	 * Indicate if a value is an exception for the test.
+	 *
+	 * @param String $test
+	 *        	name of the test
+	 * @param String $value
+	 *        	the value
+	 * @return Boolean true is the value is listed as an exception.
+	 */
+	public function isException($test, $value) {
+		$exceptions = $this->getTestExceptions($test);
+		return (!empty($exceptions) && in_array($value, $exceptions));
 	}
 }

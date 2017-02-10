@@ -76,79 +76,79 @@ class PHPCheckstyle {
 		".svn", // SVN directory
 		".git*"
 	);
- // Accounts for .git, .gitignore .gitmodules etc
+	// Accounts for .git, .gitignore .gitmodules etc
 
 	// variables used while processing control structure
 	private $_csLeftParenthesis = 0;
- // Left brackets opened in control statement or function statement
+	// Left brackets opened in control statement or function statement
 	private $_fcLeftParenthesis = 0;
- // Left brackets opened in function call
+	// Left brackets opened in function call
 	private $inDoWhile = false;
 
 	private $token = false;
 
 	private $lineNumber = 0;
- // Store the current line number
+	// Store the current line number
 	private $_isLineStart = true;
- // Start of a line (just after a return)
+	// Start of a line (just after a return)
 
 	// Indicate if we are in a control statement declaration (for, if, while, ...)
-	                              // The control statement starts just after the statement token
-	                              // and stops at the closing of the parenthesis or the new line if no parenthesis is used
+	// The control statement starts just after the statement token
+	// and stops at the closing of the parenthesis or the new line if no parenthesis is used
 	private $_inControlStatement = false;
 
 	private $_inString = false;
- // We are inside a string (only happens with T_ENCAPSED_AND_WHITESPACE)
+	// We are inside a string (only happens with T_ENCAPSED_AND_WHITESPACE)
 	private $_inArrayStatement = false;
- // We are in a array statement
+	// We are in a array statement
 	private $_inClassStatement = false;
- // We are in a class statement (declaration)
+	// We are in a class statement (declaration)
 	private $_inInterfaceStatement = false;
- // We are in an interface statement (declaration)
+	// We are in an interface statement (declaration)
 	private $_inFunctionStatement = false;
- // We are in a function statement (declaration)
+	// We are in a function statement (declaration)
 	private $_inFuncCall = false;
- // We are in a function call
+	// We are in a function call
 	private $_inFunction = false;
- // We are inside a function
+	// We are inside a function
 	private $_inClass = false;
- // We are inside a class
+	// We are inside a class
 	private $_inInterface = false;
- // We are inside an interface
+	// We are inside an interface
 	private $_privateFunctions = array();
- // The list of private functions in the class
+	// The list of private functions in the class
 	private $_privateFunctionsStartLines = array();
 
 	private $_functionParameters = array();
- // The list of function parameters
+	// The list of function parameters
 	private $_usedFunctions = array();
- // The list of functions that are used in the class
+	// The list of functions that are used in the class
 	private $_variables = array();
- // The variables used. Array of VariableInfo.
+	// The variables used. Array of VariableInfo.
 	private $_nbFunctionParameters = 0;
- // Count the number of parameters of the current function
+	// Count the number of parameters of the current function
 	private $_justAfterFuncStmt = false;
- // We are just after a control statement (last } )
+	// We are just after a control statement (last } )
 	private $_justAfterControlStmt = false;
- // We are just after a function statement (last } )
+	// We are just after a function statement (last } )
 	private $_functionStartLine = 0;
- // Starting line of the current function
+	// Starting line of the current function
 	private $_switchStartLine = 0;
- // Starting line of the current switch statement
+	// Starting line of the current switch statement
 	private $_functionReturns = false;
- // Does the function return a value ?
+	// Does the function return a value ?
 	private $_functionThrows = false;
- // Does the function throw an exception ?
+	// Does the function throw an exception ?
 	private $_functionLevel = 0;
- // Level of Nesting of the function
+	// Level of Nesting of the function
 	private $_functionVisibility = 'PUBLIC';
- // PUBLIC, PRIVATE or PROTECTED or ANONYMOUS
+	// PUBLIC, PRIVATE or PROTECTED or ANONYMOUS
 	private $_functionStatic = false;
- // Is the function static
+	// Is the function static
 	private $_classLevel = 0;
- // Level of Nesting of the class
+	// Level of Nesting of the class
 	private $_interfaceLevel = 0;
- // Level of Nesting of the interface
+	// Level of Nesting of the interface
 	private $_constantDef = false;
 
 	private $_currentClassname = null;
@@ -164,23 +164,23 @@ class PHPCheckstyle {
 	private $_currentFunctionName = null;
 
 	private $_docblocNbParams = 0;
- // Number of @params in the docblock of a function
+	// Number of @params in the docblock of a function
 	private $_docblocNbReturns = 0;
- // Number of @return in the docblock of a function
+	// Number of @return in the docblock of a function
 	private $_docblocNbThrows = 0;
- // Number of @throw in the docblock of a function
+	// Number of @throw in the docblock of a function
 	private $_cyclomaticComplexity = 0;
 
 	private $_npathComplexity = 0;
 
 	private $_fileSuppressWarnings = array();
- // List of warnings to ignore for this file
+	// List of warnings to ignore for this file
 	private $_classSuppressWarnings = array();
- // List of warnings to ignore for this class
+	// List of warnings to ignore for this class
 	private $_interfaceSuppressWarnings = array();
- // List of warnings to ignore for this interface
+	// List of warnings to ignore for this interface
 	private $_functionSuppressWarnings = array();
- // List of warnings to ignore for this function
+	// List of warnings to ignore for this function
 
 	// For MVC frameworks
 	private $_isView = false;
@@ -2561,7 +2561,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 
 			foreach ($this->_variables as $variable) {
 
-				if ((!$variable->isUsed) && !($this->_isClass || $this->_isView)) {
+				if ((!$variable->isUsed) && !($this->_isClass || $this->_isView) && !$this->_config->isException('checkUnusedVariables', $variable->name)) {
 					$msg = $this->_getMessage('UNUSED_VARIABLE', $variable->name);
 					$this->_writeError('checkUnusedVariables', $msg, $variable->line, $this->_config->getTestLevel('checkUnusedVariables'));
 				}
@@ -2945,7 +2945,6 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	 *        	the token to check
 	 */
 	private function _checkIndentation($token) {
-
 		$whitespaceString = $token->text;
 
 		if ($this->_isActive('indentation')) {

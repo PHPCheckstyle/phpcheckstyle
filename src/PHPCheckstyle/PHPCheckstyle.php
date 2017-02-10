@@ -1189,10 +1189,16 @@ class PHPCheckstyle {
 				}
 				break;
 			case T_SQUARE_BRACKET_OPEN:
+				$stackitem = new StatementItem();
+				$stackitem->line = $token->line;
+				$stackitem->type = 'square_bracket_open';
+				$stackitem->name = 'square_bracket_open';
+				$this->statementStack->push($stackitem);
 				$this->_inArrayStatement = true;
 				break;
 			case T_SQUARE_BRACKET_CLOSE:
 				$this->_inArrayStatement = false;
+				$this->statementStack->pop();
 				break;
 			case T_QUOTE:
 				$this->_checkPreferQuotes($token);
@@ -2995,7 +3001,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 			$nesting = $this->statementStack->count();
 
 			// But we must anticipate if the current line change the level
-			if ($this->tokenizer->checkNextValidToken(T_BRACES_CLOSE)) {
+			if ($this->tokenizer->checkNextValidToken(T_BRACES_CLOSE) || $this->tokenizer->checkNextValidToken(T_SQUARE_BRACKET_CLOSE)) {
 				$nesting --;
 			}
 
@@ -3023,7 +3029,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 			}
 
 			// the indentation is almost free if it is a multi line array
-			if ($this->tokenizer->checkNextToken(T_CONSTANT_ENCAPSED_STRING) || $this->tokenizer->checkNextToken(T_OBJECT_OPERATOR) || $this->tokenizer->checkNextToken(T_ARRAY) || $this->tokenizer->checkNextToken(T_NEW)) {
+			if ($this->tokenizer->checkNextToken(T_CONSTANT_ENCAPSED_STRING) || $this->tokenizer->checkNextToken(T_OBJECT_OPERATOR) || $this->tokenizer->checkNextToken(T_SQUARE_BRACKET_OPEN) || $this->tokenizer->checkNextToken(T_ARRAY) || $this->tokenizer->checkNextToken(T_NEW)) {
 				if (($expectedIndentation + 2) > $indentation) {
 					$msg = $this->_getMessage('INDENTATION_LEVEL_MORE', $expectedIndentation, $indentation);
 					$this->_writeError('indentationLevel', $msg);

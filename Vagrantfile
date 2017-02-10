@@ -8,7 +8,7 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "debian/jessie64"
-  #config.vm.box = "debian/contrib-jessie64" # Box with Virtualbox Guest Additions
+  config.vm.box_version = "8.6.1"
  
    #Dev config 
    config.vm.define "phpcheckstyle_dev" do |phpcheckstyle_dev|

@@ -1,5 +1,7 @@
 # PHPCheckstyle
 
+[![Build Status](https://travis-ci.org/PHPCheckstyle/phpcheckstyle.svg?branch=master)](https://travis-ci.org/PHPCheckstyle/phpcheckstyle)
+
 ## Overview
 
 PHPCheckstyle is an open-source tool that helps PHP programmers 

@@ -4,6 +4,7 @@
 Version 0.14.5
 --------------
 * Issue #62 : Corrected the indentation level count for short array syntax
+* Issue #41 : Ability to add exceptions to "unused variable" test
 * Corrected line numbering for indentation check
 * Added PHPUnit tests
 * Added vagrant configuration files to spawn a VirtualBox VM

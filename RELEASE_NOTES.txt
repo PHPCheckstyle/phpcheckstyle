@@ -1,14 +1,17 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
-
-Version 0.14.4
+Version 0.14.5
 --------------
 * Issue #62 : Corrected the indentation level count for short array syntax
 * Corrected line numbering for indentation check
 * Added PHPUnit tests
 * Added vagrant configuration files to spawn a VirtualBox VM
 * When running from CLI PHPCheckstyle return code is now <> 0 if some errors are detected 
+
+Version 0.14.4
+--------------
+* Moved the project from SourceForge to Github
 
 Version 0.14.3
 --------------

@@ -7,9 +7,27 @@ use PHPUnit\Framework\TestCase;
 class UnusedTest extends TestCase {
 
 	/**
-	 * Test for for spaces missing or in excedent.
+	 * Nominal case.
 	 */
-	public function testUnused() {
+	public function testGoodUnused() {
+		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+
+		$phpcheckstyle->processFiles(array(
+			'./test/sample/good_unused.php'
+		));
+
+		$errorCounts = $phpcheckstyle->getErrorCounts();
+
+		$this->assertEquals(0, $errorCounts['error'], 'We expect 0 errors of naming');
+		$this->assertEquals(0, $errorCounts['ignore'], 'We expect 0 ignored checks');
+		$this->assertEquals(0, $errorCounts['info'], 'We expect 0 info');
+		$this->assertEquals(0, $errorCounts['warning'], 'We expect 0 warnings');
+	}
+
+	/**
+	 * Test for unused functions or variables.
+	 */
+	public function testBadUnused() {
 		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
 
 		$phpcheckstyle->processFiles(array(
@@ -23,7 +41,5 @@ class UnusedTest extends TestCase {
 		$this->assertEquals(0, $errorCounts['info'], 'We expect 0 info');
 		$this->assertEquals(4, $errorCounts['warning'], 'We expect 4 warnings');
 	}
-
-
 }
 ?>

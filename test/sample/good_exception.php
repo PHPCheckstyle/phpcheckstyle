@@ -4,7 +4,7 @@
 /**
  * This file is an exemple of PHP file containing good style (according to the default ruleset).
  */
-class GoodTest {
+class GoodTestFinally {
 
 	/**
 	 * This function is documented.
@@ -18,6 +18,8 @@ class GoodTest {
 		} catch (Exception $e) {
 			// something else
 			echo $e->getMessage();
+		} finally {
+			echo "Finally does it!";
 		}
 
 	}

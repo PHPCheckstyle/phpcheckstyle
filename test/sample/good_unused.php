@@ -2,6 +2,7 @@
 /**
  * This file is an exemple of PHP file with all variables used.
  * Test a false positive.
+  * @SuppressWarnings localScopeVariableLength
  */
 class Used {
 
@@ -10,7 +11,7 @@ class Used {
 	 * @var Integer
 	 */
 	var $toto = null;
-	
+
 	/**
 	 * @return String
 	 */
@@ -24,13 +25,3 @@ class Used {
 	}
 
 }
-
-
-$view = "test";
-?>
-
-Some HTML
-
-<?=$view;?>
-
-<?php 

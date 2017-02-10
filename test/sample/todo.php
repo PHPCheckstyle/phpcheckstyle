@@ -3,7 +3,8 @@
  * TODO : The todo message.
  *
  * @param String $var a var
+ * @SuppressWarnings localScopeVariableLength
  */
 function toto($a) {
-	$a = 1; // this is line 5, but the warning is for line 4
+	$a = 1;
 }

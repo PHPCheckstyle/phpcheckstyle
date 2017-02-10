@@ -1,6 +1,7 @@
 <?php
 /**
- * Test same line indentation
+ * Test same line indentation.
+ * @SuppressWarnings localScopeVariableLength
  */
 class Indentation {
 
@@ -13,10 +14,14 @@ class Indentation {
 		$a = 0;
 
 		//code
-		if ($a == 1)
+		if ($a === 1)
 		{
 			// new code
 			echo "toto";
+		}
+		else
+		{
+			echo "titi";
 		}
 
 	} //And this bracket too

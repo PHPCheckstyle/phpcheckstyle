@@ -44,5 +44,50 @@ class IndentationTest extends TestCase {
 		$this->assertEquals(0, $errorCounts['info'], 'We expect 0 info');
 		$this->assertEquals(11, $errorCounts['warning'], 'We expect 11 warnings');
 	}
+
+	/**
+	 * Test for indentation with new line indentation.
+	 */
+	public function testGoodIndentationNewLine() {
+		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+
+		// Change the configuration to check for spaces instead of tabs
+		$phpcheckstyle->getConfig()->setTestProperty('controlStructOpenCurly', 'position', 'nl');
+		$phpcheckstyle->getConfig()->setTestProperty('funcDefinitionOpenCurly', 'position', 'nl');
+		$phpcheckstyle->getConfig()->setTestProperty('controlStructElse', 'position', 'nl');
+
+
+		$phpcheckstyle->processFiles(array(
+			'./test/sample/good_indentation_newline.php'
+		));
+
+		$errorCounts = $phpcheckstyle->getErrorCounts();
+
+		$this->assertEquals(0, $errorCounts['error'], 'We expect 0 errors');
+		$this->assertEquals(0, $errorCounts['ignore'], 'We expect 0 ignored checks');
+		$this->assertEquals(0, $errorCounts['info'], 'We expect 0 info');
+		$this->assertEquals(0, $errorCounts['warning'], 'We expect 0 warnings');
+	}
+
+	/**
+	 * Test for indentation with spaces.
+	 */
+	public function testGoodIndentationSpaces() {
+		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+
+		// Change the configuration to check for spaces instead of tabs
+		$phpcheckstyle->getConfig()->setTestProperty('indentation', 'type', 'spaces');
+
+		$phpcheckstyle->processFiles(array(
+			'./test/sample/good_indentation_space.php'
+		));
+
+		$errorCounts = $phpcheckstyle->getErrorCounts();
+
+		$this->assertEquals(0, $errorCounts['error'], 'We expect 0 errors');
+		$this->assertEquals(0, $errorCounts['ignore'], 'We expect 0 ignored checks');
+		$this->assertEquals(0, $errorCounts['info'], 'We expect 0 info');
+		$this->assertEquals(0, $errorCounts['warning'], 'We expect 0 warnings');
+	}
 }
 ?>

@@ -4,8 +4,8 @@ define("CONSTANT", 100);  // Constant Naming correct
 
 /**
  * This file is an exemple of PHP file containing good style (according to the default ruleset).
- *
-*/
+ * @SuppressWarnings localScopeVariableLength
+ */
 class GoodTest {
 
 	/**
@@ -26,12 +26,12 @@ class GoodTest {
 	function totoTwo() {
 
 		$a = $b = $c = 0;
-		
+
 		$a['Test'] = 'Test';
-		
+
 		$text = "";  // correct variable naming
 
-		if ($a == $b) {
+		if ($a === $b) {
 			echo $b;
 		} else {
 			echo $c;
@@ -40,7 +40,7 @@ class GoodTest {
 
 		$a = -12; // Should not ask for a space between - and 12
 
-		echo " toto ".$a;
+		echo " toto " . $a;
 
 		$a = array(	$a,
 				$b,
@@ -76,7 +76,7 @@ class GoodTest {
 	/**
 	 * Correctly documented function.
 	 *
-	 * @param String $a a string 
+	 * @param String $a a string
 	 * @param String $b another string
 	 * @param Boolean $c a flag
 	 * @return String a result
@@ -101,12 +101,12 @@ class GoodTest {
 	 * @throws Exception
 	 */
 	public function functionWithException() {
-		
+
 		// Call the private function
 		$this->_privateFunction();
 
 		$this->test;
-		
+
 		// do something
 		throw new Exception('Exception');
 	}

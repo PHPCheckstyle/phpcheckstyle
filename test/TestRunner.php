@@ -18,7 +18,7 @@ $lineCountFile = null;
 //$formats = array('null');
 $formats = array('console');
 
-require_once PHPCHECKSTYLE_HOME_DIR . "/../vendor/autoload.php";
+require_once dirname(__FILE__) . "/../vendor/autoload.php";
 
 $style = new PHPCheckstyle\PHPCheckstyle($formats, $options['outdir'], $options['config'], $lineCountFile, $options['debug'], $options['progress']);
 

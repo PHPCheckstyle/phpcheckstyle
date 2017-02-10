@@ -2,26 +2,26 @@
 use PHPUnit\Framework\TestCase;
 
 /**
- * Spaces tests.
+ * Metrics tests.
  */
-class SpacesTest extends TestCase {
+class MetricsTest extends TestCase {
 
 	/**
-	 * Test for for spaces missing or in excedent.
+	 * Test for different metrics.
 	 */
-	public function testSpaces() {
+	public function testMetrics() {
 		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
 
 		$phpcheckstyle->processFiles(array(
-			'./test/sample/bad_spaces.php'
+			'./test/sample/bad_metrics.php'
 		));
 
 		$errorCounts = $phpcheckstyle->getErrorCounts();
 
 		$this->assertEquals(0, $errorCounts['error'], 'We expect 0 errors of naming');
 		$this->assertEquals(0, $errorCounts['ignore'], 'We expect 0 ignored checks');
-		$this->assertEquals(2, $errorCounts['info'], 'We expect 2 info');
-		$this->assertEquals(7, $errorCounts['warning'], 'We expect 7 warnings');
+		$this->assertEquals(1, $errorCounts['info'], 'We expect 1 info');
+		$this->assertEquals(3, $errorCounts['warning'], 'We expect 3 warnings');
 	}
 
 

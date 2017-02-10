@@ -6,12 +6,12 @@
  		<file>./test/DeprecationTest.php</file>
  		<file>./test/GoodTest.php</file> 		
  		<file>./test/IndentationTest.php</file>
+ 		<file>./test/MetricsTest.php</file>
  		<file>./test/NamingTest.php</file>
  		<file>./test/OptimizationTest.php</file>
  		<file>./test/OtherTest.php</file>
  		<file>./test/PHPTagsTest.php</file>
  		<file>./test/ProhibitedTest.php</file>
- 		<file>./test/SpacesTest.php</file>
  		<file>./test/StrictCompareTest.php</file> 	
  		<file>./test/UnusedTest.php</file> 			
 	</testsuite>

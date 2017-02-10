@@ -25,5 +25,42 @@ class OtherTest extends TestCase {
 	}
 
 
+	/**
+	 * Test for PHP exceptions during parsing.
+	 */
+	public function testException() {
+		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+
+		$phpcheckstyle->processFiles(array(
+			'./test/sample/unterminated_comment.php'
+		));
+
+		$errorCounts = $phpcheckstyle->getErrorCounts();
+
+		$this->assertEquals(1, $errorCounts['error'], 'We expect 1 error');
+		$this->assertEquals(0, $errorCounts['ignore'], 'We expect 0 ignored checks');
+		$this->assertEquals(0, $errorCounts['info'], 'We expect 0 info');
+		$this->assertEquals(0, $errorCounts['warning'], 'We expect 0 warnings');
+	}
+
+
+	/**
+	 * Test for empty PHP file.
+	 */
+	public function testEmpty() {
+		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+
+		$phpcheckstyle->processFiles(array(
+			'./test/sample/empty.php'
+		));
+
+		$errorCounts = $phpcheckstyle->getErrorCounts();
+
+		$this->assertEquals(0, $errorCounts['error'], 'We expect 0 error');
+		$this->assertEquals(0, $errorCounts['ignore'], 'We expect 0 ignored checks');
+		$this->assertEquals(0, $errorCounts['info'], 'We expect 0 info');
+		$this->assertEquals(1, $errorCounts['warning'], 'We expect 1 warnings');
+	}
+
 }
 ?>

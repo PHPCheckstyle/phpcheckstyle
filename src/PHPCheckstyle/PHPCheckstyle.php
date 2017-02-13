@@ -839,7 +839,7 @@ class PHPCheckstyle {
 	 * @see http://www.php.net/manual/en/tokens.php
 	 *
 	 * @param TokenInfo $token
-	 *        	@SuppressWarnings switchCaseNeedBreak functionLength cyclomaticComplexity
+	 * @SuppressWarnings functionLength cyclomaticComplexity
 	 */
 	private function _processToken($token) {
 		// Debug
@@ -2294,6 +2294,12 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 		// For this case
 		$this->statementStack->getCurrentStackItem()->caseHasBreak = false;
 		$this->statementStack->getCurrentStackItem()->caseStartLine = $this->lineNumber;
+
+		// Check if the case is empty
+		// We detect if the next valid token after ":" is another T_CASE
+		$startPos = $this->tokenizer->findNextStringPosition(":", $this->tokenizer->getCurrentPosition());
+		$this->statementStack->getCurrentStackItem()->caseIsEmpty = $this->tokenizer->checkNextValidToken(T_CASE, false, $startPos + 1) || $this->tokenizer->checkNextValidToken(T_DEFAULT, false, $startPos + 1);
+
 	}
 
 	/**
@@ -2319,7 +2325,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 		$stackItem = $this->statementStack->getCurrentStackItem();
 
 		// Test if the previous case had a break
-		if ($this->_isActive('switchCaseNeedBreak') && $stackItem->type == "CASE" && !$stackItem->caseHasBreak) {
+		if ($this->_isActive('switchCaseNeedBreak') && $stackItem->type == "CASE" && !$stackItem->caseHasBreak && !$stackItem->caseIsEmpty) {
 			// Direct call to reporter to include a custom line number.
 			$this->_writeError('switchCaseNeedBreak', $this->_getMessage('SWITCH_CASE_NEED_BREAK'), $this->statementStack->getCurrentStackItem()->caseStartLine, $this->_config->getTestLevel('switchCaseNeedBreak'));
 		}

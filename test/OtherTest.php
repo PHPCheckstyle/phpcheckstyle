@@ -62,5 +62,24 @@ class OtherTest extends TestCase {
 		$this->assertEquals(1, $errorCounts['warning'], 'We expect 1 warnings');
 	}
 
+
+	/**
+	 * Test for the presence of a break in a switch case.
+	 */
+	public function testSwitchCaseNeedBreak() {
+		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+
+		$phpcheckstyle->processFiles(array(
+			'./test/sample/switch_multi_case.php'
+		));
+
+		$errorCounts = $phpcheckstyle->getErrorCounts();
+
+		$this->assertEquals(0, $errorCounts['error'], 'We expect 0 error');
+		$this->assertEquals(0, $errorCounts['ignore'], 'We expect 0 ignored checks');
+		$this->assertEquals(0, $errorCounts['info'], 'We expect 0 info');
+		$this->assertEquals(1, $errorCounts['warning'], 'We expect 1 warnings');
+	}
+
 }
 ?>

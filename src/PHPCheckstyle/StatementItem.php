@@ -40,6 +40,7 @@ class StatementItem {
 	var $switchHasDefault = false; // indicate that the switch instruction has a case "default" set.
 	var $caseHasBreak = false; // indicate that the current case has a break instruction
 	var $caseStartLine = 0; // start line of the currently processed case
+	var $caseIsEmpty = true; // indicate if the case is empty
 
 	// For DO / WHILE statements
 	// indicate that we have met a DO statement (which will be described in another StatementItem, but it will be closed when we meet the WHILE).

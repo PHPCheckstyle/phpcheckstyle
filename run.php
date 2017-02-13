@@ -38,6 +38,9 @@ function usage() {
 		"--quiet" =>
 			"[Optional] Quiet mode.",
 
+		"--time" =>
+			"[Optional] Display the process time in ms          .",
+
 		"--help" =>
 			"Display this usage information.",
 	);
@@ -61,6 +64,7 @@ $options['debug'] = false;
 $options['progress'] = false;
 $options['lang'] = 'en-us';
 $options['quiet'] = false;
+$options['time'] = false;
 $lineCountFile = null;
 
 // loop through user input
@@ -112,6 +116,10 @@ for ($i = 1; $i < $_SERVER["argc"]; $i ++) {
 			$options['quiet'] = true;
 			break;
 
+		case "--time":
+			$options['time'] = true;
+			break;
+
 		case "--help":
 			usage();
 			break;
@@ -156,6 +164,11 @@ if (!empty($options['linecount'])) {
 	$lineCountFile = "ncss.xml";
 }
 
+if ($options['time']) {
+	$time_start = microtime();
+}
+
+
 $style = new PHPCheckstyle\PHPCheckstyle($formats, $options['outdir'], $options['config'], $lineCountFile, $options['debug'], $options['progress']);
 
 if (file_exists(__DIR__ . '/src/PHPCheckstyle/Lang/' . $options['lang'] . '.ini')) {
@@ -175,6 +188,18 @@ if (!$options['quiet']) {
  	echo "Warnings: " . $errorCounts[WARNING] . PHP_EOL;
  	echo "=======" . PHP_EOL . PHP_EOL;
  	echo "Reporting Completed." . PHP_EOL;
+
+ 	if ($options['time']) {
+ 		$time_end = microtime();
+ 		$time = $time_end - $time_start;
+
+ 		echo "Processing ended in " . $time . " ms" . PHP_EOL;
+ 	}
+
 }
+
+
+
+
 $exitCode = ($errorCounts[ERROR] > 0) ? 1 : 0;
 exit($exitCode);

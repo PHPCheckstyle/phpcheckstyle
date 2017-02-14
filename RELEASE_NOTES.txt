@@ -8,8 +8,9 @@ Version 0.14.5
 * Issue #24 : Grouped cases must contain a break
 * Issue #23 : Added a --time option on the CLI to print the processing time
 * Corrected line numbering for indentation check
-* Added PHPUnit tests
-* Added vagrant configuration files to spawn a VirtualBox VM
+* Added PHPUnit tests 
+* Added Vagrant configuration files to spawn a local VirtualBox VM
+* Added TravisCI configuration file
 * When running from CLI PHPCheckstyle return code is now <> 0 if some errors are detected 
 
 

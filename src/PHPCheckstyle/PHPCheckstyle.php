@@ -85,8 +85,6 @@ class PHPCheckstyle {
 	private $_csLeftParenthesis = 0;
 	// Left parenthesis opened in function call
 	private $_fcLeftParenthesis = 0;
-	// Left parenthesis opened in array declaration
-	private $_arrayParenthesis = 0;
 
 	private $inDoWhile = false;
 
@@ -104,8 +102,7 @@ class PHPCheckstyle {
 
 	// We are inside a string (only happens with T_ENCAPSED_AND_WHITESPACE)
 	private $_inString = false;
-	// We are in a array declaration
-	private $_inArrayDeclaration = false;
+
 	private $_beforeArrayDeclaration = false;
 
 	private $_inClassStatement = false;
@@ -560,7 +557,6 @@ class PHPCheckstyle {
 		// Reset the current attributes
 		$this->_csLeftParenthesis = 0;
 		$this->_fcLeftParenthesis = 0;
-		$this->_arrayParenthesis = 0;
 		$this->inDoWhile = false;
 
 		$this->statementStack = new StatementStack();
@@ -568,7 +564,6 @@ class PHPCheckstyle {
 		$this->_inString = false;
 		$this->_inControlStatement = false;
 		$this->_inFunctionStatement = false;
-		$this->_inArrayDeclaration = false;
 		$this->_beforeArrayDeclaration = false;
 		$this->_inFunction = false;
 		$this->_privateFunctions = array();
@@ -854,7 +849,7 @@ class PHPCheckstyle {
 		// Debug
 		if ($this->debug) {
 			echo $this->statementStack->getStackDump() . PHP_EOL;
-			echo "Level " . $this->statementStack->count() . " - " . $token->toString() . PHP_EOL;
+			echo "Level " . $this->statementStack->count() . " - " . $token->toString() . "Par " . $this->statementStack->getCurrentStackItem()->openParentheses . PHP_EOL;
 		}
 
 		// Check if the token is in the list of prohibited tokens
@@ -1248,16 +1243,12 @@ class PHPCheckstyle {
 	 *        	the current token
 	 */
 	private function _processParenthesisOpen($token) {
-
-
 		if ($this->_inFuncCall) {
 			// inside a function call
 			$this->_fcLeftParenthesis += 1;
 		} elseif ($this->_inControlStatement || $this->_inFunctionStatement) {
 			// inside a function or control statement
 			$this->_csLeftParenthesis += 1;
-		} elseif ($this->_inArrayDeclaration) {
-			$this->_arrayParenthesis += 1;
 		}
 
 		// We are in a array declaration
@@ -1269,9 +1260,9 @@ class PHPCheckstyle {
 			$this->statementStack->push($stackitem);
 
 			$this->_beforeArrayDeclaration = false;
-			$this->_inArrayDeclaration = true;
-			$this->_arrayParenthesis += 1;
 		}
+
+		$this->statementStack->getCurrentStackItem()->openParentheses += 1;
 	}
 
 	/**
@@ -1281,6 +1272,9 @@ class PHPCheckstyle {
 	 *        	the current token
 	 */
 	private function _processParenthesisClose($token) {
+		echo "_processParenthesisClose" . PHP_EOL;
+
+		$this->statementStack->getCurrentStackItem()->openParentheses -= 1;
 
 		// Decrease the number of opened brackets
 		if ($this->_inFuncCall) {
@@ -1304,13 +1298,17 @@ class PHPCheckstyle {
 			}
 		}
 
-		// We are in a array declaration
-		if ($this->_inArrayDeclaration) {
-			$this->_arrayParenthesis -= 1;
+		echo "openParentheses" . $this->statementStack->getCurrentStackItem()->openParentheses . PHP_EOL;
 
-			if ($this->_arrayParenthesis == 0) {
+		// We the count arrive to 0 we probably have something to do
+		if ($this->statementStack->getCurrentStackItem()->openParentheses === 0) {
+
+
+
+			// We are in a array declaration, we unstack
+			if ($this->statementStack->getCurrentStackItem()->type === "ARRAY") {
+				echo "POP" . PHP_EOL;
 				$this->statementStack->pop();
-				$this->_inArrayDeclaration = false;
 			}
 		}
 	}
@@ -3088,13 +3086,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 				}
 			}
 
-			// the indentation is almost free if it is a multi line array
-			if ($this->tokenizer->checkNextToken(T_CONSTANT_ENCAPSED_STRING) || $this->tokenizer->checkNextToken(T_OBJECT_OPERATOR) || $this->tokenizer->checkNextToken(T_SQUARE_BRACKET_OPEN) || $this->tokenizer->checkNextToken(T_ARRAY) || $this->tokenizer->checkNextToken(T_NEW)) {
-				if (($expectedIndentation + 2) > $indentation) {
-					$msg = $this->_getMessage('INDENTATION_LEVEL_MORE', $expectedIndentation, $indentation);
-					$this->_writeError('indentationLevel', $msg, $token->line);
-				}
-			} else if ($expectedIndentation != $indentation) {
+			if ($expectedIndentation != $indentation) {
 				$msg = $this->_getMessage('INDENTATION_LEVEL', $expectedIndentation, $indentation);
 				$this->_writeError('indentationLevel', $msg, $token->line);
 			}

@@ -51,4 +51,8 @@ class StatementItem {
 
 	// Flag indicating the the statement block is not sourrounded by {}
 	var $noCurly = false;
+
+	// Parenthesis count
+	var $openParentheses = 0;
+
 }

@@ -1204,11 +1204,7 @@ class PHPCheckstyle {
 				$this->_checkVariableVariable($token);
 				break;
 			case T_ARRAY:
-				$stackitem = new StatementItem();
-				$stackitem->line = $token->line;
-				$stackitem->type = 'ARRAY';
-				$stackitem->name = 'ARRAY';
-				$this->statementStack->push($stackitem);
+				$this->_processArray($token);
 				break;
 			default:
 				break;
@@ -1216,6 +1212,25 @@ class PHPCheckstyle {
 
 		// If the last token is a NEW_LINE, the next token will be at the start of the line
 		$this->_isLineStart = ($token->id == T_NEW_LINE);
+	}
+
+	/**
+	 * Launched when a array token is encountered.
+	 *
+	 * @param TokenInfo $token
+	 *        	the current token
+	 */
+	private function _processArray($token) {
+
+		// If the next token is a parenthesis then we are in a array declaration
+		if ($this->tokenizer->checkNextValidToken(T_PARENTHESIS_OPEN)) {
+			$stackitem = new StatementItem();
+			$stackitem->line = $token->line;
+			$stackitem->type = 'ARRAY';
+			$stackitem->name = 'ARRAY';
+			$this->statementStack->push($stackitem);
+		}
+
 	}
 
 	/**

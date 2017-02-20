@@ -1,6 +1,14 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+
+Version 0.14.6
+--------------
+* Added config for Symfony standards
+* Issue #66 : Indentation level inside an array
+* Issue #65 : Indentation level should increase inside a case
+
+
 Version 0.14.5
 --------------
 * Issue #62 : Corrected the indentation level count for short array syntax

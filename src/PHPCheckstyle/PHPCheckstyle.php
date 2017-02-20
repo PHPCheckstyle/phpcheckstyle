@@ -1272,7 +1272,6 @@ class PHPCheckstyle {
 	 *        	the current token
 	 */
 	private function _processParenthesisClose($token) {
-		echo "_processParenthesisClose" . PHP_EOL;
 
 		$this->statementStack->getCurrentStackItem()->openParentheses -= 1;
 
@@ -1298,8 +1297,6 @@ class PHPCheckstyle {
 			}
 		}
 
-		echo "openParentheses" . $this->statementStack->getCurrentStackItem()->openParentheses . PHP_EOL;
-
 		// We the count arrive to 0 we probably have something to do
 		if ($this->statementStack->getCurrentStackItem()->openParentheses === 0) {
 
@@ -1307,7 +1304,6 @@ class PHPCheckstyle {
 
 			// We are in a array declaration, we unstack
 			if ($this->statementStack->getCurrentStackItem()->type === "ARRAY") {
-				echo "POP" . PHP_EOL;
 				$this->statementStack->pop();
 			}
 		}

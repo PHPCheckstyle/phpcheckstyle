@@ -97,9 +97,8 @@ class PHPCheckstyle {
 	// and stops at the closing of the parenthesis or the new line if no parenthesis is used
 	private $_inControlStatement = false;
 
-	private $_inString = false;
 	// We are inside a string (only happens with T_ENCAPSED_AND_WHITESPACE)
-	private $_inArrayStatement = false;
+	private $_inString = false;
 	// We are in a array statement
 	private $_inClassStatement = false;
 	// We are in a class statement (declaration)
@@ -559,7 +558,6 @@ class PHPCheckstyle {
 
 		$this->_inString = false;
 		$this->_inControlStatement = false;
-		$this->_inArrayStatement = false;
 		$this->_inFunctionStatement = false;
 		$this->_inFunction = false;
 		$this->_privateFunctions = array();
@@ -1191,13 +1189,11 @@ class PHPCheckstyle {
 			case T_SQUARE_BRACKET_OPEN:
 				$stackitem = new StatementItem();
 				$stackitem->line = $token->line;
-				$stackitem->type = 'square_bracket_open';
+				$stackitem->type = 'ARRAY';
 				$stackitem->name = 'square_bracket_open';
 				$this->statementStack->push($stackitem);
-				$this->_inArrayStatement = true;
 				break;
 			case T_SQUARE_BRACKET_CLOSE:
-				$this->_inArrayStatement = false;
 				$this->statementStack->pop();
 				break;
 			case T_QUOTE:
@@ -1206,6 +1202,13 @@ class PHPCheckstyle {
 				break;
 			case T_DOLLAR:
 				$this->_checkVariableVariable($token);
+				break;
+			case T_ARRAY:
+				$stackitem = new StatementItem();
+				$stackitem->line = $token->line;
+				$stackitem->type = 'ARRAY';
+				$stackitem->name = 'ARRAY';
+				$this->statementStack->push($stackitem);
 				break;
 			default:
 				break;
@@ -1233,27 +1236,35 @@ class PHPCheckstyle {
 	 * Launched when a ) sign is encountered.
 	 */
 	private function _processParenthesisClose() {
+
 		// Decrease the number of opened brackets
 		if ($this->_inFuncCall) {
+
 			$this->_fcLeftParenthesis -= 1;
+
+			// If 0 we are not in the call anymore
+			if ($this->_fcLeftParenthesis == 0) {
+				$this->_inFuncCall = false;
+			}
 		} elseif ($this->_inControlStatement || $this->_inFunctionStatement) {
 			$this->_csLeftParenthesis -= 1;
-		}
 
-		// If 0 we are not in the call anymore
-		if ($this->_fcLeftParenthesis == 0) {
-			$this->_inFuncCall = false;
-		}
-		// If 0 we are not in the statement anymore
-		if ($this->_csLeftParenthesis == 0) {
+			// If 0 we are not in the statement anymore
+			if ($this->_csLeftParenthesis == 0) {
 
-			if ($this->_inControlStatement) {
-				$this->_inControlStatement = false;
-				$this->_justAfterControlStmt = true;
-				$this->_checkNeedBraces();
-			} elseif ($this->_inFunctionStatement && !$this->_inInterface) {
-				$this->_inFunctionStatement = false;
-				$this->_justAfterFuncStmt = true;
+				if ($this->_inControlStatement) {
+					$this->_inControlStatement = false;
+					$this->_justAfterControlStmt = true;
+					$this->_checkNeedBraces();
+				} elseif ($this->_inFunctionStatement && !$this->_inInterface) {
+					$this->_inFunctionStatement = false;
+					$this->_justAfterFuncStmt = true;
+				}
+			}
+		} else {
+			// end of and array declaration
+			if ($this->statementStack->getCurrentStackItem()->type === "ARRAY") {
+				$this->statementStack->pop();
 			}
 		}
 	}
@@ -1392,8 +1403,8 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 
 		// Particular case of a ELSE IF {}
 		// We unstack both the IF and the ELSE
-		$isElse = $currentStackItem->type == "ELSE";
-		$isIf = $this->statementStack->getCurrentStackItem()->type == "IF";
+		$isElse = ($currentStackItem->type === "ELSE");
+		$isIf = ($this->statementStack->getCurrentStackItem()->type === "IF");
 		$isNoCurly = $this->statementStack->getCurrentStackItem()->noCurly;
 		if ($isElse && $isIf && $isNoCurly) {
 			$this->statementStack->pop();
@@ -2884,9 +2895,9 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	private function _checkUnaryOperator() {
 		if ($this->_isActive('checkUnaryOperator')) {
 			// If the control statement is not listed as an exception
-			if (!$this->_config->isException('checkUnaryOperator', $this->_currentStatement) || $this->_inArrayStatement) {
+			if (!$this->_config->isException('checkUnaryOperator', $this->_currentStatement) || ($this->statementStack->getCurrentStackItem()->type === "ARRAY")) {
 				// And if we are currently in a control statement or an array statement
-				if ($this->_inControlStatement || $this->_inArrayStatement) {
+				if ($this->_inControlStatement || ($this->statementStack->getCurrentStackItem()->type === "ARRAY")) {
 					$this->_writeError('checkUnaryOperator', $this->_getMessage('UNARY_OPERATOR'));
 				}
 			}

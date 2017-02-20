@@ -839,7 +839,7 @@ class PHPCheckstyle {
 	 * @see http://www.php.net/manual/en/tokens.php
 	 *
 	 * @param TokenInfo $token
-	 * @SuppressWarnings functionLength cyclomaticComplexity
+	 *        	@SuppressWarnings functionLength cyclomaticComplexity
 	 */
 	private function _processToken($token) {
 		// Debug
@@ -2299,7 +2299,6 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 		// We detect if the next valid token after ":" is another T_CASE
 		$startPos = $this->tokenizer->findNextStringPosition(":", $this->tokenizer->getCurrentPosition());
 		$this->statementStack->getCurrentStackItem()->caseIsEmpty = $this->tokenizer->checkNextValidToken(T_CASE, false, $startPos + 1) || $this->tokenizer->checkNextValidToken(T_DEFAULT, false, $startPos + 1);
-
 	}
 
 	/**
@@ -2954,12 +2953,9 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 				if ($tabfound) {
 					$this->_writeError('indentation', $this->_getMessage('INDENTATION_TAB'), $token->line);
 				}
-				// Number of spaces used
-				$indentationNumber = $this->_config->getTestProperty('indentation', 'number');
-				if (empty($indentationNumber)) {
-					$indentationNumber = 2;
-				}
-				$this->_checkIndentationLevel($whitespaceString, $indentationNumber);
+
+				// for spaces, we check the indentation level
+				$this->_checkIndentationLevel($token);
 			} else if (strtolower($indentationType) == 'tab' || strtolower($indentationType) == 'tabs') {
 				// If indentation type is tabs, we look for whitespace in the string
 				$whitespacefound = preg_match("/[ ]/", $whitespaceString);
@@ -2975,12 +2971,18 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	 *
 	 * Launched when T_WHITESPACE is met at the beginning of a line.
 	 *
-	 * @param String $whitespaceString
-	 *        	the whitespace string used for indentation
-	 * @param String $indentationNumber
-	 *        	the expected number of whitespaces used for indentation
+	 * @param TokenInfo $token
+	 *        	the token to check
 	 */
-	private function _checkIndentationLevel($whitespaceString, $indentationNumber) {
+	private function _checkIndentationLevel($token) {
+		$whitespaceString = $token->text;
+
+		// Number of spaces used
+		$indentationNumber = $this->_config->getTestProperty('indentation', 'number');
+		if (empty($indentationNumber)) {
+			$indentationNumber = 4;
+		}
+
 		// doesn't work if we are not in a class
 		if (!$this->_inClass) {
 			return;
@@ -2992,6 +2994,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 		}
 
 		$previousToken = $this->tokenizer->peekPrvsToken();
+
 		// only check a line once
 		if (!isset($this->indentationLevel['previousLine']) || $this->lineNumber != $this->indentationLevel['previousLine']) {
 			// Nesting level is the number of items in the branching stack
@@ -3004,7 +3007,7 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 
 			$expectedIndentation = $nesting * $indentationNumber;
 			$indentation = strlen($whitespaceString);
-			if ($previousToken->id != T_NEW_LINE) {
+			if ($previousToken->id !== T_NEW_LINE) {
 				$indentation = 0;
 			}
 
@@ -3014,14 +3017,17 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 			}
 
 			// Control switch statement indentation
-			if ($this->statementStack->getCurrentStackItem()->type == "SWITCH") {
-				if (!$this->tokenizer->checkNextToken(T_CASE) && !$this->tokenizer->checkNextToken(T_DEFAULT)) {
-					$expectedIndentation = $expectedIndentation + $indentationNumber;
-				}
+			if ($this->statementStack->getCurrentStackItem()->type === "SWITCH") {
 
 				// Don't check brackets in a switch
 				if ($this->tokenizer->checkNextValidToken(T_BRACES_OPEN) || $this->tokenizer->checkNextValidToken(T_BRACES_CLOSE)) {
 					return;
+				}
+			} else if ($this->statementStack->getCurrentStackItem()->type === "CASE" || $this->statementStack->getCurrentStackItem()->type === "DEFAULT") {
+
+				// If the current line contains a new case, we decrease the expected level
+				if ($this->tokenizer->checkNextValidToken(T_CASE) || $this->tokenizer->checkNextValidToken(T_DEFAULT) || $this->tokenizer->checkNextValidToken(T_BRACES_CLOSE)) {
+					$expectedIndentation -= $indentationNumber;
 				}
 			}
 
@@ -3029,11 +3035,11 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 			if ($this->tokenizer->checkNextToken(T_CONSTANT_ENCAPSED_STRING) || $this->tokenizer->checkNextToken(T_OBJECT_OPERATOR) || $this->tokenizer->checkNextToken(T_SQUARE_BRACKET_OPEN) || $this->tokenizer->checkNextToken(T_ARRAY) || $this->tokenizer->checkNextToken(T_NEW)) {
 				if (($expectedIndentation + 2) > $indentation) {
 					$msg = $this->_getMessage('INDENTATION_LEVEL_MORE', $expectedIndentation, $indentation);
-					$this->_writeError('indentationLevel', $msg);
+					$this->_writeError('indentationLevel', $msg, $token->line);
 				}
 			} else if ($expectedIndentation != $indentation) {
 				$msg = $this->_getMessage('INDENTATION_LEVEL', $expectedIndentation, $indentation);
-				$this->_writeError('indentationLevel', $msg);
+				$this->_writeError('indentationLevel', $msg, $token->line);
 			}
 		}
 		$this->indentationLevel['previousLine'] = $this->lineNumber;

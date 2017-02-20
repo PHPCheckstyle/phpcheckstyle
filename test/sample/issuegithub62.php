@@ -13,4 +13,19 @@ class CouchException extends Exception {
         417 => 'CouchExpectationException'
     ];
 
+
+    /**
+     * Test
+     *
+     * @return result
+     */
+    function test()
+    {
+        $classes = array(
+            $this->em->getClassMetadata(self::ITEM_GROUP_CLASS),
+            $this->em->getClassMetadata(self::SINGLE_IDENT_CLASS),
+            $this->em->getClassMetadata(self::SINGLE_IDENT_NO_TO_STRING_CLASS)
+        );
+    }
+
 }

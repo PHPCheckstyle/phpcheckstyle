@@ -78,11 +78,16 @@ class PHPCheckstyle {
 	);
 	// Accounts for .git, .gitignore .gitmodules etc
 
+	//
 	// variables used while processing control structure
+	//
+	// Left parenthesis opened in control statement or function statement
 	private $_csLeftParenthesis = 0;
-	// Left brackets opened in control statement or function statement
+	// Left parenthesis opened in function call
 	private $_fcLeftParenthesis = 0;
-	// Left brackets opened in function call
+	// Left parenthesis opened in array declaration
+	private $_arrayParenthesis = 0;
+
 	private $inDoWhile = false;
 
 	private $token = false;
@@ -99,7 +104,10 @@ class PHPCheckstyle {
 
 	// We are inside a string (only happens with T_ENCAPSED_AND_WHITESPACE)
 	private $_inString = false;
-	// We are in a array statement
+	// We are in a array declaration
+	private $_inArrayDeclaration = false;
+	private $_beforeArrayDeclaration = false;
+
 	private $_inClassStatement = false;
 	// We are in a class statement (declaration)
 	private $_inInterfaceStatement = false;
@@ -552,6 +560,7 @@ class PHPCheckstyle {
 		// Reset the current attributes
 		$this->_csLeftParenthesis = 0;
 		$this->_fcLeftParenthesis = 0;
+		$this->_arrayParenthesis = 0;
 		$this->inDoWhile = false;
 
 		$this->statementStack = new StatementStack();
@@ -559,6 +568,8 @@ class PHPCheckstyle {
 		$this->_inString = false;
 		$this->_inControlStatement = false;
 		$this->_inFunctionStatement = false;
+		$this->_inArrayDeclaration = false;
+		$this->_beforeArrayDeclaration = false;
 		$this->_inFunction = false;
 		$this->_privateFunctions = array();
 		$this->_usedFunctions = array();
@@ -1168,12 +1179,12 @@ class PHPCheckstyle {
 				break;
 
 			case T_PARENTHESIS_OPEN:
-				$this->_processParenthesisOpen();
+				$this->_processParenthesisOpen($token);
 				$this->_checkNoWhiteSpaceAfter($token->text);
 				break;
 
 			case T_PARENTHESIS_CLOSE:
-				$this->_processParenthesisClose();
+				$this->_processParenthesisClose($token);
 				$this->_checkNoWhiteSpaceBefore($token->text);
 				break;
 
@@ -1224,62 +1235,82 @@ class PHPCheckstyle {
 
 		// If the next token is a parenthesis then we are in a array declaration
 		if ($this->tokenizer->checkNextValidToken(T_PARENTHESIS_OPEN)) {
-			$stackitem = new StatementItem();
-			$stackitem->line = $token->line;
-			$stackitem->type = 'ARRAY';
-			$stackitem->name = 'ARRAY';
-			$this->statementStack->push($stackitem);
-		}
 
+			// flag the array declaration, for use when we encounter the T_PARENTHESIS_OPEN
+			$this->_beforeArrayDeclaration = true;
+		}
 	}
 
 	/**
 	 * Launched when a ( sign is encountered.
+	 *
+	 * @param TokenInfo $token
+	 *        	the current token
 	 */
-	private function _processParenthesisOpen() {
-		// the only issue with "(" is generally whether there should be space after it or not
+	private function _processParenthesisOpen($token) {
+
+
 		if ($this->_inFuncCall) {
 			// inside a function call
 			$this->_fcLeftParenthesis += 1;
 		} elseif ($this->_inControlStatement || $this->_inFunctionStatement) {
 			// inside a function or control statement
 			$this->_csLeftParenthesis += 1;
+		} elseif ($this->_inArrayDeclaration) {
+			$this->_arrayParenthesis += 1;
+		}
+
+		// We are in a array declaration
+		if ($this->_beforeArrayDeclaration) {
+			$stackitem = new StatementItem();
+			$stackitem->line = $token->line;
+			$stackitem->type = 'ARRAY';
+			$stackitem->name = 'ARRAY';
+			$this->statementStack->push($stackitem);
+
+			$this->_beforeArrayDeclaration = false;
+			$this->_inArrayDeclaration = true;
+			$this->_arrayParenthesis += 1;
 		}
 	}
 
 	/**
 	 * Launched when a ) sign is encountered.
+	 *
+	 * @param TokenInfo $token
+	 *        	the current token
 	 */
-	private function _processParenthesisClose() {
+	private function _processParenthesisClose($token) {
 
 		// Decrease the number of opened brackets
 		if ($this->_inFuncCall) {
-
 			$this->_fcLeftParenthesis -= 1;
-
-			// If 0 we are not in the call anymore
-			if ($this->_fcLeftParenthesis == 0) {
-				$this->_inFuncCall = false;
-			}
 		} elseif ($this->_inControlStatement || $this->_inFunctionStatement) {
 			$this->_csLeftParenthesis -= 1;
-
-			// If 0 we are not in the statement anymore
-			if ($this->_csLeftParenthesis == 0) {
-
-				if ($this->_inControlStatement) {
-					$this->_inControlStatement = false;
-					$this->_justAfterControlStmt = true;
-					$this->_checkNeedBraces();
-				} elseif ($this->_inFunctionStatement && !$this->_inInterface) {
-					$this->_inFunctionStatement = false;
-					$this->_justAfterFuncStmt = true;
-				}
+		}
+		// If 0 we are not in the call anymore
+		if ($this->_fcLeftParenthesis == 0) {
+			$this->_inFuncCall = false;
+		}
+		// If 0 we are not in the statement anymore
+		if ($this->_csLeftParenthesis == 0) {
+			if ($this->_inControlStatement) {
+				$this->_inControlStatement = false;
+				$this->_justAfterControlStmt = true;
+				$this->_checkNeedBraces();
+			} elseif ($this->_inFunctionStatement && !$this->_inInterface) {
+				$this->_inFunctionStatement = false;
+				$this->_justAfterFuncStmt = true;
 			}
-		} else {
-			// end of and array declaration
-			if ($this->statementStack->getCurrentStackItem()->type === "ARRAY") {
+		}
+
+		// We are in a array declaration
+		if ($this->_inArrayDeclaration) {
+			$this->_arrayParenthesis -= 1;
+
+			if ($this->_arrayParenthesis == 0) {
 				$this->statementStack->pop();
+				$this->_inArrayDeclaration = false;
 			}
 		}
 	}

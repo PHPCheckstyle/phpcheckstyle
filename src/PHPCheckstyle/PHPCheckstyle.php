@@ -167,12 +167,17 @@ class PHPCheckstyle {
 
 	private $_currentFunctionName = null;
 
-	private $_docblocNbParams = 0;
+
 	// Number of @params in the docblock of a function
-	private $_docblocNbReturns = 0;
+	private $_docblocNbParams = 0;
 	// Number of @return in the docblock of a function
-	private $_docblocNbThrows = 0;
+	private $_docblocNbReturns = 0;
 	// Number of @throw in the docblock of a function
+	private $_docblocNbThrows = 0;
+	// Does the function inherits its doc
+	private $_docblocInheritDoc = false;
+
+
 	private $_cyclomaticComplexity = 0;
 
 	private $_npathComplexity = 0;
@@ -603,6 +608,7 @@ class PHPCheckstyle {
 		$this->_docblocNbParams = 0;
 		$this->_docblocNbReturns = 0;
 		$this->_docblocNbThrows = 0;
+		$this->_docblocInheritDoc = false;
 
 		$this->_isView = false;
 		$this->_isModel = false;
@@ -2061,7 +2067,10 @@ class PHPCheckstyle {
 		// For anonymous functions, we don't check the docblock
 		$isAnonymous = $this->statementStack->getCurrentStackItem()->visibility === 'ANONYMOUS';
 
-		if ($this->_isActive('docBlocks') && !$isAnonymous && !$this->_config->isException('docBlocks', $this->_currentFunctionName)) {
+		if ($this->_isActive('docBlocks')
+			&& !$isAnonymous
+			&& !$this->_config->isException('docBlocks', $this->_currentFunctionName)
+			&& !$this->_docblocInheritDoc) {
 
 			// If the function is not private and we check the doc
 			$isPrivateExcluded = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
@@ -2094,11 +2103,6 @@ class PHPCheckstyle {
 				}
 			}
 		}
-
-		// Reset the count of elements in the current function docblock
-		$this->_docblocNbParams = 0;
-		$this->_docblocNbReturns = 0;
-		$this->_docblocNbThrows = 0;
 	}
 
 	/**
@@ -2143,6 +2147,12 @@ class PHPCheckstyle {
 
 		// Reset the warnings suppressed by annotation
 		$this->_functionSuppressWarnings = array();
+
+		// Reset the count of elements in the current function docblock
+		$this->_docblocNbParams = 0;
+		$this->_docblocNbReturns = 0;
+		$this->_docblocNbThrows = 0;
+		$this->_docblocInheritDoc = false;
 	}
 
 	/**
@@ -2687,11 +2697,17 @@ class PHPCheckstyle {
 	private function _checkUnusedFunctionParameters() {
 		if ($this->_isActive('checkUnusedFunctionParameters')) {
 
-			foreach ($this->_functionParameters as $variableName => $value) {
-				if ($value != "used") {
-					$msg = $this->_getMessage('UNUSED_FUNCTION_PARAMETER', $this->_currentFunctionName, $variableName);
-					$this->_writeError('checkUnusedFunctionParameters', $msg);
+			// If the docblock is inherited, this means that the function implements a parent function
+			// We may have some unused parameters in this case, we don't generate a warnings
+			if (!$this->_docblocInheritDoc) {
+
+				foreach ($this->_functionParameters as $variableName => $value) {
+					if ($value != "used") {
+						$msg = $this->_getMessage('UNUSED_FUNCTION_PARAMETER', $this->_currentFunctionName, $variableName);
+						$this->_writeError('checkUnusedFunctionParameters', $msg);
+					}
 				}
+
 			}
 		}
 	}
@@ -3235,6 +3251,9 @@ class PHPCheckstyle {
 		}
 		if (stripos($token->text, '@throw') !== false) {
 			$this->_docblocNbThrows ++;
+		}
+		if (stripos($token->text, '@inheritdoc') !== false) {
+			$this->_docblocInheritDoc = true;
 		}
 
 		// Check if the comment starts with '#'

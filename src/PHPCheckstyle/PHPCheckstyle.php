@@ -1252,7 +1252,8 @@ class PHPCheckstyle {
 	private function _processSquareBracketClose($token) {
 
 		// We are in a array declaration, we unstack
-		if ($this->statementStack->getCurrentStackItem()->type === "ARRAY" && $this->statementStack->getCurrentStackItem()->name === 'square_bracket_open') {
+		if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY
+			&& $this->statementStack->getCurrentStackItem()->name === 'square_bracket_open') {
 			$this->statementStack->pop();
 		}
 	}
@@ -1337,7 +1338,7 @@ class PHPCheckstyle {
 		if ($this->statementStack->getCurrentStackItem()->openParentheses === 0) {
 
 			// We are in a array declaration, we unstack
-			if ($this->statementStack->getCurrentStackItem()->type === "ARRAY") {
+			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY) {
 				$this->statementStack->pop();
 			}
 		}
@@ -1453,22 +1454,24 @@ class PHPCheckstyle {
 		if (!is_String($currentStackItem)) {
 
 			// Test for the end of a switch bloc
-			if ($currentStackItem->type === "SWITCH" || $currentStackItem->type === "DEFAULT" || $currentStackItem->type === "CASE") {
+			if ($currentStackItem->type === StatementItem::TYPE_SWITCH
+				|| $currentStackItem->type === StatementItem::TYPE_DEFAULT
+				|| $currentStackItem->type === StatementItem::TYPE_CASE) {
 				$this->_processSwitchStop();
 			}
 
 			// Test for the end of a function
-			if ($currentStackItem->type === "FUNCTION") {
+			if ($currentStackItem->type === StatementItem::TYPE_FUNCTION) {
 				$this->_processFunctionStop();
 			}
 
 			// Test for the end of a class
-			if ($currentStackItem->type === "CLASS") {
+			if ($currentStackItem->type === StatementItem::TYPE_CLASS) {
 				$this->_processClassStop();
 			}
 
 			// Test for the end of an interface
-			if ($currentStackItem->type === "INTERFACE") {
+			if ($currentStackItem->type === StatementItem::TYPE_INTERFACE) {
 				$this->_processInterfaceStop();
 			}
 		}
@@ -1476,8 +1479,8 @@ class PHPCheckstyle {
 
 		// Particular case of a ELSE IF {}
 		// We unstack both the IF and the ELSE
-		$isElse = ($currentStackItem->type === "ELSE");
-		$isIf = ($this->statementStack->getCurrentStackItem()->type === "IF");
+		$isElse = ($currentStackItem->type === StatementItem::TYPE_ELSE);
+		$isIf = ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_IF);
 		$isNoCurly = $this->statementStack->getCurrentStackItem()->noCurly;
 		if ($isElse && $isIf && $isNoCurly) {
 			$this->statementStack->pop();
@@ -1800,14 +1803,14 @@ class PHPCheckstyle {
 			}
 
 			// ELSE just after a IF with no curly : we close the IF statement
-			if ($this->statementStack->getCurrentStackItem()->type == "IF" && $this->statementStack->getCurrentStackItem()->noCurly == true) {
+			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_IF && $this->statementStack->getCurrentStackItem()->noCurly == true) {
 				$this->statementStack->pop();
 			}
 		}
 
 		if ($token->id == T_IF) {
 			// IF just after a ELSE with no curly : we close the ELSE statement
-			if ($this->statementStack->getCurrentStackItem()->type == "ELSE" && $this->statementStack->getCurrentStackItem()->noCurly == true) {
+			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ELSE && $this->statementStack->getCurrentStackItem()->noCurly == true) {
 				$this->statementStack->pop();
 			}
 		}
@@ -2331,7 +2334,8 @@ class PHPCheckstyle {
 	 */
 	private function _processSwitchStop() {
 		// If we already are in a "case", we remove it from the stack
-		if ($this->statementStack->getCurrentStackItem()->type == "CASE" || $this->statementStack->getCurrentStackItem()->type == "DEFAULT") {
+		if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_CASE
+			|| $this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_DEFAULT) {
 
 			// Test if the previous case had a break
 			$this->_checkSwitchCaseNeedBreak();
@@ -2361,7 +2365,7 @@ class PHPCheckstyle {
 	 */
 	private function _processSwitchCase() {
 		// If we already are in a "case", we remove it from the stack
-		if ($this->statementStack->getCurrentStackItem()->type == "CASE" || $this->statementStack->getCurrentStackItem()->type == "DEFAULT") {
+		if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_CASE || $this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_DEFAULT) {
 
 			// Test if the previous case had a break
 			$this->_checkSwitchCaseNeedBreak();
@@ -2423,7 +2427,7 @@ class PHPCheckstyle {
 	 */
 	private function _processSwitchDefault() {
 		// If we already are in a "case", we remove it from the stack
-		if ($this->statementStack->getCurrentStackItem()->type == "CASE" || $this->statementStack->getCurrentStackItem()->type == "DEFAULT") {
+		if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_CASE || $this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_DEFAULT) {
 
 			// Test if the previous case had a break
 			$this->_checkSwitchCaseNeedBreak();
@@ -2669,7 +2673,7 @@ class PHPCheckstyle {
 		if ($this->_isActive('checkUnusedCode')) {
 
 			// The check is done only when we are at the root level of a function
-			if ($this->statementStack->getCurrentStackItem()->type == 'FUNCTION') {
+			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_FUNCTION) {
 
 				// Find the end of the return statement
 				$pos = $this->tokenizer->findNextStringPosition(';');
@@ -2985,9 +2989,9 @@ class PHPCheckstyle {
 	private function _checkUnaryOperator() {
 		if ($this->_isActive('checkUnaryOperator')) {
 			// If the control statement is not listed as an exception
-			if (!$this->_config->isException('checkUnaryOperator', $this->_currentStatement) || ($this->statementStack->getCurrentStackItem()->type === "ARRAY")) {
+			if (!$this->_config->isException('checkUnaryOperator', $this->_currentStatement) || ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY)) {
 				// And if we are currently in a control statement or an array statement
-				if ($this->_inControlStatement || ($this->statementStack->getCurrentStackItem()->type === "ARRAY")) {
+				if ($this->_inControlStatement || ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY)) {
 					$this->_writeError('checkUnaryOperator', $this->_getMessage('UNARY_OPERATOR'));
 				}
 			}
@@ -3125,13 +3129,13 @@ class PHPCheckstyle {
 			}
 
 			// Control switch statement indentation
-			if ($this->statementStack->getCurrentStackItem()->type === "SWITCH") {
+			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_SWITCH) {
 
 				// Don't check brackets in a switch
 				if ($this->tokenizer->checkNextValidToken(T_BRACES_OPEN) || $this->tokenizer->checkNextValidToken(T_BRACES_CLOSE)) {
 					return;
 				}
-			} else if ($this->statementStack->getCurrentStackItem()->type === "CASE" || $this->statementStack->getCurrentStackItem()->type === "DEFAULT") {
+			} else if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_CASE || $this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_DEFAULT) {
 
 				// If the current line contains a new case, we decrease the expected level
 				if ($this->tokenizer->checkNextValidToken(T_CASE) || $this->tokenizer->checkNextValidToken(T_DEFAULT) || $this->tokenizer->checkNextValidToken(T_BRACES_CLOSE)) {

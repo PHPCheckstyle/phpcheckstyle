@@ -12,19 +12,29 @@ namespace PHPCheckstyle;
  * @SuppressWarnings checkUnusedVariables
  */
 class StatementItem {
+
+	/**
+	 * Possible types of statement item.
+	 */
+	const TYPE_CLASS = 'CLASS';
+	const TYPE_FUNCTION = 'FUNCTION';
+	const TYPE_INTERFACE = 'INTERFACE';
+	const TYPE_IF = 'IF';
+	const TYPE_ELSE = 'ELSE';
+	const TYPE_ELSEIF = 'ELSEIF';
+	const TYPE_FOR = 'FOR';
+	const TYPE_FOREACH = 'FOREACH';
+	const TYPE_TRY = 'TRY';
+	const TYPE_CATCH = 'CATCH';
+	const TYPE_FINALLY = 'FINALLY';
+	const TYPE_DO = 'DO';
+	const TYPE_WHILE = 'WHILE';
+	const TYPE_SWITCH = 'SWITCH';
+	const TYPE_CASE = 'CASE';
+	const TYPE_DEFAULT = 'DEFAULT';
+	const TYPE_ARRAY = 'ARRAY';   // inside an array declaration
+
 	// The statement type.
-	// CLASS
-	// FUNCTION
-	// INTERFACE
-	// IF
-	// ELSE
-	// ELSEIF
-	// FOR
-	// FOREACH
-	// TRY
-	// CATCH
-	// DO
-	// WHILE
 	var $type = null;
 
 	// The statement name

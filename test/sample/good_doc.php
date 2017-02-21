@@ -39,4 +39,15 @@ class GoodTest {
 		// do something else
 	}
 
+
+	/**
+	 * Doc is inherited.
+	 *
+	 * @inheritdoc
+	 */
+	function privateFunction2($a, array $b = array()) {
+
+		// function parameters are not used, but we don't care
+	}
+
 }

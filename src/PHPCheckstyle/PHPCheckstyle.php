@@ -3073,8 +3073,15 @@ class PHPCheckstyle {
 			return;
 		}
 
-		// don't check empty lines and when we are in a control statement
-		if ($this->_inControlStatement || $this->_inFuncCall || !isset($this->lineNumber) || $this->tokenizer->checkNextToken(T_NEW_LINE) || $this->tokenizer->checkNextValidToken(T_PARENTHESIS_CLOSE)) {
+		// don't check empty lines, when we are inside a control statement, when the next token is a object opérator, ...
+		if ($this->_inControlStatement
+			|| $this->_inFuncCall
+			|| !isset($this->lineNumber)
+			|| $this->tokenizer->checkNextToken(T_NEW_LINE)
+			|| $this->tokenizer->checkNextValidToken(T_PARENTHESIS_CLOSE)
+			|| $this->tokenizer->checkNextValidToken(T_BOOLEAN_AND)
+			|| $this->tokenizer->checkNextValidToken(T_BOOLEAN_OR)
+			|| $this->tokenizer->checkNextValidToken(T_OBJECT_OPERATOR)) {
 			return;
 		}
 

@@ -5,8 +5,11 @@
 Version 0.14.6
 --------------
 * Added config for Symfony standards
+* Issue #70 : List the statement types in a interface
+* Issue #69 : Whitespace must not follow : exception for comments
 * Issue #66 : Indentation level inside an array
 * Issue #65 : Indentation level should increase inside a case
+* Issue #64 : Silence doc warnings when @inheritdoc is present
 
 
 Version 0.14.5

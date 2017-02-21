@@ -66,7 +66,7 @@
 	<test name="functionNaming" regexp="/^[a-z][a-zA-Z0-9]*$/" level="error" />
 
 	<!-- Check Protected Naming -->
-	<test name="protectedFunctionNaming" regexp="/^_[a-z][a-zA-Z0-9]*$/"
+	<test name="protectedFunctionNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/"
 		level="error" />
 
 	<!-- Check Private Function Naming -->

@@ -1107,12 +1107,12 @@ class PHPCheckstyle {
 
 			case T_DOUBLE_ARROW:
 				$this->_checkWhiteSpaceBefore($token->text);
-				$this->_checkWhiteSpaceAfter($token->text);
+				$this->_checkWhiteSpaceAfter($token);
 				break;
 
 			case T_OBJECT_OPERATOR:
 				$this->_checkNoWhiteSpaceBefore($token->text);
-				$this->_checkNoWhiteSpaceAfter($token->text);
+				$this->_checkNoWhiteSpaceAfter($token);
 				break;
 
 			case T_START_HEREDOC:
@@ -1170,12 +1170,12 @@ class PHPCheckstyle {
 				break;
 
 			case T_EXCLAMATION_MARK:
-				$this->_checkNoWhiteSpaceAfter($token->text);
+				$this->_checkNoWhiteSpaceAfter($token);
 				break;
 
 			case T_PARENTHESIS_OPEN:
 				$this->_processParenthesisOpen($token);
-				$this->_checkNoWhiteSpaceAfter($token->text);
+				$this->_checkNoWhiteSpaceAfter($token);
 				break;
 
 			case T_PARENTHESIS_CLOSE:
@@ -1193,14 +1193,10 @@ class PHPCheckstyle {
 				}
 				break;
 			case T_SQUARE_BRACKET_OPEN:
-				$stackitem = new StatementItem();
-				$stackitem->line = $token->line;
-				$stackitem->type = 'ARRAY';
-				$stackitem->name = 'square_bracket_open';
-				$this->statementStack->push($stackitem);
+				$this->_processSquareBracketOpen($token);
 				break;
 			case T_SQUARE_BRACKET_CLOSE:
-				$this->statementStack->pop();
+				$this->_processSquareBracketClose($token);
 				break;
 			case T_QUOTE:
 				$this->_checkPreferQuotes($token);
@@ -1218,6 +1214,41 @@ class PHPCheckstyle {
 
 		// If the last token is a NEW_LINE, the next token will be at the start of the line
 		$this->_isLineStart = ($token->id == T_NEW_LINE);
+	}
+
+	/**
+	 * Launched when a [ is encountered.
+	 *
+	 * @param TokenInfo $token
+	 *        	the current token
+	 */
+	private function _processSquareBracketOpen($token) {
+
+		// If the [ is preceded by = we are in a array declaration
+		if ($this->tokenizer->checkPreviousValidToken(T_EQUAL)) {
+
+			$stackitem = new StatementItem();
+			$stackitem->line = $token->line;
+			$stackitem->type = 'ARRAY';
+			$stackitem->name = 'square_bracket_open';
+
+			$this->statementStack->push($stackitem);
+
+		}
+	}
+
+	/**
+	 * Launched when a ] is encountered.
+	 *
+	 * @param TokenInfo $token
+	 *        	the current token
+	 */
+	private function _processSquareBracketClose($token) {
+
+		// We are in a array declaration, we unstack
+		if ($this->statementStack->getCurrentStackItem()->type === "ARRAY" && $this->statementStack->getCurrentStackItem()->name === 'square_bracket_open') {
+			$this->statementStack->pop();
+		}
 	}
 
 	/**
@@ -1272,7 +1303,6 @@ class PHPCheckstyle {
 	 *        	the current token
 	 */
 	private function _processParenthesisClose($token) {
-
 		$this->statementStack->getCurrentStackItem()->openParentheses -= 1;
 
 		// Decrease the number of opened brackets
@@ -1300,8 +1330,6 @@ class PHPCheckstyle {
 		// We the count arrive to 0 we probably have something to do
 		if ($this->statementStack->getCurrentStackItem()->openParentheses === 0) {
 
-
-
 			// We are in a array declaration, we unstack
 			if ($this->statementStack->getCurrentStackItem()->type === "ARRAY") {
 				$this->statementStack->pop();
@@ -1320,9 +1348,8 @@ class PHPCheckstyle {
 			$this->_checkWhiteSpaceBefore($token->text);
 		}
 		// We allow some '-' signs to skip the the space afterwards for negative numbers
-		if (!($this->tokenizer->checkNextToken(T_LNUMBER) || // float number
-$this->tokenizer->checkNextToken(T_DNUMBER))) {
-			// integer
+		// float number or integer
+		if (!($this->tokenizer->checkNextToken(T_LNUMBER) || $this->tokenizer->checkNextToken(T_DNUMBER))) {
 			$this->_checkWhiteSpaceAfter($token->text);
 		}
 	}
@@ -1420,22 +1447,22 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 		if (!is_String($currentStackItem)) {
 
 			// Test for the end of a switch bloc
-			if ($currentStackItem->type == "SWITCH" || $currentStackItem->type == "DEFAULT" || $currentStackItem->type == "CASE") {
+			if ($currentStackItem->type === "SWITCH" || $currentStackItem->type === "DEFAULT" || $currentStackItem->type === "CASE") {
 				$this->_processSwitchStop();
 			}
 
 			// Test for the end of a function
-			if ($currentStackItem->type == "FUNCTION") {
+			if ($currentStackItem->type === "FUNCTION") {
 				$this->_processFunctionStop();
 			}
 
 			// Test for the end of a class
-			if ($currentStackItem->type == "CLASS") {
+			if ($currentStackItem->type === "CLASS") {
 				$this->_processClassStop();
 			}
 
 			// Test for the end of an interface
-			if ($currentStackItem->type == "INTERFACE") {
+			if ($currentStackItem->type === "INTERFACE") {
 				$this->_processInterfaceStop();
 			}
 		}
@@ -2913,17 +2940,24 @@ $this->tokenizer->checkNextToken(T_DNUMBER))) {
 	/**
 	 * Check for the absence of a white space after the text.
 	 *
-	 * @param String $text
-	 *        	The text of the token to test
+	 * @param TokenInfo $token the token
 	 */
-	private function _checkNoWhiteSpaceAfter($text) {
+	private function _checkNoWhiteSpaceAfter($token) {
 		if ($this->_isActive('noSpaceAfterToken')) {
+
+			$text = $token->text;
 
 			if (!$this->_config->isException('noSpaceAfterToken', $text)) {
 
+				// The next token is a whitespace
 				if ($this->tokenizer->checkNextToken(T_WHITESPACE)) {
-					$msg = $this->_getMessage('NO_SPACE_AFTER_TOKEN', $text);
-					$this->_writeError('noSpaceAfterToken', $msg);
+
+					// And the next valid token is on the same line
+					$tokenAfter = $this->tokenizer->peekNextValidToken();
+					if ($tokenAfter->line === $token->line) {
+						$msg = $this->_getMessage('NO_SPACE_AFTER_TOKEN', $text);
+						$this->_writeError('noSpaceAfterToken', $msg);
+					}
 				}
 			}
 		}

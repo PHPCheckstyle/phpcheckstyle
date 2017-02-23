@@ -288,21 +288,21 @@ class XmlNCSSReporter {
 		$projectLine = $this->_createDOMLine($this->nbPackages, $classes, $functions, $ncss, $javadocs, "Project");
 		$table->appendChild($projectLine);
 
-		if ($this->nbPackages == 0) {
+		if ($this->nbPackages === 0) {
 			$packageLine = $this->_createDOMLine("", "", "", "", "", "Package");
 		} else {
 			$packageLine = $this->_createDOMLine("", $classes / $this->nbPackages, $functions / $this->nbPackages, $ncss / $this->nbPackages, $javadocs / $this->nbPackages, "Package");
 		}
 		$table->appendChild($packageLine);
 
-		if ($classes == 0) {
+		if ($classes === 0) {
 			$packageLine = $this->_createDOMLine("", "", "", "", "", "Class");
 		} else {
 			$packageLine = $this->_createDOMLine("", "", $functions / $classes, $ncss / $classes, $javadocs / $classes, "Class");
 		}
 		$table->appendChild($packageLine);
 
-		if ($functions == 0) {
+		if ($functions === 0) {
 			$packageLine = $this->_createDOMLine("", "", "", "", "", "Function");
 		} else {
 			$packageLine = $this->_createDOMLine("", "", "", $ncss / $functions, $javadocs / $functions, "Function");
@@ -314,16 +314,16 @@ class XmlNCSSReporter {
 		//
 		$averages = $this->document->createElement("averages");
 
-		$avgNcss = $this->document->createElement('ncss', ($nbFiles == 0) ? 0 : ($ncss / $nbFiles));
+		$avgNcss = $this->document->createElement('ncss', ($nbFiles === 0) ? 0 : ($ncss / $nbFiles));
 		$averages->appendChild($avgNcss);
 
-		$avgNcss = $this->document->createElement('functions', ($nbFiles == 0) ? 0 : ($functions / $nbFiles));
+		$avgNcss = $this->document->createElement('functions', ($nbFiles === 0) ? 0 : ($functions / $nbFiles));
 		$averages->appendChild($avgNcss);
 
-		$avgNcss = $this->document->createElement('classes', ($nbFiles == 0) ? 0 : ($classes / $nbFiles));
+		$avgNcss = $this->document->createElement('classes', ($nbFiles === 0) ? 0 : ($classes / $nbFiles));
 		$averages->appendChild($avgNcss);
 
-		$avgNcss = $this->document->createElement('javadoc', ($nbFiles == 0) ? 0 : ($javadocs / $nbFiles));
+		$avgNcss = $this->document->createElement('javadoc', ($nbFiles === 0) ? 0 : ($javadocs / $nbFiles));
 		$averages->appendChild($avgNcss);
 
 		$this->objects->appendChild($averages);

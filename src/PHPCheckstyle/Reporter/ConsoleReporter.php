@@ -11,8 +11,7 @@ namespace PHPCheckstyle\Reporter;
  */
 class ConsoleReporter extends Reporter {
 	/**
-	 *
-	 * @see Reporter::writeError Tab the line and write the error message
+	 * {@inheritdoc}
 	 *
 	 * @param Integer $line
 	 *        	the line number

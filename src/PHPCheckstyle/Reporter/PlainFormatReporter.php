@@ -60,8 +60,7 @@ class PlainFormatReporter extends Reporter {
 	}
 
 	/**
-	 *
-	 * @see Reporter::writeError Tab the line and write the error message
+	 * {@inheritdoc}
 	 *
 	 * @param Integer $line
 	 *        	the line number
@@ -85,7 +84,7 @@ class PlainFormatReporter extends Reporter {
 	}
 
 	private function _ensureFileOpen() {
-		if ($this->fileHandle == false) {
+		if ($this->fileHandle === false) {
 			$this->fileHandle = fopen($this->outputFile, "w");
 		}
 		return $this->fileHandle;

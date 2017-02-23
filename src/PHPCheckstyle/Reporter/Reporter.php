@@ -28,7 +28,7 @@ abstract class Reporter {
 	public function __construct($ofolder = false, $ofile = "error.txt") {
 
 		// creating the folder if it does not already exist.
-		if ($ofolder != false && !file_exists($ofolder)) {
+		if ($ofolder !== false && !file_exists($ofolder)) {
 			mkdir($ofolder, 0755, true);
 		}
 

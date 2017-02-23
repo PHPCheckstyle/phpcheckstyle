@@ -7,9 +7,9 @@ namespace PHPCheckstyle\Reporter;
 class HTMLConsoleFormatReporter extends HTMLFormatReporter {
 
 	/**
-	 * Constructor; calls parent's constructor
+	 * Constructor; calls parent's constructor.
 	 */
-	public function HTMLConsoleFormatReporter() {
+	public function __construct() {
 		parent::__construct();
 	}
 

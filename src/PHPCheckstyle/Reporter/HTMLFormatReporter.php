@@ -138,10 +138,10 @@ class HTMLFormatReporter extends Reporter {
 		$this->nbfiles ++;
 
 		// If the previous file contained errors
-		if ($this->fileErrors != 0) {
+		if ($this->fileErrors !== 0) {
 
 			// Add the previous file to the summary
-			if ($this->previousFile != '') {
+			if ($this->previousFile !== '') {
 				$fileBody = $this->_readTemplate("files_body");
 				$values = array();
 				$values['%%filepath%%'] = $this->previousFile;
@@ -167,8 +167,7 @@ class HTMLFormatReporter extends Reporter {
 	}
 
 	/**
-	 *
-	 * @see Reporter::writeError Write a new check error.
+	 * {@inheritdoc}
 	 *
 	 * @param Integer $line
 	 *        	the line number
@@ -184,7 +183,7 @@ class HTMLFormatReporter extends Reporter {
 		// Update the counters
 		$this->nbErrors ++;
 		$this->fileErrors ++;
-		if ($this->fileInError == false) {
+		if ($this->fileInError === false) {
 			$this->nbfilesError ++;
 			$this->fileInError = true;
 		}

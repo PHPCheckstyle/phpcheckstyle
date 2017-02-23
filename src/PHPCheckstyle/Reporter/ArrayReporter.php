@@ -8,13 +8,15 @@ namespace PHPCheckstyle\Reporter;
  */
 class ArrayReporter extends Reporter {
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		$this->outputFile = array();
 	}
 
 	/**
-	 *
-	 * @see Reporter::writeError Tab the line and write the error message
+	 * {@inheritdoc}
 	 *
 	 * @param Integer $line
 	 *        	the line number

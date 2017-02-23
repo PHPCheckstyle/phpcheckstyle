@@ -103,9 +103,9 @@ class Tokenizer {
 	 *        	the line where the token is found
 	 */
 	public function tokenize($filename) {
-		
+
 		$this->tokens = array();
-		
+
 		// Read the file
 		if (filesize($filename)) {
 			$fp = fopen($filename, "rb");
@@ -113,7 +113,7 @@ class Tokenizer {
 			$this->tokens = $this->_getAllTokens($this->content);
 			fclose($fp);
 		}
-		
+
 	}
 
 	/**
@@ -265,11 +265,11 @@ class Tokenizer {
 	 * Peeks at the previous valid token.
 	 * A valid token is one that is neither a whitespace or a comment
 	 *
-	 * @param Integer $startPos a token position (optional). 
+	 * @param Integer $startPos a token position (optional).
 	 * @return TokenInfo the info about the token found
 	 */
 	public function peekPrvsValidToken($startPos = null) {
-		
+
 		if ($startPos === null) {
 			// default position for the search
 			$pos = $this->getCurrentPosition() - 1;
@@ -435,7 +435,7 @@ class Tokenizer {
 	public function checkNextValidToken($id, $text = false, $startPos = null) {
 		$tokenInfo = $this->peekNextValidToken($startPos);
 
-		if ($tokenInfo != null) {
+		if ($tokenInfo !== null) {
 			return $this->checkToken($tokenInfo, $id, $text);
 		} else {
 			return false;
@@ -462,11 +462,11 @@ class Tokenizer {
 			$tokenInfo->position = $this->tokenNumber;
 			$tokenInfo->line = $this->lineNumber;
 
-			if ($data == "\r\n" || $data == "\n" || $data == "\r") {
+			if ($data === "\r\n" || $data === "\n" || $data === "\r") {
 				// This is a new line token
 				$tokenInfo->id = T_NEW_LINE;
 				$this->lineNumber ++;
-			} else if ($data == "\t") {
+			} else if ($data === "\t") {
 				// This is a tab token
 				$tokenInfo->id = T_TAB;
 			} else {
@@ -477,7 +477,7 @@ class Tokenizer {
 			$this->tokenNumber ++;
 
 			// Added detections
-			if ($tokenInfo->id == T_UNKNOWN) {
+			if ($tokenInfo->id === T_UNKNOWN) {
 				switch ($tokenInfo->text) {
 					case ";":
 						$tokenInfo->id = T_SEMICOLON;
@@ -550,7 +550,7 @@ class Tokenizer {
 						break;
 					case '$':
 						$tokenInfo->id = T_DOLLAR;
-						break;						
+						break;
 					default:
 				}
 			}
@@ -585,7 +585,7 @@ class Tokenizer {
 
 		// Check for parsing errors
 		$parsingErrors = error_get_last();
-		if (!empty($parsingErrors) && $parsingErrors["type"] == 128) {
+		if (!empty($parsingErrors) && $parsingErrors["type"] === 128) {
 			throw new Exception($parsingErrors["message"]);
 		}
 
@@ -597,7 +597,7 @@ class Tokenizer {
 			$tokenText = $isTokenArray ? $token[1] : $token;
 
 			// Manage T_OPEN_TAG when php.ini setting short_open_tag is Off.
-			if ($this->shortOpenTagOff && $tokenID == T_INLINE_HTML) {
+			if ($this->shortOpenTagOff && $tokenID === T_INLINE_HTML) {
 
 				$startPos = strpos($tokenText, SHORT_OPEN_TAG);
 				$endPos = strpos($tokenText, CLOSE_TAG, $startPos + strlen(SHORT_OPEN_TAG));
@@ -670,9 +670,9 @@ class Tokenizer {
 			$token = $this->peekTokenAt($pos);
 
 			// Increment or decrement the parenthesis count
-			if ($token->id == T_PARENTHESIS_OPEN) {
+			if ($token->id === T_PARENTHESIS_OPEN) {
 				$parenthesisCount += 1;
-			} else if ($token->id == T_PARENTHESIS_CLOSE) {
+			} else if ($token->id === T_PARENTHESIS_CLOSE) {
 				$parenthesisCount -= 1;
 			}
 

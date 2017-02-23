@@ -69,7 +69,8 @@ class StatementStack {
 	 */
 	function getCurrentStackItem() {
 		$topItem = end($this->statements);
-		if ($topItem != null) {
+
+		if (!empty($topItem)) {
 			return $topItem;
 		} else {
 			// In case of a empty stack, we are at the root of a PHP file (with no class or function).

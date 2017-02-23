@@ -76,8 +76,7 @@ class XmlFormatReporter extends Reporter {
 	}
 
 	/**
-	 *
-	 * @see Reporter::writeError creates a <error> element for the current doc element
+	 * {@inheritdoc}
 	 *
 	 * @param Integer $line
 	 *        	the line number
@@ -102,6 +101,9 @@ class XmlFormatReporter extends Reporter {
 		$this->currentElement->appendChild($errEl);
 	}
 
+	/**
+	 * XML header.
+	 */
 	protected function initXml() {
 		$this->document = new DomDocument("1.0");
 		$this->root = $this->document->createElement('checkstyle');
@@ -133,6 +135,9 @@ class XmlFormatReporter extends Reporter {
 		return $this->document;
 	}
 
+	/**
+	 * Close the current element.
+	 */
 	protected function endCurrentElement() {
 		if ($this->currentElement) {
 			$this->root->appendChild($this->currentElement);

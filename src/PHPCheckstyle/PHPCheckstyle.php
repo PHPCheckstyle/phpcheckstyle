@@ -67,6 +67,8 @@ class PHPCheckstyle {
 	// Language for messages
 	private $lang;
 
+	private $level;
+
 	private $messages = array();
 
 	// Files to ignore
@@ -307,7 +309,7 @@ class PHPCheckstyle {
 	 *        	indicate if we log the progress of the scan
 	 * @access public
 	 */
-	public function __construct($formats, $outDir, $configFile, $linecountfile = null, $debug = false, $progress = false) {
+	public function __construct($formats, $outDir, $configFile, $linecountfile = null, $debug = false, $progress = false, $level = INFO) {
 
 		// Initialise the Tokenizer
 		$this->tokenizer = new Tokenizer();
@@ -316,6 +318,9 @@ class PHPCheckstyle {
 		$this->statementStack = new StatementStack();
 
 		$this->debug = $debug;
+
+		// Reporting Level
+		$this->level = $level;
 
 		// Initialise the Reporters
 		$this->_reporter = new Reporters();
@@ -335,7 +340,7 @@ class PHPCheckstyle {
 			$this->_reporter->addReporter(new XmlConsoleFormatReporter());
 		}
 		if (in_array("console", $formats)) {
-			$this->_reporter->addReporter(new ConsoleReporter());
+			$this->_reporter->addReporter(new ConsoleReporter($this->level));
 		}
 		if (in_array("array", $formats)) {
 			$this->_reporter->addReporter(new ArrayReporter());

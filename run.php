@@ -35,6 +35,9 @@ function usage() {
 		"--lang" =>
 			"[Optional] Language file to use for the result (en-us by default).",
 
+        "--level" =>
+            "[Optional] Specifies the output level (info, warning, error). For console report only.",
+
 		"--quiet" =>
 			"[Optional] Quiet mode.",
 
@@ -94,6 +97,11 @@ for ($i = 1; $i < $_SERVER["argc"]; $i ++) {
 			$i++;
 			$options['lang'] = $_SERVER['argv'][$i];
 			break;
+
+        case "--level":
+            $i++;
+            $options['level'] = $_SERVER['argv'][$i];
+            break;
 
 		case "--config":
 			$i++;
@@ -167,9 +175,25 @@ if (!empty($options['linecount'])) {
 if ($options['time']) {
 	$time_start = microtime();
 }
+$level = INFO;
+if (isset($options['level'])) {
+    switch ($options['level']) {
+        case INFO:
+            $level = INFO;
+            break;
+        case WARNING:
+            $level = WARNING;
+            break;
+        case ERROR:
+            $level = ERROR;
+            break;
+        default:
+            echo "Unkown level '" . $options['level'] . "'. Ingnoring level'\n";
+    }
+}
 
 
-$style = new PHPCheckstyle\PHPCheckstyle($formats, $options['outdir'], $options['config'], $lineCountFile, $options['debug'], $options['progress']);
+$style = new PHPCheckstyle\PHPCheckstyle($formats, $options['outdir'], $options['config'], $lineCountFile, $options['debug'], $options['progress'], $level);
 
 if (file_exists(__DIR__ . '/src/PHPCheckstyle/Lang/' . $options['lang'] . '.ini')) {
 	$style->setLang($options['lang']);

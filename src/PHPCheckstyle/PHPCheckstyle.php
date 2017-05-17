@@ -1328,7 +1328,7 @@ class PHPCheckstyle {
 		// If 0 we are not in the call anymore
 		if ($this->_fcLeftParenthesis === 0) {
 			$this->_inFuncCall = false;
-            array_pop($this->_currentFuncCall);
+			array_pop($this->_currentFuncCall);
 		}
 		// If 0 we are not in the statement anymore
 		if ($this->_csLeftParenthesis === 0) {
@@ -1723,7 +1723,7 @@ class PHPCheckstyle {
 			// ASSUMPTION:that T_STRING followed by "(" is a function call
 			$this->_inFuncCall = true;
 
-            array_push($this->_currentFuncCall, $text);
+			array_push($this->_currentFuncCall, $text);
 
 			// Add the function name to the list of used functions
 			$this->_usedFunctions[$text] = $text;
@@ -2583,7 +2583,7 @@ class PHPCheckstyle {
 	 */
 	private function _checkEncapsedVariablesInsideString() {
 		if ($this->_isActive('encapsedVariablesInsideString') AND !$this->statementStack->getCurrentStackItem()->inHeredoc
-            OR ($this->_inFuncCall AND !$this->_config->isException('encapsedVariablesInsideString', end($this->_currentFuncCall)))) {
+		    OR ($this->_inFuncCall AND !$this->_config->isException('encapsedVariablesInsideString', end($this->_currentFuncCall)))) {
 			$this->_writeError('encapsedVariablesInsideString', $this->_getMessage('VARIABLE_INSIDE_STRING'));
 		}
 	}

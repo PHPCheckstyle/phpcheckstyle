@@ -1343,7 +1343,8 @@ class PHPCheckstyle {
 		if ($this->statementStack->getCurrentStackItem()->openParentheses === 0) {
 
 			// We are in a array declaration, we unstack
-			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY) {
+			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY AND 
+				$this->statementStack->getCurrentStackItem()->name !== 'square_bracket_open') {
 				$this->statementStack->pop();
 			}
 		}

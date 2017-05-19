@@ -127,6 +127,8 @@ class PHPCheckstyle {
 
 	private $_functionParameters = array();
 	// The list of function parameters
+	private $_currentFuncCall = [];
+	// The stack of function calls
 	private $_usedFunctions = array();
 	// The list of functions that are used in the class
 	private $_variables = array();
@@ -1326,6 +1328,7 @@ class PHPCheckstyle {
 		// If 0 we are not in the call anymore
 		if ($this->_fcLeftParenthesis === 0) {
 			$this->_inFuncCall = false;
+			array_pop($this->_currentFuncCall);
 		}
 		// If 0 we are not in the statement anymore
 		if ($this->_csLeftParenthesis === 0) {
@@ -1343,7 +1346,8 @@ class PHPCheckstyle {
 		if ($this->statementStack->getCurrentStackItem()->openParentheses === 0) {
 
 			// We are in a array declaration, we unstack
-			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY) {
+			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY AND 
+				$this->statementStack->getCurrentStackItem()->name !== 'square_bracket_open') {
 				$this->statementStack->pop();
 			}
 		}
@@ -1718,6 +1722,8 @@ class PHPCheckstyle {
 		if ($this->tokenizer->checkNextValidToken(T_PARENTHESIS_OPEN)) {
 			// ASSUMPTION:that T_STRING followed by "(" is a function call
 			$this->_inFuncCall = true;
+
+			array_push($this->_currentFuncCall, $text);
 
 			// Add the function name to the list of used functions
 			$this->_usedFunctions[$text] = $text;
@@ -2576,7 +2582,8 @@ class PHPCheckstyle {
 	 * This function is launched when the current token is T_ENCAPSED_AND_WHITESPACE.
 	 */
 	private function _checkEncapsedVariablesInsideString() {
-		if ($this->_isActive('encapsedVariablesInsideString') && !$this->statementStack->getCurrentStackItem()->inHeredoc) {
+		if ($this->_isActive('encapsedVariablesInsideString') AND !$this->statementStack->getCurrentStackItem()->inHeredoc
+		    OR ($this->_inFuncCall AND !$this->_config->isException('encapsedVariablesInsideString', end($this->_currentFuncCall)))) {
 			$this->_writeError('encapsedVariablesInsideString', $this->_getMessage('VARIABLE_INSIDE_STRING'));
 		}
 	}

@@ -1,2 +1,1 @@
-#!/usr/bin/env sh
 php ../phpcheckstyle/phpcheckstyle/run.php

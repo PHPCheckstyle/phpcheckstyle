@@ -4,8 +4,8 @@
 
 Version 0.14.7 (in dev)
 --------------
-* Fix square bracket for arrays on method assignation with test case.  (thx GuillermoMI)
-* Add flag to force error level only on console report (thx Jean-Philippe Quéméner)
+* Fix square bracket for arrays on method assignation with test case.  (thanks to GuillermoMI)
+* Add flag to force error level only on console report (thanks to Jean-Philippe Quéméner)
 
 
 Version 0.14.6

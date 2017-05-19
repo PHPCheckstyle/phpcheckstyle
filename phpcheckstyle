@@ -1,1 +1,1 @@
-php ../phpcheckstyle/phpcheckstyle/run.php
+php ./run.php

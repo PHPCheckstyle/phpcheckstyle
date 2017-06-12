@@ -2582,8 +2582,8 @@ class PHPCheckstyle {
 	 * This function is launched when the current token is T_ENCAPSED_AND_WHITESPACE.
 	 */
 	private function _checkEncapsedVariablesInsideString() {
-		if ($this->_isActive('encapsedVariablesInsideString') AND !$this->statementStack->getCurrentStackItem()->inHeredoc
-		    OR ($this->_inFuncCall AND !$this->_config->isException('encapsedVariablesInsideString', end($this->_currentFuncCall)))) {
+		if ($this->_isActive('encapsedVariablesInsideString') AND (!$this->statementStack->getCurrentStackItem()->inHeredoc
+		    OR ($this->_inFuncCall AND !$this->_config->isException('encapsedVariablesInsideString', end($this->_currentFuncCall))))) {
 			$this->_writeError('encapsedVariablesInsideString', $this->_getMessage('VARIABLE_INSIDE_STRING'));
 		}
 	}

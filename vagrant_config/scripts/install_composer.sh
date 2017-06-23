@@ -15,8 +15,7 @@ wget https://www.dotdeb.org/dotdeb.gpg && apt-key add dotdeb.gpg
 apt-get update -y
 apt-get install -y php7.0 php7.0-cli php7.0-xdebug php7.0-xml 
 
-# apt-get install -y php5 php5-cli php5-intl php5-xdebug 
-
+apt-get install -y git zip
 
 
 echo "--------------------------------------------------" 

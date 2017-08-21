@@ -1543,8 +1543,14 @@ class PHPCheckstyle {
 	 */
 	private function _checkVariableNaming($text) {
 		if ($this->_inClass || $this->_inInterface) {
-			if ($this->_inFunction || $this->_inFunctionStatement || $this->_inInterfaceStatement) {
-				$this->_checkScopedVariableNaming($text, 'localVariableNaming', 'LOCAL_VARIABLE_NAMING');
+			if ($this->_inFunctionStatement || $this->_inInterfaceStatement) {
+				$this->_checkScopedVariableNaming($text, 'functionParameterNaming', 'FUNCTION_PARAMETER_NAMING');
+			} else if ($this->_inFunction) {
+				if (in_array($text, $this->_functionParameters)) {
+					$this->_checkScopedVariableNaming($text, 'functionParameterNaming', 'FUNCTION_PARAMETER_NAMING');
+				} else {
+					$this->_checkScopedVariableNaming($text, 'localVariableNaming', 'LOCAL_VARIABLE_NAMING');
+				}
 			} else {
 				$this->_checkScopedVariableNaming($text, 'memberVariableNaming', 'MEMBER_VARIABLE_NAMING');
 			}

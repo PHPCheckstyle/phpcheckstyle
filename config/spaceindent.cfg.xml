@@ -58,6 +58,7 @@
 	<test name="topLevelVariableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!--  for top level variables -->
 	<test name="localVariableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!--  for local variables (inside a class) -->
 	<test name="memberVariableNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!--  for member variables (inside a function) -->
+	<test name="functionParameterNaming" regexp="/^[a-z_][a-zA-Z0-9]*$/" /> <!-- for function parameters -->
 
 	<!-- Check Function Naming -->
 	<test name="functionNaming" regexp="/^[a-z][a-zA-Z0-9]*$/" level="error"/>

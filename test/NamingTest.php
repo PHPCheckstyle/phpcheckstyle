@@ -26,9 +26,6 @@ class NamingTest extends TestCase {
 		$this->assertEquals(5, $errorCounts['warning'], 'We expect 5 warnings');
 	}
 
-
-
-
 	/**
 	 * Test function naming rules.
 	 */

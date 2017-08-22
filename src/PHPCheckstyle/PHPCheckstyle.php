@@ -26,6 +26,7 @@ use PHPCheckstyle\Reporter\NullReporter;
  *         @SuppressWarnings checkUnusedPrivateFunctions functionMaxParameters
  */
 class PHPCheckstyle {
+
 	// The class used to export the result
 	public $_reporter;
 
@@ -78,6 +79,7 @@ class PHPCheckstyle {
 		".svn", // SVN directory
 		".git*"
 	);
+
 	// Accounts for .git, .gitignore .gitmodules etc
 
 	//
@@ -85,6 +87,7 @@ class PHPCheckstyle {
 	//
 	// Left parenthesis opened in control statement or function statement
 	private $_csLeftParenthesis = 0;
+
 	// Left parenthesis opened in function call
 	private $_fcLeftParenthesis = 0;
 
@@ -93,8 +96,10 @@ class PHPCheckstyle {
 	private $token = false;
 
 	private $lineNumber = 0;
+
 	// Store the current line number
 	private $_isLineStart = true;
+
 	// Start of a line (just after a return)
 
 	// Indicate if we are in a control statement declaration (for, if, while, ...)
@@ -108,54 +113,78 @@ class PHPCheckstyle {
 	private $_beforeArrayDeclaration = false;
 
 	private $_inClassStatement = false;
+
 	// We are in a class statement (declaration)
 	private $_inInterfaceStatement = false;
+
 	// We are in an interface statement (declaration)
 	private $_inFunctionStatement = false;
+
 	// We are in a function statement (declaration)
 	private $_inFuncCall = false;
+
 	// We are in a function call
 	private $_inFunction = false;
+
 	// We are inside a function
 	private $_inClass = false;
+
 	// We are inside a class
 	private $_inInterface = false;
+
 	// We are inside an interface
 	private $_privateFunctions = array();
+
 	// The list of private functions in the class
 	private $_privateFunctionsStartLines = array();
 
 	private $_functionParameters = array();
+
 	// The list of function parameters
 	private $_currentFuncCall = [];
+
 	// The stack of function calls
 	private $_usedFunctions = array();
+
 	// The list of functions that are used in the class
 	private $_variables = array();
+
 	// The variables used. Array of VariableInfo.
 	private $_nbFunctionParameters = 0;
+
 	// Count the number of parameters of the current function
 	private $_justAfterFuncStmt = false;
+
 	// We are just after a control statement (last } )
 	private $_justAfterControlStmt = false;
+
 	// We are just after a function statement (last } )
 	private $_functionStartLine = 0;
+
 	// Starting line of the current function
 	private $_switchStartLine = 0;
+
 	// Starting line of the current switch statement
 	private $_functionReturns = false;
+
 	// Does the function return a value ?
 	private $_functionThrows = false;
+
 	// Does the function throw an exception ?
 	private $_functionLevel = 0;
+
 	// Level of Nesting of the function
 	private $_functionVisibility = 'PUBLIC';
+
 	// PUBLIC, PRIVATE or PROTECTED or ANONYMOUS
 	private $_functionStatic = false;
+
 	// Is the function static
 	private $_classLevel = 0;
+
 	// Level of Nesting of the class
 	private $_interfaceLevel = 0;
+
 	// Level of Nesting of the interface
 	private $_constantDef = false;
 
@@ -171,28 +200,33 @@ class PHPCheckstyle {
 
 	private $_currentFunctionName = null;
 
-
 	// Number of @params in the docblock of a function
 	private $_docblocNbParams = 0;
+
 	// Number of @return in the docblock of a function
 	private $_docblocNbReturns = 0;
+
 	// Number of @throw in the docblock of a function
 	private $_docblocNbThrows = 0;
+
 	// Does the function inherits its doc
 	private $_docblocInheritDoc = false;
-
 
 	private $_cyclomaticComplexity = 0;
 
 	private $_npathComplexity = 0;
 
 	private $_fileSuppressWarnings = array();
+
 	// List of warnings to ignore for this file
 	private $_classSuppressWarnings = array();
+
 	// List of warnings to ignore for this class
 	private $_interfaceSuppressWarnings = array();
+
 	// List of warnings to ignore for this interface
 	private $_functionSuppressWarnings = array();
+
 	// List of warnings to ignore for this function
 
 	// For MVC frameworks
@@ -1246,7 +1280,6 @@ class PHPCheckstyle {
 			$stackitem->name = 'square_bracket_open';
 
 			$this->statementStack->push($stackitem);
-
 		}
 	}
 
@@ -1259,8 +1292,7 @@ class PHPCheckstyle {
 	private function _processSquareBracketClose($token) {
 
 		// We are in a array declaration, we unstack
-		if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY
-			&& $this->statementStack->getCurrentStackItem()->name === 'square_bracket_open') {
+		if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY && $this->statementStack->getCurrentStackItem()->name === 'square_bracket_open') {
 			$this->statementStack->pop();
 		}
 	}
@@ -1346,8 +1378,7 @@ class PHPCheckstyle {
 		if ($this->statementStack->getCurrentStackItem()->openParentheses === 0) {
 
 			// We are in a array declaration, we unstack
-			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY AND
-				$this->statementStack->getCurrentStackItem()->name !== 'square_bracket_open') {
+			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY and $this->statementStack->getCurrentStackItem()->name !== 'square_bracket_open') {
 				$this->statementStack->pop();
 			}
 		}
@@ -1464,9 +1495,7 @@ class PHPCheckstyle {
 		if (!is_String($currentStackItem)) {
 
 			// Test for the end of a switch bloc
-			if ($currentStackItem->type === StatementItem::TYPE_SWITCH
-				|| $currentStackItem->type === StatementItem::TYPE_DEFAULT
-				|| $currentStackItem->type === StatementItem::TYPE_CASE) {
+			if ($currentStackItem->type === StatementItem::TYPE_SWITCH || $currentStackItem->type === StatementItem::TYPE_DEFAULT || $currentStackItem->type === StatementItem::TYPE_CASE) {
 				$this->_processSwitchStop();
 			}
 
@@ -1546,7 +1575,7 @@ class PHPCheckstyle {
 			if ($this->_inFunctionStatement || $this->_inInterfaceStatement) {
 				$this->_checkScopedVariableNaming($text, 'functionParameterNaming', 'FUNCTION_PARAMETER_NAMING');
 			} else if ($this->_inFunction) {
-				if (in_array($text, $this->_functionParameters)) {
+				if (array_key_exists($text, $this->_functionParameters)) {
 					$this->_checkScopedVariableNaming($text, 'functionParameterNaming', 'FUNCTION_PARAMETER_NAMING');
 				} else {
 					$this->_checkScopedVariableNaming($text, 'localVariableNaming', 'LOCAL_VARIABLE_NAMING');
@@ -2088,10 +2117,7 @@ class PHPCheckstyle {
 		// For anonymous functions, we don't check the docblock
 		$isAnonymous = $this->statementStack->getCurrentStackItem()->visibility === 'ANONYMOUS';
 
-		if ($this->_isActive('docBlocks')
-			&& !$isAnonymous
-			&& !$this->_config->isException('docBlocks', $this->_currentFunctionName)
-			&& !$this->_docblocInheritDoc) {
+		if ($this->_isActive('docBlocks') && !$isAnonymous && !$this->_config->isException('docBlocks', $this->_currentFunctionName) && !$this->_docblocInheritDoc) {
 
 			// If the function is not private and we check the doc
 			$isPrivateExcluded = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
@@ -2352,8 +2378,7 @@ class PHPCheckstyle {
 	 */
 	private function _processSwitchStop() {
 		// If we already are in a "case", we remove it from the stack
-		if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_CASE
-			|| $this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_DEFAULT) {
+		if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_CASE || $this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_DEFAULT) {
 
 			// Test if the previous case had a break
 			$this->_checkSwitchCaseNeedBreak();
@@ -2588,8 +2613,7 @@ class PHPCheckstyle {
 	 * This function is launched when the current token is T_ENCAPSED_AND_WHITESPACE.
 	 */
 	private function _checkEncapsedVariablesInsideString() {
-		if ($this->_isActive('encapsedVariablesInsideString') AND (!$this->statementStack->getCurrentStackItem()->inHeredoc
-		    OR ($this->_inFuncCall AND !$this->_config->isException('encapsedVariablesInsideString', end($this->_currentFuncCall))))) {
+		if ($this->_isActive('encapsedVariablesInsideString') and (!$this->statementStack->getCurrentStackItem()->inHeredoc or ($this->_inFuncCall and !$this->_config->isException('encapsedVariablesInsideString', end($this->_currentFuncCall))))) {
 			$this->_writeError('encapsedVariablesInsideString', $this->_getMessage('VARIABLE_INSIDE_STRING'));
 		}
 	}
@@ -2730,7 +2754,6 @@ class PHPCheckstyle {
 						$this->_writeError('checkUnusedFunctionParameters', $msg);
 					}
 				}
-
 			}
 		}
 	}
@@ -2979,7 +3002,8 @@ class PHPCheckstyle {
 	/**
 	 * Check for the absence of a white space after the text.
 	 *
-	 * @param TokenInfo $token the token
+	 * @param TokenInfo $token
+	 *        	the token
 	 */
 	private function _checkNoWhiteSpaceAfter($token) {
 		if ($this->_isActive('noSpaceAfterToken')) {
@@ -3113,14 +3137,7 @@ class PHPCheckstyle {
 		}
 
 		// don't check empty lines, when we are inside a control statement, when the next token is a object opérator, ...
-		if ($this->_inControlStatement
-			|| $this->_inFuncCall
-			|| !isset($this->lineNumber)
-			|| $this->tokenizer->checkNextToken(T_NEW_LINE)
-			|| $this->tokenizer->checkNextValidToken(T_PARENTHESIS_CLOSE)
-			|| $this->tokenizer->checkNextValidToken(T_BOOLEAN_AND)
-			|| $this->tokenizer->checkNextValidToken(T_BOOLEAN_OR)
-			|| $this->tokenizer->checkNextValidToken(T_OBJECT_OPERATOR)) {
+		if ($this->_inControlStatement || $this->_inFuncCall || !isset($this->lineNumber) || $this->tokenizer->checkNextToken(T_NEW_LINE) || $this->tokenizer->checkNextValidToken(T_PARENTHESIS_CLOSE) || $this->tokenizer->checkNextValidToken(T_BOOLEAN_AND) || $this->tokenizer->checkNextValidToken(T_BOOLEAN_OR) || $this->tokenizer->checkNextValidToken(T_OBJECT_OPERATOR)) {
 			return;
 		}
 

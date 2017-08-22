@@ -2,11 +2,12 @@
                          ===========================
 
 
-Version 0.14.7 (in dev)
+Version 0.14.7
 --------------
 * Issue #81 : Fail to detect private functions with spaces after function (thanks to Hans-Christian Halfbrodt)
 * Fix square bracket for arrays on method assignation with test case.  (thanks to GuillermoMI)
 * Add flag to force error level only on console report (thanks to Jean-Philippe Quéméner)
+* Issue #82 : Cannot define independent rules for function parameter namings and local variable namings  (thanks to dpalic)
 
 
 Version 0.14.6

@@ -11,17 +11,19 @@ namespace PHPCheckstyle\Reporter;
  */
 class ConsoleReporter extends Reporter {
 
-    /**
-     * @var String
-     */
-    private $reportingLevel;
+	/**
+	 *
+	 * @var String
+	 */
+	private $reportingLevel;
 
-    public function __construct($level = INFO) {
-        $this->reportingLevel = $this->calculateLevel($level);
-        parent::__construct();
-    }
+	public function __construct($level = INFO) {
+		$this->reportingLevel = $this->_calculateLevel($level);
+		parent::__construct();
+	}
 
-    /**
+	/**
+	 *
 	 * {@inheritdoc}
 	 *
 	 * @param Integer $line
@@ -32,40 +34,39 @@ class ConsoleReporter extends Reporter {
 	 *        	the text to log
 	 * @param String $level
 	 *        	the severity level
-	 * @SuppressWarnings
+	 *        	@SuppressWarnings
 	 */
 	public function writeError($line, $check, $message, $level = WARNING) {
-	    $messageLevel = $this->calculateLevel($level);
-	    if ($messageLevel >= $this->reportingLevel) {
-            echo "File \"" . $this->currentPhpFile . "\"" . " " . $level . ", line " . $line . " - " . $message . "\n";
-        }
+		$messageLevel = $this->_calculateLevel($level);
+		if ($messageLevel >= $this->reportingLevel) {
+			echo "File \"" . $this->currentPhpFile . "\"" . " " . $level . ", line " . $line . " - " . $message . "\n";
+		}
 	}
 
-    /**
-     * Transforms a specified level from a String to an Integer
-     * so one can check if the level is above or below a
-     * certain threshold.
-     *
-     * Unknown level will return 1 which is equal to INFO
-     *
-     * @param String $level
-     *
-     * @return int
-     *          INFO = 1
-     *          WARNING = 2
-     *          ERROR = 3
-     *          unknown = 1
-     */
-	private function calculateLevel($level) {
-	    switch ($level) {
-            case INFO:
-                return 1;
-            case WARNING:
-                return 2;
-            case ERROR:
-                return 3;
-            default:
-                return 1;
-        }
-    }
+	/**
+	 * Transforms a specified level from a String to an Integer
+	 * so one can check if the level is above or below a
+	 * certain threshold.
+	 *
+	 * Unknown level will return 1 which is equal to INFO
+	 *
+	 * @param String $level
+	 *
+	 * @return int INFO = 1
+	 *         WARNING = 2
+	 *         ERROR = 3
+	 *         unknown = 1
+	 */
+	private function _calculateLevel($level) {
+		switch ($level) {
+			case INFO:
+				return 1;
+			case WARNING:
+				return 2;
+			case ERROR:
+				return 3;
+			default:
+				return 1;
+		}
+	}
 }

@@ -1378,7 +1378,7 @@ class PHPCheckstyle {
 		if ($this->statementStack->getCurrentStackItem()->openParentheses === 0) {
 
 			// We are in a array declaration, we unstack
-			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY and $this->statementStack->getCurrentStackItem()->name !== 'square_bracket_open') {
+			if ($this->statementStack->getCurrentStackItem()->type === StatementItem::TYPE_ARRAY && $this->statementStack->getCurrentStackItem()->name !== 'square_bracket_open') {
 				$this->statementStack->pop();
 			}
 		}
@@ -2613,7 +2613,7 @@ class PHPCheckstyle {
 	 * This function is launched when the current token is T_ENCAPSED_AND_WHITESPACE.
 	 */
 	private function _checkEncapsedVariablesInsideString() {
-		if ($this->_isActive('encapsedVariablesInsideString') and (!$this->statementStack->getCurrentStackItem()->inHeredoc or ($this->_inFuncCall and !$this->_config->isException('encapsedVariablesInsideString', end($this->_currentFuncCall))))) {
+		if ($this->_isActive('encapsedVariablesInsideString') && (!$this->statementStack->getCurrentStackItem()->inHeredoc || ($this->_inFuncCall && !$this->_config->isException('encapsedVariablesInsideString', end($this->_currentFuncCall))))) {
 			$this->_writeError('encapsedVariablesInsideString', $this->_getMessage('VARIABLE_INSIDE_STRING'));
 		}
 	}

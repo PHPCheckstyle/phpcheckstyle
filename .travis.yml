@@ -3,6 +3,9 @@ php:
   - '5.6'
   - '7.0'
   - '7.1'
+before_install:
+  - chmod +x build.sh
+  - chmod +x phpcheckstyle.sh  
 before_script: composer update 
 script: 
   - ./phpunit.sh

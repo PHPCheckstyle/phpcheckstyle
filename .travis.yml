@@ -4,7 +4,7 @@ php:
   - '7.0'
   - '7.1'
 before_install:
-  - chmod +x build.sh
+  - chmod +x phpunit.sh
   - chmod +x phpcheckstyle.sh  
 before_script: composer update 
 script: 

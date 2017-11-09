@@ -34,6 +34,7 @@ function usage() {
 
 		"--lang" =>
 			"[Optional] Language file to use for the result (en-us by default).",
+		
 		"--max-errors" =>
 			"[Optional] Defines how many errors are still allowed for a pass (0 by default)",
 
@@ -101,10 +102,10 @@ for ($i = 1; $i < $_SERVER["argc"]; $i ++) {
 			$options['lang'] = $_SERVER['argv'][$i];
 			break;
 
-        case "--level":
-            $i++;
-            $options['level'] = $_SERVER['argv'][$i];
-            break;
+		case "--level":
+		        $i++;
+		        $options['level'] = $_SERVER['argv'][$i];
+		        break;
 
 		case "--config":
 			$i++;
@@ -228,9 +229,6 @@ if (!$options['quiet']) {
  	}
 
 }
-
-
-
 
 $exitCode = ($errorCounts[ERROR] > $options['max-errors']) ? 1 : 0;
 exit($exitCode);

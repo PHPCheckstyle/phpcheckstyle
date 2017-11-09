@@ -8,6 +8,7 @@ Version 0.14.7
 * Fix square bracket for arrays on method assignation with test case.  (thanks to GuillermoMI)
 * Add flag to force error level only on console report (thanks to Jean-Philippe Quéméner)
 * Issue #82 : Cannot define independent rules for function parameter namings and local variable namings  (thanks to dpalic)
+* Issue #84 : Set maximum errors for build fail (thanks to hafah)
 
 
 Version 0.14.6

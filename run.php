@@ -34,6 +34,9 @@ function usage() {
 
 		"--lang" =>
 			"[Optional] Language file to use for the result (en-us by default).",
+		
+		"--max-errors" =>
+			"[Optional] Defines how many errors are still allowed for a pass (0 by default)",
 
         "--level" =>
             "[Optional] Specifies the output level (info, warning, error). For console report only.",
@@ -68,6 +71,7 @@ $options['progress'] = false;
 $options['lang'] = 'en-us';
 $options['quiet'] = false;
 $options['time'] = false;
+$options['max-errors'] = 0;
 $lineCountFile = null;
 
 // loop through user input
@@ -98,22 +102,27 @@ for ($i = 1; $i < $_SERVER["argc"]; $i ++) {
 			$options['lang'] = $_SERVER['argv'][$i];
 			break;
 
-        case "--level":
-            $i++;
-            $options['level'] = $_SERVER['argv'][$i];
-            break;
+		case "--level":
+		        $i++;
+		        $options['level'] = $_SERVER['argv'][$i];
+		        break;
 
 		case "--config":
 			$i++;
 			$options['config'] = $_SERVER['argv'][$i];
 			break;
-
+			
 		case "--debug":
 			$options['debug'] = true;
 			break;
 
 		case "--linecount":
 			$options['linecount'] = true;
+			break;
+			
+		case "--max-errors":
+			$i++;
+			$options['max-errors'] = $_SERVER['argv'][$i];
 			break;
 
 		case "--progress":
@@ -165,6 +174,10 @@ if (!empty($unknownFormats)) {
 // check that source directory is specified and is valid
 if (!$options['src']) {
 	echo "\nPlease specify a source directory/file using --src option.\n\n";
+	usage();
+}
+if (!$options['max-errors']) {
+	echo "\nPlease specify a number when using --max-errors option.\n\n";
 	usage();
 }
 
@@ -222,8 +235,5 @@ if (!$options['quiet']) {
 
 }
 
-
-
-
-$exitCode = ($errorCounts[ERROR] > 0) ? 1 : 0;
+$exitCode = ($errorCounts[ERROR] > $options['max-errors']) ? 1 : 0;
 exit($exitCode);

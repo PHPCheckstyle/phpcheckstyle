@@ -111,13 +111,18 @@ for ($i = 1; $i < $_SERVER["argc"]; $i ++) {
 			$i++;
 			$options['config'] = $_SERVER['argv'][$i];
 			break;
-
+			
 		case "--debug":
 			$options['debug'] = true;
 			break;
 
 		case "--linecount":
 			$options['linecount'] = true;
+			break;
+			
+		case "--max-errors":
+			$i++;
+			$options['max-errors'] = $_SERVER['argv'][$i];
 			break;
 
 		case "--progress":

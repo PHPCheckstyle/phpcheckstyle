@@ -34,7 +34,7 @@ function usage() {
 
 		"--lang" =>
 			"[Optional] Language file to use for the result (en-us by default).",
-		
+
 		"--max-errors" =>
 			"[Optional] Defines how many errors are still allowed for a pass (0 by default)",
 
@@ -111,7 +111,7 @@ for ($i = 1; $i < $_SERVER["argc"]; $i ++) {
 			$i++;
 			$options['config'] = $_SERVER['argv'][$i];
 			break;
-			
+
 		case "--debug":
 			$options['debug'] = true;
 			break;
@@ -119,7 +119,7 @@ for ($i = 1; $i < $_SERVER["argc"]; $i ++) {
 		case "--linecount":
 			$options['linecount'] = true;
 			break;
-			
+
 		case "--max-errors":
 			$i++;
 			$options['max-errors'] = $_SERVER['argv'][$i];
@@ -176,7 +176,7 @@ if (!$options['src']) {
 	echo "\nPlease specify a source directory/file using --src option.\n\n";
 	usage();
 }
-if (!$options['max-errors']) {
+if (isset($options['max-errors']) && $options['max-errors'] === '') {
 	echo "\nPlease specify a number when using --max-errors option.\n\n";
 	usage();
 }

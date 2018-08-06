@@ -25,6 +25,7 @@
 	<logging>
 		<log type="coverage-html" target="./checkstyle_result/phpunit/coverage" title="OCRE" />
 		<log type="coverage-clover" target="./checkstyle_result/phpunit/coverage.xml" />
+		<log type="junit" target="./checkstyle_result/phpunit/junit.xml" />
 	</logging>
 		
 </phpunit>

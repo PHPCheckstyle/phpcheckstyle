@@ -16,6 +16,9 @@ class StatementStack {
 	 */
 	var $statements = array();
 
+
+	var $defaultItem;
+
 	/**
 	 * Return the size of the stack.
 	 *
@@ -50,7 +53,11 @@ class StatementStack {
 	 */
 	function getStackDump() {
 		$dump = "";
-		$stackTypes = array("FUNCTION", "INTERFACE", "CLASS");
+		$stackTypes = array(
+			"FUNCTION",
+			"INTERFACE",
+			"CLASS"
+		);
 		foreach ($this->statements as $item) {
 			$dump .= $item->type;
 			if (in_array($item->type, $stackTypes)) {
@@ -75,7 +82,7 @@ class StatementStack {
 		} else {
 			// In case of a empty stack, we are at the root of a PHP file (with no class or function).
 			// We return the default values
-			return new StatementItem();
+			return $this->getDefaultItem();
 		}
 	}
 
@@ -90,7 +97,50 @@ class StatementStack {
 		} else {
 			// In case of a empty stack, we are at the root of a PHP file (with no class or function).
 			// We return the default values
-			return new StatementItem();
+			return $this->getDefaultItem();
 		}
+	}
+
+	/**
+	 * Return the parent function.
+	 *
+	 * @return StatementItem
+	 */
+	function getParentFunction() {
+		for ($i = $this->count() - 1; $i >= 0; $i --) {
+			$item = $this->statements[$i];
+			if ($item->type === "FUNCTION") {
+				return $item;
+			}
+		}
+		// In case of a empty stack, we are at the root of a PHP file (with no class or function).
+		// We return the default values
+		return $this->getDefaultItem();
+	}
+
+	/**
+	 * Return the parent class.
+	 *
+	 * @return StatementItem
+	 */
+	function getParentClass() {
+		for ($i = $this->count() - 1; $i >= 0; $i --) {
+			$item = $this->statements[$i];
+			if ($item->type === "CLASS" || $item->type === "INTERFACE") {
+				return $item;
+			}
+		}
+		// In case of a empty stack, we are at the root of a PHP file (with no class or function).
+		return $this->getDefaultItem();
+	}
+
+	/**
+	 * return a Singleton of a StackItem corresponding to the file level.
+	 */
+	function getDefaultItem() {
+		if ($this->defaultItem == null) {
+			$this->defaultItem = new StatementItem();
+		}
+		return $this->defaultItem;
 	}
 }

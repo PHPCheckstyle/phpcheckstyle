@@ -24,9 +24,9 @@ echo "--------------------------------------------------"
 
 cd /vagrant/
 
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+wget -O composer-setup.php https://getcomposer.org/installer
 php composer-setup.php
-php -r "unlink('composer-setup.php');"
+rm composer-setup.php
 
 sudo mv composer.phar /usr/local/bin/composer
 

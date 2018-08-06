@@ -65,4 +65,16 @@ class StatementItem {
 	// Open parentheses count
 	var $openParentheses = 0;
 
+	// Number of @params in the docblock of a function
+	var $docblocNbParams = 0;
+
+	// Number of @return in the docblock of a function
+	var $docblocNbReturns = 0;
+
+	// Number of @throw in the docblock of a function
+	var $docblocNbThrows = 0;
+
+	// Does the function inherits its doc
+	var $docblocInheritDoc = false;
+
 }

@@ -17,6 +17,7 @@ use PHPCheckstyle\Reporter\XmlConsoleFormatReporter;
 use PHPCheckstyle\Reporter\XmlFormatReporter;
 use PHPCheckstyle\Reporter\XmlNCSSReporter;
 use PHPCheckstyle\Reporter\NullReporter;
+use PHPCheckstyle\Config\CheckStyleConfig;
 
 /**
  * Main Class.
@@ -199,18 +200,6 @@ class PHPCheckstyle {
 	private $_currentStatement = false;
 
 	private $_currentFunctionName = null;
-
-	// Number of @params in the docblock of a function
-	private $_docblocNbParams = 0;
-
-	// Number of @return in the docblock of a function
-	private $_docblocNbReturns = 0;
-
-	// Number of @throw in the docblock of a function
-	private $_docblocNbThrows = 0;
-
-	// Does the function inherits its doc
-	private $_docblocInheritDoc = false;
 
 	private $_cyclomaticComplexity = 0;
 
@@ -645,11 +634,6 @@ class PHPCheckstyle {
 		$this->_currentInterfacename = null;
 		$this->_currentFilename = null;
 		$this->_packageName = null;
-
-		$this->_docblocNbParams = 0;
-		$this->_docblocNbReturns = 0;
-		$this->_docblocNbThrows = 0;
-		$this->_docblocInheritDoc = false;
 
 		$this->_isView = false;
 		$this->_isModel = false;
@@ -2117,7 +2101,7 @@ class PHPCheckstyle {
 		// For anonymous functions, we don't check the docblock
 		$isAnonymous = $this->statementStack->getCurrentStackItem()->visibility === 'ANONYMOUS';
 
-		if ($this->_isActive('docBlocks') && !$isAnonymous && !$this->_config->isException('docBlocks', $this->_currentFunctionName) && !$this->_docblocInheritDoc) {
+		if ($this->_isActive('docBlocks') && !$isAnonymous && !$this->_config->isException('docBlocks', $this->_currentFunctionName) && !$this->statementStack->getParentStackItem()->docblocInheritDoc) {
 
 			// If the function is not private and we check the doc
 			$isPrivateExcluded = $this->_config->getTestProperty('docBlocks', 'excludePrivateMembers');
@@ -2126,7 +2110,7 @@ class PHPCheckstyle {
 				// Check the docblock @return
 				if (($this->_config->getTestProperty('docBlocks', 'testReturn') !== 'false')) {
 
-					if ($this->_functionReturns && ($this->_docblocNbReturns === 0)) {
+					if ($this->_functionReturns && ($this->statementStack->getParentStackItem()->docblocNbReturns === 0)) {
 						$msg = $this->_getMessage('DOCBLOCK_RETURN', $this->_currentFunctionName);
 						$this->_writeError('docBlocks', $msg);
 					}
@@ -2134,7 +2118,7 @@ class PHPCheckstyle {
 
 				// Check the docblock @param
 				if (($this->_config->getTestProperty('docBlocks', 'testParam') !== 'false')) {
-					if ($this->_nbFunctionParameters !== $this->_docblocNbParams) {
+					if ($this->_nbFunctionParameters !== $this->statementStack->getParentStackItem()->docblocNbParams) {
 						$msg = $this->_getMessage('DOCBLOCK_PARAM', $this->_currentFunctionName);
 						$this->_writeError('docBlocks', $msg);
 					}
@@ -2143,7 +2127,7 @@ class PHPCheckstyle {
 				// Check the docblock @throw
 				if (($this->_config->getTestProperty('docBlocks', 'testThrow') !== 'false')) {
 
-					if ($this->_functionThrows && ($this->_docblocNbThrows === 0)) {
+					if ($this->_functionThrows && ($this->statementStack->getParentStackItem()->docblocNbThrows === 0)) {
 						$msg = $this->_getMessage('DOCBLOCK_THROW', $this->_currentFunctionName);
 						$this->_writeError('docBlocks', $msg);
 					}
@@ -2196,10 +2180,10 @@ class PHPCheckstyle {
 		$this->_functionSuppressWarnings = array();
 
 		// Reset the count of elements in the current function docblock
-		$this->_docblocNbParams = 0;
-		$this->_docblocNbReturns = 0;
-		$this->_docblocNbThrows = 0;
-		$this->_docblocInheritDoc = false;
+		$this->statementStack->getParentStackItem()->docblocNbParams = 0;
+		$this->statementStack->getParentStackItem()->docblocNbReturns = 0;
+		$this->statementStack->getParentStackItem()->docblocNbThrows = 0;
+		$this->statementStack->getParentStackItem()->docblocInheritDoc = false;
 	}
 
 	/**
@@ -2746,7 +2730,7 @@ class PHPCheckstyle {
 
 			// If the docblock is inherited, this means that the function implements a parent function
 			// We may have some unused parameters in this case, we don't generate a warnings
-			if (!$this->_docblocInheritDoc) {
+			if (!$this->statementStack->getParentStackItem()->docblocInheritDoc) {
 
 				foreach ($this->_functionParameters as $variableName => $value) {
 					if ($value !== "used") {
@@ -3222,7 +3206,7 @@ class PHPCheckstyle {
 	/**
 	 * Process a TODO comment.
 	 *
-	 * @param Token $token
+	 * @param TokenInfo $token
 	 *        	the doc token.
 	 */
 	private function _processTODO($token) {
@@ -3279,21 +3263,21 @@ class PHPCheckstyle {
 		// Count the @params, @returns and @throw
 		if (stripos($token->text, '/**') !== false) {
 			// Reset the count of elements if it's a new docblock
-			$this->_docblocNbParams = 0;
-			$this->_docblocNbReturns = 0;
-			$this->_docblocNbThrows = 0;
+			$this->statementStack->getCurrentStackItem()->docblocNbParams = 0;
+			$this->statementStack->getCurrentStackItem()->docblocNbReturns = 0;
+			$this->statementStack->getCurrentStackItem()->docblocNbThrows = 0;
 		}
 		if (stripos($token->text, '@param') !== false) {
-			$this->_docblocNbParams ++;
+			$this->statementStack->getCurrentStackItem()->docblocNbParams++;
 		}
 		if (stripos($token->text, '@return') !== false) {
-			$this->_docblocNbReturns ++;
+			$this->statementStack->getCurrentStackItem()->docblocNbReturns ++;
 		}
 		if (stripos($token->text, '@throw') !== false) {
-			$this->_docblocNbThrows ++;
+			$this->statementStack->getCurrentStackItem()->docblocNbThrows ++;
 		}
 		if (stripos($token->text, '@inheritdoc') !== false) {
-			$this->_docblocInheritDoc = true;
+			$this->statementStack->getCurrentStackItem()->docblocInheritDoc = true;
 		}
 
 		// Check if the comment starts with '#'
@@ -3616,7 +3600,7 @@ class PHPCheckstyle {
 	 *
 	 * @param String $check
 	 *        	the name of the check
-	 * @return a boolean
+	 * @return Boolean
 	 */
 	private function _isActive($check) {
 		// Check if the check is configured
@@ -3803,7 +3787,7 @@ class PHPCheckstyle {
 	 *
 	 * @param String $message
 	 *        	the message to return
-	 * @return a string
+	 * @return String
 	 */
 	private function _getMessage() {
 		set_error_handler(array(

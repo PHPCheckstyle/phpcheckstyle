@@ -3,7 +3,7 @@ namespace PHPCheckstyle;
 
 require_once __DIR__ . "/_Constants.php";
 
-use \Exception;
+use Exception;
 use PHPCheckstyle\Config\CheckArrayStyleConfig;
 use PHPCheckstyle\Config\CheckXMLStyleConfig;
 use PHPCheckstyle\Reporter\Reporters;
@@ -147,7 +147,7 @@ class PHPCheckstyle {
 	// The stack of function calls
 	private $_usedFunctions = array();
 
-	// The list of functions that are used in the class
+	// The list of variables that are used in the class
 	private $_variables = array();
 
 	// The variables used. Array of VariableInfo.
@@ -1234,6 +1234,7 @@ class PHPCheckstyle {
 				$this->_inString = !$this->_inString;
 				break;
 			case T_DOLLAR:
+				$this->_checkComplexVariable($token);
 				$this->_checkVariableVariable($token);
 				break;
 			case T_ARRAY:
@@ -3268,7 +3269,7 @@ class PHPCheckstyle {
 			$this->statementStack->getCurrentStackItem()->docblocNbThrows = 0;
 		}
 		if (stripos($token->text, '@param') !== false) {
-			$this->statementStack->getCurrentStackItem()->docblocNbParams++;
+			$this->statementStack->getCurrentStackItem()->docblocNbParams ++;
 		}
 		if (stripos($token->text, '@return') !== false) {
 			$this->statementStack->getCurrentStackItem()->docblocNbReturns ++;
@@ -3722,6 +3723,32 @@ class PHPCheckstyle {
 			if ($this->tokenizer->checkNextToken(T_VARIABLE)) {
 				$msg = $this->_getMessage("VARIABLE_VARIABLE", '$' . $this->tokenizer->peekNextToken()->text);
 				$this->_writeError('variableVariable', $msg);
+			}
+		}
+	}
+
+	/**
+	 * Check the use of a complex variable ${.
+	 *
+	 * Should be the token T_DOLLAR_OPEN_CURLY_BRACES but can also be T_DOLLAR + T_BRACES_OPEN
+	 *
+	 * Called when the current token is a single $.
+	 *
+	 * @param TokenInfo $token
+	 */
+	private function _checkComplexVariable($token) {
+		if ($this->tokenizer->checkNextToken(T_BRACES_OPEN)) {
+			// We skip the T_BRACES_OPEN and T_BRACES_CLOSE analysis to avoid the creation of a new statement level.
+			$valueToken = $this->tokenizer->peekNextValidToken($token->position + 2);
+			$closeToken = $this->tokenizer->peekNextValidToken($valueToken->position + 1);
+
+			if ($closeToken->id === T_BRACES_CLOSE) {
+
+				$this->tokenizer->setCurrentPosition($valueToken->position);
+
+				$this->_processVariable($valueToken->text);
+
+				$this->tokenizer->setCurrentPosition($closeToken->position + 1);
 			}
 		}
 	}

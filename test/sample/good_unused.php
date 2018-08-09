@@ -20,6 +20,8 @@ class Used {
 		$a = 2;
 		$result = $a + $this->toto;
 
+		echo ${$a}; // This should not generate a warning
+
 		return $result;
 
 	}

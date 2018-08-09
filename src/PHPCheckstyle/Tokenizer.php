@@ -192,6 +192,15 @@ class Tokenizer {
 	}
 
 	/**
+	 * Set the current position in the tokenizer.
+	 *
+	 * @param Integer position of the Tokenizer
+	 */
+	public function setCurrentPosition($position) {
+		$this->index = $position;
+	}
+
+	/**
 	 * Returns the next token without moving
 	 * the index.
 	 *

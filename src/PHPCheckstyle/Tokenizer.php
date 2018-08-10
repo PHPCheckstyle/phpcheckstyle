@@ -1,6 +1,7 @@
 <?php
 namespace PHPCheckstyle;
-use \Exception;
+
+use Exception;
 
 /**
  * Lexical Analysis.
@@ -80,16 +81,18 @@ class Tokenizer {
 		// Detect the php.ini settings
 		$this->shortOpenTagOff = (ini_get('short_open_tag') === false);
 
-		/*if ($this->shortOpenTagOff) {
-			echo "Warning : The short_open_tag value of your php.ini setting is off, you may want to activate it for correct code analysis";
-		}*/
+		/*
+		 * if ($this->shortOpenTagOff) {
+		 * echo "Warning : The short_open_tag value of your php.ini setting is off, you may want to activate it for correct code analysis";
+		 * }
+		 */
 
 		$this->ignoreTokens = array(
-			T_WHITESPACE  => true,
-			T_TAB         => true,
-			T_COMMENT     => true,
-			T_ML_COMMENT  => true,
-			T_DOC_COMMENT => true,
+			T_WHITESPACE => true,
+			T_TAB => true,
+			T_COMMENT => true,
+			T_ML_COMMENT => true,
+			T_DOC_COMMENT => true
 		);
 
 		$this->reset();
@@ -103,7 +106,6 @@ class Tokenizer {
 	 *        	the line where the token is found
 	 */
 	public function tokenize($filename) {
-
 		$this->tokens = array();
 
 		// Read the file
@@ -113,7 +115,6 @@ class Tokenizer {
 			$this->tokens = $this->_getAllTokens($this->content);
 			fclose($fp);
 		}
-
 	}
 
 	/**
@@ -185,7 +186,7 @@ class Tokenizer {
 	/**
 	 * Gives the current position in the tokenizer.
 	 *
-	 * @return current position of the Tokenizer
+	 * @return Integer the current position of the Tokenizer
 	 */
 	public function getCurrentPosition() {
 		return $this->index;
@@ -194,7 +195,8 @@ class Tokenizer {
 	/**
 	 * Set the current position in the tokenizer.
 	 *
-	 * @param Integer position of the Tokenizer
+	 * @param
+	 *        	Integer position of the Tokenizer
 	 */
 	public function setCurrentPosition($position) {
 		$this->index = $position;
@@ -274,11 +276,11 @@ class Tokenizer {
 	 * Peeks at the previous valid token.
 	 * A valid token is one that is neither a whitespace or a comment
 	 *
-	 * @param Integer $startPos a token position (optional).
+	 * @param Integer $startPos
+	 *        	a token position (optional).
 	 * @return TokenInfo the info about the token found
 	 */
 	public function peekPrvsValidToken($startPos = null) {
-
 		if ($startPos === null) {
 			// default position for the search
 			$pos = $this->getCurrentPosition() - 1;
@@ -431,6 +433,37 @@ class Tokenizer {
 	}
 
 	/**
+	 * Find the next position of the string.
+	 *
+	 * @param Integer $tokenId
+	 *        	the token identifier
+	 * @param Integer $apos
+	 *        	the position to start from (by defaut will use current position)
+	 * @return Integer the position, null if not found
+	 */
+	public function findNextTokenPosition($tokenId, $apos = null) {
+		if ($apos === null) {
+			$pos = $this->getCurrentPosition();
+		} else {
+			$pos = $apos;
+		}
+		$pos += 1; // Start from the token following the current position
+
+		$nbTokens = count($this->tokens);
+		while ($pos < $nbTokens) {
+			$token = $this->tokens[$pos];
+
+			if ($tokenId === $token->id) {
+				return $pos;
+			}
+
+			$pos ++;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Check if the next valid token (ignoring whitespaces) correspond to the specified token.
 	 *
 	 * @param Integer $id
@@ -458,7 +491,7 @@ class Tokenizer {
 	 *        	The token text
 	 * @param Integer $tokenText
 	 *        	The token text
-	 * @return an array of tokens
+	 * @return Array[TokenInfo]
 	 */
 	private function _identifyTokens($tokenText, $tokenID) {
 		// Split the data up by newlines
@@ -622,7 +655,7 @@ class Tokenizer {
 					$openTag = new TokenInfo();
 					$openTag->id = T_OPEN_TAG;
 					$openTag->text = SHORT_OPEN_TAG;
-					$this->tokenNumber++;
+					$this->tokenNumber ++;
 					$openTag->position = $this->tokenNumber;
 					$openTag->line = $this->lineNumber;
 					$this->newTokens[] = $openTag;
@@ -640,7 +673,7 @@ class Tokenizer {
 					$closeTag = new TokenInfo();
 					$closeTag->id = T_CLOSE_TAG;
 					$closeTag->text = CLOSE_TAG;
-					$this->tokenNumber++;
+					$this->tokenNumber ++;
 					$closeTag->position = $this->tokenNumber;
 					$closeTag->line = $this->lineNumber;
 					$this->newTokens[] = $closeTag;
@@ -709,5 +742,4 @@ class Tokenizer {
 		}
 		return false;
 	}
-
 }

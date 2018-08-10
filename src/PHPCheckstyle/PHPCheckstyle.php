@@ -3730,6 +3730,7 @@ class PHPCheckstyle {
 	/**
 	 * Check the use of a complex variable ${.
 	 *
+	 * Skip the analysis inside the variable.
 	 * Should be the token T_DOLLAR_OPEN_CURLY_BRACES but can also be T_DOLLAR + T_BRACES_OPEN
 	 *
 	 * Called when the current token is a single $.
@@ -3738,17 +3739,14 @@ class PHPCheckstyle {
 	 */
 	private function _checkComplexVariable($token) {
 		if ($this->tokenizer->checkNextToken(T_BRACES_OPEN)) {
-			// We skip the T_BRACES_OPEN and T_BRACES_CLOSE analysis to avoid the creation of a new statement level.
-			$valueToken = $this->tokenizer->peekNextValidToken($token->position + 2);
-			$closeToken = $this->tokenizer->peekNextValidToken($valueToken->position + 1);
 
-			if ($closeToken->id === T_BRACES_CLOSE) {
+			// Detect the end of the complexe variable
+			$closePos = $this->tokenizer->findNextTokenPosition(T_BRACES_CLOSE);
 
-				$this->tokenizer->setCurrentPosition($valueToken->position);
+			if ($closePos !== null) {
 
-				$this->_processVariable($valueToken->text);
-
-				$this->tokenizer->setCurrentPosition($closeToken->position + 1);
+				// Skip the analysis of the content of the variable.
+				$this->tokenizer->setCurrentPosition($closePos + 1);
 			}
 		}
 	}

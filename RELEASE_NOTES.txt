@@ -2,6 +2,11 @@
                          ===========================
 
 
+Version 0.14.8
+--------------
+* Issue #92 : checkWhiteSpaceBefore "{", unless it's in ${var}
+* Issue #89 : False error "The function parameters must match those in its docblock @param" when using local variable tag
+
 Version 0.14.7
 --------------
 * Issue #81 : Fail to detect private functions with spaces after function (thanks to Hans-Christian Halfbrodt)

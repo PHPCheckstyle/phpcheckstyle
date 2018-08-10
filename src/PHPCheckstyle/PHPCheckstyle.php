@@ -1171,9 +1171,10 @@ class PHPCheckstyle {
 				break;
 
 			case T_BRACES_OPEN: // {
-				$this->_processBracesOpen($token);
+				if (!$this->_checkComplexVariable2($token)) {
+					$this->_processBracesOpen($token);
+				}
 				break;
-
 			case T_BRACES_CLOSE: // }
 				$this->_processBracesClose($token);
 				break;
@@ -1234,8 +1235,9 @@ class PHPCheckstyle {
 				$this->_inString = !$this->_inString;
 				break;
 			case T_DOLLAR:
-				$this->_checkComplexVariable($token);
-				$this->_checkVariableVariable($token);
+				if (!$this->_checkComplexVariable($token)) {
+					$this->_checkVariableVariable($token);
+				}
 				break;
 			case T_ARRAY:
 				$this->_processArray($token);
@@ -3747,8 +3749,42 @@ class PHPCheckstyle {
 
 				// Skip the analysis of the content of the variable.
 				$this->tokenizer->setCurrentPosition($closePos + 1);
+
+				return true;
 			}
 		}
+
+		return false;
+	}
+
+	/**
+	 * Check the use of a complex variable {$.
+	 *
+	 * Skip the analysis inside the variable.
+	 * Should be the token T_CURLY_OPEN but can also be T_BRACES_OPEN + T_DOLLAR
+	 *
+	 * Called when the current token is a single {.
+	 *
+	 * @param TokenInfo $token
+	 */
+	private function _checkComplexVariable2($token) {
+
+		// Right after the { there is a $ with no space between
+		if ($this->tokenizer->checkNextToken(T_DOLLAR) || ($this->tokenizer->checkNextToken(T_VARIABLE))) {
+
+			// Detect the end of the complexe variable
+			$closePos = $this->tokenizer->findNextTokenPosition(T_BRACES_CLOSE);
+
+			if ($closePos !== null) {
+
+				// Skip the analysis of the content of the variable.
+				$this->tokenizer->setCurrentPosition($closePos + 1);
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

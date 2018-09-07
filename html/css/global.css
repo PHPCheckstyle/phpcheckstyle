@@ -110,3 +110,9 @@ h2 {
 	color: #4076B9;
 	font-size: 10px;
 }
+
+
+.badge-error {
+    color: #212529;
+    background-color: #dc3545;
+}

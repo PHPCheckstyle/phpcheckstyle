@@ -98,7 +98,6 @@ class IndentationTest extends TestCase {
 		$phpcheckstyle->getConfig()->setTestProperty('funcDefinitionOpenCurly', 'position', 'nl');
 		$phpcheckstyle->getConfig()->setTestProperty('controlStructElse', 'position', 'nl');
 
-
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/good_indentation_newline.php'
 		));
@@ -132,7 +131,6 @@ class IndentationTest extends TestCase {
 		$this->assertEquals(0, $errorCounts['warning'], 'We expect 0 warnings');
 	}
 
-
 	/**
 	 * Test for for spaces missing or in excedent.
 	 */
@@ -149,6 +147,36 @@ class IndentationTest extends TestCase {
 		$this->assertEquals(0, $errorCounts['ignore'], 'We expect 0 ignored checks');
 		$this->assertEquals(2, $errorCounts['info'], 'We expect 2 info');
 		$this->assertEquals(7, $errorCounts['warning'], 'We expect 7 warnings');
+	}
+
+	/**
+	 * Test for space after control statement (no space after control statement).
+	 */
+	public function testBadSpaceAfterControl() {
+		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+
+		// Change the configuration to check for spaces instead of tabs
+		$phpcheckstyle->getConfig()->setTestProperty('spaceaftercontrolstmt', 'type', 'spaces');
+
+		// Change the configuration to check for no spaces after control statement
+		$config = $phpcheckstyle->getConfig();
+		$refl = new \ReflectionProperty($config, 'config');
+		$refl->setAccessible(true);
+		$value = $refl->getValue($config);
+		unset($value['spaceaftercontrolstmt']);
+		$value['nospaceaftercontrolstmt'] = array();
+		$refl->setValue($config, $value);
+
+		$phpcheckstyle->processFiles(array(
+			'./test/sample/bad_space_after_control.php'
+		));
+
+		$errorCounts = $phpcheckstyle->getErrorCounts();
+
+		$this->assertEquals(0, $errorCounts['error'], 'We expect 0 errors');
+		$this->assertEquals(0, $errorCounts['ignore'], 'We expect 0 ignored checks');
+		$this->assertEquals(0, $errorCounts['info'], 'We expect 0 info');
+		$this->assertEquals(1, $errorCounts['warning'], 'We expect 1 warning');
 	}
 }
 ?>

@@ -1,10 +1,11 @@
                          PHPCheckstyle Release Notes
                          ===========================
 
+
 Version 0.14.9
 --------------
 * Issue #93 : Use Bootstrap4 for styling (thanks to HCrane)
-
+* Issue #94 : Add no space after control stmt test option (thanks to CharlotteDunois)
 
 Version 0.14.8
 --------------

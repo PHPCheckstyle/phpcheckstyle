@@ -7,8 +7,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "debian/jessie64"
-  config.vm.box_version = "8.6.1"
+  config.vm.box = "geerlingguy/debian9"
  
    #Dev config 
    config.vm.define "phpcheckstyle_dev" do |phpcheckstyle_dev|

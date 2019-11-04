@@ -188,6 +188,10 @@
 		are followed by a space before the opening parenthesis. PEAR standard stipulates 
 		this to distinguish it from function calls. -->
 	<test name="spaceAfterControlStmt" />
+	
+	<!-- Tests that the control statements ("if", "else", "while", "for", etc.) 
+		are NOT followed by a space before the opening parenthesis. -->	
+	<!--  <test name="noSpaceAfterControlStmt" />  -->
 
 	<!-- Check that there is no space after a function name in a function call -->
 	<test name="noSpaceAfterFunctionName" level="info"></test>
@@ -210,7 +214,7 @@
 	<test name="noSpaceAfterToken" level="info" />
 
 	<!-- **************** -->
-	<!-- Metrics -->
+	<!-- Metrics 		  -->
 	<!-- **************** -->
 
 	<!-- Check that the lenght of the line doesn't pass the max value -->

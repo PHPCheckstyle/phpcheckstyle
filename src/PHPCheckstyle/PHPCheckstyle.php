@@ -1817,6 +1817,14 @@ class PHPCheckstyle {
 					$this->_writeError('spaceAfterControlStmt', $msg);
 				}
 			}
+		} else if ($this->_isActive('noSpaceAfterControlStmt')) {
+			// first token: if one whitespace, error
+			if ($this->tokenizer->checkNextToken(T_WHITESPACE)) {
+				if (($token->id !== T_ELSE) && ($token->id !== T_TRY) && ($token->id !== T_DO)) {
+					$msg = $this->_getMessage('NO_SPACE_AFTER_TOKEN', $csText);
+					$this->_writeError('noSpaceAfterControlStmt', $msg);
+				}
+			}
 		}
 
 		// for some control structures like "else" and "do",

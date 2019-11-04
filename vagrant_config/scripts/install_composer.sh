@@ -10,10 +10,7 @@ echo " Install PHP "
 echo "--------------------------------------------------"
 
 # Add a repository for PHP 7
-echo "deb http://packages.dotdeb.org jessie all" > /etc/apt/sources.list.d/dotdeb.list
-wget https://www.dotdeb.org/dotdeb.gpg && apt-key add dotdeb.gpg
-apt-get update -y
-apt-get install -y php7.0 php7.0-cli php7.0-xdebug php7.0-xml 
+apt-get install -y php php-cli php-xdebug php-xml 
 
 apt-get install -y git zip
 

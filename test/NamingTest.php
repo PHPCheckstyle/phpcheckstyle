@@ -10,7 +10,7 @@ class NamingTest extends TestCase {
 	 * Test naming rules.
 	 */
 	public function testNaming() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/_bad_naming.php'
@@ -30,7 +30,7 @@ class NamingTest extends TestCase {
 	 * Test function naming rules.
 	 */
 	public function testFunctionNaming() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		// Change the default configuration, function parameters should start with "_"
 		$phpcheckstyle->getConfig()->setTestProperty('functionParameterNaming', 'regexp', "/^[_][a-zA-Z0-9]*$/");

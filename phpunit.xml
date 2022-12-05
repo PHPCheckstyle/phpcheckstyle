@@ -16,16 +16,16 @@
  		<file>./test/UnusedTest.php</file>	
 	</testsuite>
 	
-	<filter>
-		<whitelist>
-			<directory suffix=".php">./src/</directory>
-		</whitelist>
-	</filter>
-	
+	<coverage>
+		<include>
+			<directory suffix=".php">./src</directory>
+		</include>
+	</coverage>
+
 	<logging>
-		<log type="coverage-html" target="./checkstyle_result/phpunit/coverage" title="OCRE" />
-		<log type="coverage-clover" target="./checkstyle_result/phpunit/coverage.xml" />
-		<log type="junit" target="./checkstyle_result/phpunit/junit.xml" />
+		<junit outputFile="./checkstyle_result/phpunit/junit.xml" />
+		<testdoxHtml outputFile="./checkstyle_result/phpunit/coverage.html" />
+		<testdoxXml outputFile="./checkstyle_result/phpunit/coverage.xml" />
 	</logging>
 		
 </phpunit>

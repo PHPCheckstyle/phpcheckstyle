@@ -10,7 +10,7 @@ class MetricsTest extends TestCase {
 	 * Test for different metrics.
 	 */
 	public function testMetrics() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/bad_metrics.php'

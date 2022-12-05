@@ -10,7 +10,7 @@ class DeprecationTest extends TestCase {
 	 * Test for deprecated php methods rules.
 	 */
 	public function testDeprecations() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/bad_deprecation.php'

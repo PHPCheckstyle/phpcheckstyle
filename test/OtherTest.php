@@ -10,7 +10,7 @@ class OtherTest extends TestCase {
 	 * Test others rules.
 	 */
 	public function testOther() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/bad_other.php'
@@ -29,7 +29,7 @@ class OtherTest extends TestCase {
 	 * Test for PHP exceptions during parsing.
 	 */
 	public function testException() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/unterminated_comment.php'
@@ -48,7 +48,7 @@ class OtherTest extends TestCase {
 	 * Test for empty PHP file.
 	 */
 	public function testEmpty() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/empty.php'
@@ -67,7 +67,7 @@ class OtherTest extends TestCase {
 	 * Test for the presence of a break in a switch case.
 	 */
 	public function testSwitchCaseNeedBreak() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/switch_multi_case.php'

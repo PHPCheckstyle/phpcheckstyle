@@ -496,7 +496,7 @@ class Tokenizer {
 	private function _identifyTokens($tokenText, $tokenID) {
 		// Split the data up by newlines
 		// To correctly handle T_NEW_LINE inside comments and HTML
-		$splitData = preg_split('#(\r\n|\n|\r)#', $tokenText, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+		$splitData = preg_split('#(\r\n|\n|\r)#', $tokenText, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 		foreach ($splitData as $data) {
 
 			$tokenInfo = new TokenInfo();

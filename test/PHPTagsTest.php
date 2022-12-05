@@ -10,7 +10,7 @@ class PHPTagsTest extends TestCase {
 	 * Test PHP Tags rules.
 	 */
 	public function testTextAfterClosingTag() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/bad_php_tags_text_after_end.php'
@@ -28,7 +28,7 @@ class PHPTagsTest extends TestCase {
 	 * Test PHP Tags rules.
 	 */
 	public function testClosingTagNotNeeded() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/bad_php_tags_end_not_needed.php'

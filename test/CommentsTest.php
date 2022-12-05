@@ -10,7 +10,7 @@ class CommentsTest extends TestCase {
 	 * Nominal case.
 	 */
 	public function testGoodDoc() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/good_doc.php'
@@ -28,7 +28,7 @@ class CommentsTest extends TestCase {
 	 * Test for bad comments.
 	 */
 	public function testComments() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/bad_comments.php'
@@ -46,7 +46,7 @@ class CommentsTest extends TestCase {
 	 * Test for TODOs.
 	 */
 	public function testTODOs() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/todo.php'

@@ -10,7 +10,7 @@ class IndentationTest extends TestCase {
 	 * Test tabs indentation.
 	 */
 	public function testTabIndentation() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/bad_indentation.php'
@@ -28,7 +28,7 @@ class IndentationTest extends TestCase {
 	 * Test tabs indentation.
 	 */
 	public function testSpaceIndentation() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		// Change the configuration to check for spaces instead of tabs
 		$phpcheckstyle->getConfig()->setTestProperty('indentation', 'type', 'spaces');
@@ -49,7 +49,7 @@ class IndentationTest extends TestCase {
 	 * Test tabs indentation.
 	 */
 	public function testSpaceIndentationArray() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		// Change the configuration to check for spaces instead of tabs
 		$phpcheckstyle->getConfig()->setTestProperty('indentation', 'type', 'spaces');
@@ -70,7 +70,7 @@ class IndentationTest extends TestCase {
 	 * Test tabs indentation.
 	 */
 	public function testGoodSpaceIndentationArray() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		// Change the configuration to check for spaces instead of tabs
 		$phpcheckstyle->getConfig()->setTestProperty('indentation', 'type', 'spaces');
@@ -91,7 +91,7 @@ class IndentationTest extends TestCase {
 	 * Test for indentation with new line indentation.
 	 */
 	public function testGoodIndentationNewLine() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		// Change the configuration to check for spaces instead of tabs
 		$phpcheckstyle->getConfig()->setTestProperty('controlStructOpenCurly', 'position', 'nl');
@@ -114,7 +114,7 @@ class IndentationTest extends TestCase {
 	 * Test for indentation with spaces.
 	 */
 	public function testGoodIndentationSpaces() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		// Change the configuration to check for spaces instead of tabs
 		$phpcheckstyle->getConfig()->setTestProperty('indentation', 'type', 'spaces');
@@ -135,7 +135,7 @@ class IndentationTest extends TestCase {
 	 * Test for for spaces missing or in excedent.
 	 */
 	public function testBadSpaces() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/bad_spaces.php'
@@ -153,7 +153,7 @@ class IndentationTest extends TestCase {
 	 * Test for space after control statement (no space after control statement).
 	 */
 	public function testBadSpaceAfterControl() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		// Change the configuration to check for spaces instead of tabs
 		$phpcheckstyle->getConfig()->setTestProperty('spaceaftercontrolstmt', 'type', 'spaces');

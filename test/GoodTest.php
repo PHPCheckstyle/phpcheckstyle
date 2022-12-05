@@ -10,7 +10,7 @@ class GoodTest extends TestCase {
 	 * Test for nominal case of good style according to the rules.
 	 */
 	public function testGood() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/good.php'
@@ -30,7 +30,7 @@ class GoodTest extends TestCase {
 	 * Test for good iterators.
 	 */
 	public function testDoWhile() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/good_do_while.php'
@@ -48,7 +48,7 @@ class GoodTest extends TestCase {
 	 * Test for good_anonymous_function.
 	 */
 	public function testAnonymousFunction() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/good_anonymous_function.php'
@@ -66,7 +66,7 @@ class GoodTest extends TestCase {
 	 * Test for try/catch/finally.
 	 */
 	public function testException() {
-		$phpcheckstyle = $GLOBALS['PHPCheckstyle'];
+	    $phpcheckstyle = $GLOBALS['runner']->getInstance();
 
 		$phpcheckstyle->processFiles(array(
 			'./test/sample/good_exception.php'
